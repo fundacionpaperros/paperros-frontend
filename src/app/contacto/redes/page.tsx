@@ -1,4 +1,3 @@
-
 export default function Redes() {
   return (
     <div className="bg-secondary">
@@ -10,7 +9,7 @@ export default function Redes() {
               Encuéntranos
             </h1>
             <p className="text-xl text-secondary/80 max-w-3xl mx-auto">
-              Síguenos en nuestras redes sociales y mantente al día con nuestra labor
+              Síguenos en nuestras redes sociales y mantente al día con nuestro trabajo
             </p>
           </div>
         </div>
@@ -19,105 +18,79 @@ export default function Redes() {
       {/* Main Content */}
       <section className="py-20 bg-secondary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">
+          {/* Social Media Links */}
+          <div className="mb-16">
+            <h2 className="text-2xl font-bold text-primary mb-8 text-center">
               Nuestras Redes Sociales
             </h2>
-            <p className="text-lg text-primary/80 max-w-3xl mx-auto">
-              Mantente conectado con nosotros y sigue las historias de transformación 
-              de los animales que ayudamos. Cada like, compartir y comentario nos ayuda 
-              a llegar a más personas.
-            </p>
-          </div>
-
-          {/* Social Media Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-            <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-                <span className="text-3xl text-white">📷</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {/* Instagram */}
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-3xl">📷</span>
+                </div>
+                <h3 className="text-xl font-bold text-primary mb-4">Instagram</h3>
+                <p className="text-primary/80 mb-6">@fundacionpaperros</p>
+                <a 
+                  href="https://instagram.com/fundacionpaperros" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity duration-200 inline-block"
+                >
+                  Seguir
+                </a>
               </div>
-              <h3 className="text-2xl font-bold text-primary mb-4">Instagram</h3>
-              <p className="text-primary/80 mb-6">
-                @fundacionpaperros
-              </p>
-              <p className="text-primary/70 text-sm mb-6">
-                Fotos y videos de nuestros animales, historias de adopción exitosas 
-                y contenido educativo sobre tenencia responsable.
-              </p>
-              <a 
-                href="https://instagram.com/fundacionpaperros"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-200 inline-block"
-              >
-                Seguir
-              </a>
-            </div>
 
-            <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-              <div className="w-20 h-20 bg-black rounded-full mx-auto mb-6 flex items-center justify-center">
-                <span className="text-3xl text-white">🎵</span>
+              {/* TikTok */}
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+                <div className="w-20 h-20 bg-black rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-3xl">🎵</span>
+                </div>
+                <h3 className="text-xl font-bold text-primary mb-4">TikTok</h3>
+                <p className="text-primary/80 mb-6">fundacionpaperros</p>
+                <a 
+                  href="https://tiktok.com/@fundacionpaperros" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-200 inline-block"
+                >
+                  Seguir
+                </a>
               </div>
-              <h3 className="text-2xl font-bold text-primary mb-4">TikTok</h3>
-              <p className="text-primary/80 mb-6">
-                fundacionpaperros
-              </p>
-              <p className="text-primary/70 text-sm mb-6">
-                Videos cortos y divertidos de nuestros animales, consejos rápidos 
-                de cuidado y momentos tiernos de rehabilitación.
-              </p>
-              <a 
-                href="https://tiktok.com/@fundacionpaperros"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-200 inline-block"
-              >
-                Seguir
-              </a>
-            </div>
 
-            <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-              <div className="w-20 h-20 bg-blue-600 rounded-full mx-auto mb-6 flex items-center justify-center">
-                <span className="text-3xl text-white">📘</span>
+              {/* Facebook */}
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+                <div className="w-20 h-20 bg-blue-600 rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-3xl">👥</span>
+                </div>
+                <h3 className="text-xl font-bold text-primary mb-4">Facebook</h3>
+                <p className="text-primary/80 mb-6">Fundación Pa Perros</p>
+                <a 
+                  href="https://facebook.com/fundacionpaperros" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 inline-block"
+                >
+                  Seguir
+                </a>
               </div>
-              <h3 className="text-2xl font-bold text-primary mb-4">Facebook</h3>
-              <p className="text-primary/80 mb-6">
-                Fundación Pa Perros
-              </p>
-              <p className="text-primary/70 text-sm mb-6">
-                Eventos, noticias, historias completas de adopción y comunidad 
-                de adoptantes y voluntarios.
-              </p>
-              <a 
-                href="https://facebook.com/fundacionpaperros"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 inline-block"
-              >
-                Seguir
-              </a>
-            </div>
 
-            <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-              <div className="w-20 h-20 bg-red-600 rounded-full mx-auto mb-6 flex items-center justify-center">
-                <span className="text-3xl text-white">📺</span>
+              {/* YouTube */}
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+                <div className="w-20 h-20 bg-red-600 rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-3xl">📺</span>
+                </div>
+                <h3 className="text-xl font-bold text-primary mb-4">YouTube</h3>
+                <p className="text-primary/80 mb-6">Fundación Pa Perros</p>
+                <a 
+                  href="https://youtube.com/@fundacionpaperros" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors duration-200 inline-block"
+                >
+                  Suscribirse
+                </a>
               </div>
-              <h3 className="text-2xl font-bold text-primary mb-4">YouTube</h3>
-              <p className="text-primary/80 mb-6">
-                Fundación Pa Perros
-              </p>
-              <p className="text-primary/70 text-sm mb-6">
-                Videos educativos, documentales de rescates, tutoriales de cuidado 
-                y charlas completas sobre bienestar animal.
-              </p>
-              <a 
-                href="https://youtube.com/@fundacionpaperros"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors duration-200 inline-block"
-              >
-                Suscribirse
-              </a>
             </div>
           </div>
 
@@ -127,69 +100,63 @@ export default function Redes() {
               ¿Qué Encontrarás en Nuestras Redes?
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <div className="w-16 h-16 bg-accent-orange rounded-full mx-auto mb-4 flex items-center justify-center">
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+                <div className="w-16 h-16 bg-accent-orange rounded-full mx-auto mb-6 flex items-center justify-center">
                   <span className="text-2xl">📸</span>
                 </div>
-                <h4 className="text-xl font-bold text-primary mb-3">Historias de Rescate</h4>
-                <p className="text-primary/80 text-sm">
-                  Seguimiento completo del proceso de rescate, rehabilitación y adopción 
-                  de nuestros animales.
+                <h4 className="text-xl font-bold text-primary mb-4">Historias de Éxito</h4>
+                <p className="text-primary/80">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
               </div>
 
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <div className="w-16 h-16 bg-accent-blue rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl">🎓</span>
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+                <div className="w-16 h-16 bg-accent-blue rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-2xl">🎥</span>
                 </div>
-                <h4 className="text-xl font-bold text-primary mb-3">Contenido Educativo</h4>
-                <p className="text-primary/80 text-sm">
-                  Tips de cuidado, señales de bienestar animal, prevención de maltrato 
-                  y tenencia responsable.
+                <h4 className="text-xl font-bold text-primary mb-4">Videos Educativos</h4>
+                <p className="text-primary/80">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
               </div>
 
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <div className="w-16 h-16 bg-accent-green rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl">🎉</span>
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+                <div className="w-16 h-16 bg-accent-green rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-2xl">📅</span>
                 </div>
-                <h4 className="text-xl font-bold text-primary mb-3">Eventos y Actividades</h4>
-                <p className="text-primary/80 text-sm">
-                  Información sobre jornadas de esterilización, charlas educativas, 
-                  eventos de adopción y actividades comunitarias.
+                <h4 className="text-xl font-bold text-primary mb-4">Eventos y Actividades</h4>
+                <p className="text-primary/80">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
               </div>
 
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <div className="w-16 h-16 bg-accent-orange rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl">❤️</span>
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+                <div className="w-16 h-16 bg-accent-orange rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-2xl">🐕</span>
                 </div>
-                <h4 className="text-xl font-bold text-primary mb-3">Testimonios</h4>
-                <p className="text-primary/80 text-sm">
-                  Historias de familias adoptantes, voluntarios y personas que han 
-                  sido impactadas por nuestra labor.
+                <h4 className="text-xl font-bold text-primary mb-4">Animales en Adopción</h4>
+                <p className="text-primary/80">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
               </div>
 
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <div className="w-16 h-16 bg-accent-blue rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl">📢</span>
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+                <div className="w-16 h-16 bg-accent-blue rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-2xl">💡</span>
                 </div>
-                <h4 className="text-xl font-bold text-primary mb-3">Urgencias</h4>
-                <p className="text-primary/80 text-sm">
-                  Alertas sobre animales en situación de emergencia que necesitan 
-                  ayuda inmediata o hogares temporales.
+                <h4 className="text-xl font-bold text-primary mb-4">Consejos de Cuidado</h4>
+                <p className="text-primary/80">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
               </div>
 
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <div className="w-16 h-16 bg-accent-green rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl">🎁</span>
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+                <div className="w-16 h-16 bg-accent-green rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-2xl">🤝</span>
                 </div>
-                <h4 className="text-xl font-bold text-primary mb-3">Campañas</h4>
-                <p className="text-primary/80 text-sm">
-                  Campañas de donación, adopción simbólica, apadrinamiento y 
-                  otras formas de apoyar nuestra misión.
+                <h4 className="text-xl font-bold text-primary mb-4">Comunidad</h4>
+                <p className="text-primary/80">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
               </div>
             </div>
@@ -198,73 +165,84 @@ export default function Redes() {
           {/* Engagement Stats */}
           <div className="mb-16">
             <h3 className="text-2xl font-bold text-primary mb-8 text-center">
-              Nuestro Impacto en Redes
+              Nuestra Comunidad Digital
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              <div className="bg-accent-orange/10 rounded-2xl p-6 text-center">
-                <h4 className="text-4xl font-bold text-primary mb-2">5K+</h4>
-                <p className="text-accent-orange font-semibold">Seguidores Instagram</p>
-                <p className="text-primary/80 text-sm">Comunidad activa</p>
+              <div className="bg-accent-orange/10 rounded-2xl p-8 text-center">
+                <h4 className="text-4xl font-bold text-accent-orange mb-2">5K+</h4>
+                <p className="text-primary font-semibold">Seguidores en Instagram</p>
               </div>
-              <div className="bg-accent-blue/10 rounded-2xl p-6 text-center">
-                <h4 className="text-4xl font-bold text-primary mb-2">2K+</h4>
-                <p className="text-accent-blue font-semibold">Seguidores TikTok</p>
-                <p className="text-primary/80 text-sm">Crecimiento rápido</p>
+              <div className="bg-accent-blue/10 rounded-2xl p-8 text-center">
+                <h4 className="text-4xl font-bold text-accent-blue mb-2">3K+</h4>
+                <p className="text-primary font-semibold">Me Gusta en Facebook</p>
               </div>
-              <div className="bg-accent-green/10 rounded-2xl p-6 text-center">
-                <h4 className="text-4xl font-bold text-primary mb-2">3K+</h4>
-                <p className="text-accent-green font-semibold">Me Gusta Facebook</p>
-                <p className="text-primary/80 text-sm">Comunidad local</p>
+              <div className="bg-accent-green/10 rounded-2xl p-8 text-center">
+                <h4 className="text-4xl font-bold text-accent-green mb-2">2K+</h4>
+                <p className="text-primary font-semibold">Suscriptores en YouTube</p>
               </div>
-              <div className="bg-accent-orange/10 rounded-2xl p-6 text-center">
-                <h4 className="text-4xl font-bold text-primary mb-2">1K+</h4>
-                <p className="text-accent-orange font-semibold">Suscriptores YouTube</p>
-                <p className="text-primary/80 text-sm">Contenido educativo</p>
+              <div className="bg-accent-orange/10 rounded-2xl p-8 text-center">
+                <h4 className="text-4xl font-bold text-accent-orange mb-2">1K+</h4>
+                <p className="text-primary font-semibold">Seguidores en TikTok</p>
               </div>
             </div>
           </div>
 
-          {/* Call to Action */}
+          {/* Newsletter */}
+          <div className="mb-16">
+            <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+              <h3 className="text-2xl font-bold text-primary mb-4">
+                Mantente Informado
+              </h3>
+              <p className="text-primary/80 mb-6 max-w-2xl mx-auto">
+                Suscríbete a nuestro boletín para recibir actualizaciones sobre nuestros programas, 
+                eventos y historias de éxito directamente en tu correo.
+              </p>
+              <div className="max-w-md mx-auto flex gap-4">
+                <input
+                  type="email"
+                  placeholder="Tu correo electrónico"
+                  className="flex-1 px-4 py-3 border border-primary/20 rounded-lg focus:ring-2 focus:ring-accent-orange focus:border-transparent"
+                />
+                <button className="bg-accent-orange text-white px-6 py-3 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200">
+                  Suscribirse
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA Section */}
           <div className="bg-primary text-secondary rounded-2xl p-8 text-center">
             <h3 className="text-2xl font-bold mb-4">
-              ¡Síguenos y sé parte del cambio!
+              ¿Quieres ser parte de nuestra comunidad?
             </h3>
             <p className="text-secondary/80 mb-6 max-w-2xl mx-auto">
-              Cada like, compartir y comentario nos ayuda a llegar a más personas 
-              y crear conciencia sobre el bienestar animal. Tu apoyo digital es muy valioso.
+              Síguenos en nuestras redes sociales para estar al día con nuestro trabajo, 
+              participar en nuestras actividades y ser parte de la transformación del bienestar animal en Colombia.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <a 
-                href="https://instagram.com/fundacionpaperros"
-                target="_blank"
+                href="https://instagram.com/fundacionpaperros" 
+                target="_blank" 
                 rel="noopener noreferrer"
-                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-200"
+                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity duration-200"
               >
                 Instagram
               </a>
               <a 
-                href="https://tiktok.com/@fundacionpaperros"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-200"
-              >
-                TikTok
-              </a>
-              <a 
-                href="https://facebook.com/fundacionpaperros"
-                target="_blank"
+                href="https://facebook.com/fundacionpaperros" 
+                target="_blank" 
                 rel="noopener noreferrer"
                 className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200"
               >
                 Facebook
               </a>
               <a 
-                href="https://youtube.com/@fundacionpaperros"
-                target="_blank"
+                href="https://tiktok.com/@fundacionpaperros" 
+                target="_blank" 
                 rel="noopener noreferrer"
-                className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors duration-200"
+                className="bg-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-200"
               >
-                YouTube
+                TikTok
               </a>
             </div>
           </div>

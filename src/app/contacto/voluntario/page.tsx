@@ -1,5 +1,3 @@
-import Image from 'next/image';
-
 export default function Voluntario() {
   return (
     <div className="bg-secondary">
@@ -11,7 +9,7 @@ export default function Voluntario() {
               Quiero ser Voluntario
             </h1>
             <p className="text-xl text-secondary/80 max-w-3xl mx-auto">
-              Únete a nuestro equipo y ayuda a transformar vidas
+              Únete a nuestro equipo de voluntarios y ayuda a transformar vidas
             </p>
           </div>
         </div>
@@ -23,27 +21,23 @@ export default function Voluntario() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
             <div className="space-y-6">
               <h2 className="text-3xl md:text-4xl font-bold text-primary">
-                Tu tiempo puede cambiar vidas
+                Sé Parte del Cambio
               </h2>
               <p className="text-lg text-primary/80 leading-relaxed">
-                Como voluntario de la Fundación Pa Perros, tendrás la oportunidad de 
-                contribuir directamente al bienestar animal y ser parte de una comunidad 
-                apasionada por hacer la diferencia.
+                En Fundación Pa&apos; Perros trabajamos con albergues aliados y rescatistas para promover 
+                la adopción responsable y generar conciencia sobre el bienestar animal. Como voluntario, 
+                serás parte de esta transformación cultural.
               </p>
               <p className="text-lg text-primary/80 leading-relaxed">
-                No necesitas experiencia previa, solo ganas de ayudar y aprender. 
-                Te capacitaremos en todo lo que necesites saber.
+                A diferencia de un albergue tradicional, nos enfocamos en crear un impacto sostenible 
+                a través de la educación, la sensibilización y el apoyo a organizaciones que comparten nuestra misión.
               </p>
             </div>
             <div className="relative">
               <div className="relative w-full h-96">
-                <Image
-                  src="/image 13.png"
-                  alt="Voluntariado"
-                  width={500}
-                  height={400}
-                  className="object-cover rounded-2xl w-full h-full"
-                />
+                <div className="absolute inset-0 bg-accent-green rounded-2xl flex items-center justify-center">
+                  <span className="text-6xl">🤝</span>
+                </div>
               </div>
             </div>
           </div>
@@ -54,100 +48,82 @@ export default function Voluntario() {
               Oportunidades de Voluntariado
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <div className="w-16 h-16 bg-accent-orange rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl">🐕</span>
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+                <div className="w-20 h-20 bg-accent-orange rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-3xl">📚</span>
                 </div>
-                <h4 className="text-xl font-bold text-primary mb-3">Cuidado Directo</h4>
-                <p className="text-primary/80 text-sm mb-4">
-                  Alimentación, paseos, limpieza y cuidado directo de los animales rescatados.
+                <h4 className="text-xl font-bold text-primary mb-4">Educación y Charlas</h4>
+                <p className="text-primary/80 mb-6">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
-                <ul className="text-primary/70 text-sm space-y-1">
-                  <li>• Alimentación y hidratación</li>
-                  <li>• Paseos y ejercicio</li>
-                  <li>• Limpieza de espacios</li>
-                  <li>• Acompañamiento emocional</li>
-                </ul>
+                <button className="bg-accent-orange text-white px-6 py-2 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200">
+                  Aplicar
+                </button>
               </div>
 
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <div className="w-16 h-16 bg-accent-blue rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl">📚</span>
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+                <div className="w-20 h-20 bg-accent-blue rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-3xl">📱</span>
                 </div>
-                <h4 className="text-xl font-bold text-primary mb-3">Educación</h4>
-                <p className="text-primary/80 text-sm mb-4">
-                  Ayuda en charlas educativas, talleres y programas de sensibilización.
+                <h4 className="text-xl font-bold text-primary mb-4">Comunicaciones</h4>
+                <p className="text-primary/80 mb-6">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
-                <ul className="text-primary/70 text-sm space-y-1">
-                  <li>• Apoyo en charlas escolares</li>
-                  <li>• Preparación de material</li>
-                  <li>• Logística de eventos</li>
-                  <li>• Difusión en redes sociales</li>
-                </ul>
+                <button className="bg-accent-blue text-white px-6 py-2 rounded-lg font-semibold hover:bg-accent-blue/90 transition-colors duration-200">
+                  Aplicar
+                </button>
               </div>
 
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <div className="w-16 h-16 bg-accent-green rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl">🚗</span>
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+                <div className="w-20 h-20 bg-accent-green rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-3xl">🎪</span>
                 </div>
-                <h4 className="text-xl font-bold text-primary mb-3">Transporte</h4>
-                <p className="text-primary/80 text-sm mb-4">
-                  Transporte de animales a citas veterinarias, eventos y hogares temporales.
+                <h4 className="text-xl font-bold text-primary mb-4">Eventos y Actividades</h4>
+                <p className="text-primary/80 mb-6">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
-                <ul className="text-primary/70 text-sm space-y-1">
-                  <li>• Transporte veterinario</li>
-                  <li>• Entrega de adopciones</li>
-                  <li>• Recogida de donaciones</li>
-                  <li>• Apoyo en eventos</li>
-                </ul>
+                <button className="bg-accent-green text-white px-6 py-2 rounded-lg font-semibold hover:bg-accent-green/90 transition-colors duration-200">
+                  Aplicar
+                </button>
               </div>
 
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <div className="w-16 h-16 bg-accent-orange rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl">📱</span>
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+                <div className="w-20 h-20 bg-accent-orange rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-3xl">🏥</span>
                 </div>
-                <h4 className="text-xl font-bold text-primary mb-3">Comunicaciones</h4>
-                <p className="text-primary/80 text-sm mb-4">
-                  Apoyo en redes sociales, fotografía, videografía y contenido digital.
+                <h4 className="text-xl font-bold text-primary mb-4">Apoyo Veterinario</h4>
+                <p className="text-primary/80 mb-6">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
-                <ul className="text-primary/70 text-sm space-y-1">
-                  <li>• Gestión de redes sociales</li>
-                  <li>• Fotografía de animales</li>
-                  <li>• Creación de contenido</li>
-                  <li>• Diseño gráfico</li>
-                </ul>
+                <button className="bg-accent-orange text-white px-6 py-2 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200">
+                  Aplicar
+                </button>
               </div>
 
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <div className="w-16 h-16 bg-accent-blue rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl">🏥</span>
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+                <div className="w-20 h-20 bg-accent-blue rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-3xl">🚶‍♂️</span>
                 </div>
-                <h4 className="text-xl font-bold text-primary mb-3">Apoyo Veterinario</h4>
-                <p className="text-primary/80 text-sm mb-4">
-                  Para profesionales o estudiantes de veterinaria que quieren ayudar.
+                <h4 className="text-xl font-bold text-primary mb-4">Servicios con Propósito</h4>
+                <p className="text-primary/80 mb-6">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
-                <ul className="text-primary/70 text-sm space-y-1">
-                  <li>• Asistencia en consultas</li>
-                  <li>• Apoyo en cirugías</li>
-                  <li>• Cuidados post-operatorios</li>
-                  <li>• Educación sanitaria</li>
-                </ul>
+                <button className="bg-accent-blue text-white px-6 py-2 rounded-lg font-semibold hover:bg-accent-blue/90 transition-colors duration-200">
+                  Aplicar
+                </button>
               </div>
 
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <div className="w-16 h-16 bg-accent-green rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl">🏠</span>
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+                <div className="w-20 h-20 bg-accent-green rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-3xl">💻</span>
                 </div>
-                <h4 className="text-xl font-bold text-primary mb-3">Hogar Temporal</h4>
-                <p className="text-primary/80 text-sm mb-4">
-                  Acoge temporalmente a un animal mientras encuentra su hogar definitivo.
+                <h4 className="text-xl font-bold text-primary mb-4">Administración</h4>
+                <p className="text-primary/80 mb-6">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
-                <ul className="text-primary/70 text-sm space-y-1">
-                  <li>• Cuidado temporal</li>
-                  <li>• Socialización</li>
-                  <li>• Evaluación de comportamiento</li>
-                  <li>• Preparación para adopción</li>
-                </ul>
+                <button className="bg-accent-green text-white px-6 py-2 rounded-lg font-semibold hover:bg-accent-green/90 transition-colors duration-200">
+                  Aplicar
+                </button>
               </div>
             </div>
           </div>
@@ -158,114 +134,138 @@ export default function Voluntario() {
               Requisitos para Ser Voluntario
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-white rounded-lg shadow-lg p-8">
-                <h4 className="text-xl font-bold text-primary mb-4">Requisitos Básicos</h4>
-                <ul className="space-y-3 text-primary/80">
-                  <li className="flex items-start">
-                    <span className="text-accent-orange mr-2">✓</span>
-                    Ser mayor de 18 años (o 16 con autorización de padres)
+              <div className="bg-white rounded-2xl p-8 shadow-lg">
+                <h4 className="text-xl font-bold text-primary mb-6">Requisitos Generales</h4>
+                <ul className="space-y-4">
+                  <li className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-accent-orange rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-white text-sm">✓</span>
+                    </div>
+                    <p className="text-primary/80">Lorem ipsum dolor sit amet</p>
                   </li>
-                  <li className="flex items-start">
-                    <span className="text-accent-orange mr-2">✓</span>
-                    Tener amor por los animales
+                  <li className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-accent-orange rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-white text-sm">✓</span>
+                    </div>
+                    <p className="text-primary/80">Lorem ipsum dolor sit amet</p>
                   </li>
-                  <li className="flex items-start">
-                    <span className="text-accent-orange mr-2">✓</span>
-                    Compromiso mínimo de 4 horas semanales
+                  <li className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-accent-orange rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-white text-sm">✓</span>
+                    </div>
+                    <p className="text-primary/80">Lorem ipsum dolor sit amet</p>
                   </li>
-                  <li className="flex items-start">
-                    <span className="text-accent-orange mr-2">✓</span>
-                    Disponibilidad para capacitación inicial
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-accent-orange mr-2">✓</span>
-                    Responsabilidad y puntualidad
+                  <li className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-accent-orange rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-white text-sm">✓</span>
+                    </div>
+                    <p className="text-primary/80">Lorem ipsum dolor sit amet</p>
                   </li>
                 </ul>
               </div>
-              <div className="bg-white rounded-lg shadow-lg p-8">
-                <h4 className="text-xl font-bold text-primary mb-4">Lo que Ofrecemos</h4>
-                <ul className="space-y-3 text-primary/80">
-                  <li className="flex items-start">
-                    <span className="text-accent-blue mr-2">✓</span>
-                    Capacitación especializada
+
+              <div className="bg-white rounded-2xl p-8 shadow-lg">
+                <h4 className="text-xl font-bold text-primary mb-6">Beneficios del Voluntariado</h4>
+                <ul className="space-y-4">
+                  <li className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-accent-blue rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-white text-sm">✓</span>
+                    </div>
+                    <p className="text-primary/80">Lorem ipsum dolor sit amet</p>
                   </li>
-                  <li className="flex items-start">
-                    <span className="text-accent-blue mr-2">✓</span>
-                    Certificado de voluntariado
+                  <li className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-accent-blue rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-white text-sm">✓</span>
+                    </div>
+                    <p className="text-primary/80">Lorem ipsum dolor sit amet</p>
                   </li>
-                  <li className="flex items-start">
-                    <span className="text-accent-blue mr-2">✓</span>
-                    Experiencia en bienestar animal
+                  <li className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-accent-blue rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-white text-sm">✓</span>
+                    </div>
+                    <p className="text-primary/80">Lorem ipsum dolor sit amet</p>
                   </li>
-                  <li className="flex items-start">
-                    <span className="text-accent-blue mr-2">✓</span>
-                    Comunidad de voluntarios
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-accent-blue mr-2">✓</span>
-                    Seguro de voluntariado
+                  <li className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-accent-blue rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-white text-sm">✓</span>
+                    </div>
+                    <p className="text-primary/80">Lorem ipsum dolor sit amet</p>
                   </li>
                 </ul>
               </div>
             </div>
           </div>
 
-          {/* Process */}
+          {/* Application Form */}
           <div className="mb-16">
             <h3 className="text-2xl font-bold text-primary mb-8 text-center">
-              Proceso de Aplicación
+              Formulario de Aplicación
             </h3>
-            <div className="bg-white rounded-lg shadow-lg p-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-accent-orange rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-2xl font-bold text-white">1</span>
+            <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+              <div className="w-20 h-20 bg-accent-green rounded-full mx-auto mb-6 flex items-center justify-center">
+                <span className="text-3xl">📝</span>
+              </div>
+              <h4 className="text-xl font-bold text-primary mb-4">Aplica como Voluntario</h4>
+              <p className="text-primary/80 mb-6">
+                Completa nuestro formulario para ser parte de nuestro equipo de voluntarios
+              </p>
+              <a 
+                href="https://forms.gle/S9ZeuoJP4yuX6MVg6" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="bg-accent-green text-white px-8 py-4 rounded-lg font-semibold hover:bg-accent-green/90 transition-colors duration-200 inline-block"
+              >
+                Completar Formulario
+              </a>
+            </div>
+          </div>
+
+          {/* Testimonials */}
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold text-primary mb-8 text-center">
+              Testimonios de Voluntarios
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="bg-white rounded-2xl p-6 shadow-lg">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-accent-orange rounded-full flex items-center justify-center mr-4">
+                    <span className="text-white font-bold">M</span>
                   </div>
-                  <h4 className="text-lg font-bold text-primary mb-2">Aplicación</h4>
-                  <p className="text-primary/80 text-sm">
-                    Completa el formulario de aplicación con tus datos y preferencias
-                  </p>
-                </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-accent-blue rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-2xl font-bold text-white">2</span>
+                  <div>
+                    <h4 className="font-bold text-primary">Lorem Ipsum</h4>
+                    <p className="text-primary/80 text-sm">Voluntaria desde 2023</p>
                   </div>
-                  <h4 className="text-lg font-bold text-primary mb-2">Entrevista</h4>
-                  <p className="text-primary/80 text-sm">
-                    Entrevista personal para conocer tus motivaciones y disponibilidad
-                  </p>
                 </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-accent-green rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-2xl font-bold text-white">3</span>
+                <p className="text-primary/80">
+                  &ldquo;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.&rdquo;
+                </p>
+              </div>
+
+              <div className="bg-white rounded-2xl p-6 shadow-lg">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-accent-blue rounded-full flex items-center justify-center mr-4">
+                    <span className="text-white font-bold">C</span>
                   </div>
-                  <h4 className="text-lg font-bold text-primary mb-2">Capacitación</h4>
-                  <p className="text-primary/80 text-sm">
-                    Capacitación inicial sobre nuestros protocolos y mejores prácticas
-                  </p>
-                </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-accent-orange rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-2xl font-bold text-white">4</span>
+                  <div>
+                    <h4 className="font-bold text-primary">Lorem Ipsum</h4>
+                    <p className="text-primary/80 text-sm">Voluntario desde 2022</p>
                   </div>
-                  <h4 className="text-lg font-bold text-primary mb-2">Inicio</h4>
-                  <p className="text-primary/80 text-sm">
-                    Comienzas tu voluntariado con acompañamiento y supervisión
-                  </p>
                 </div>
+                <p className="text-primary/80">
+                  &ldquo;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.&rdquo;
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Call to Action */}
+          {/* CTA Section */}
           <div className="bg-primary text-secondary rounded-2xl p-8 text-center">
             <h3 className="text-2xl font-bold mb-4">
-              ¿Listo para ser parte del cambio?
+              ¿Listo para hacer la diferencia?
             </h3>
             <p className="text-secondary/80 mb-6 max-w-2xl mx-auto">
-              Completa nuestro formulario de aplicación y comienza tu jornada como voluntario. 
-              Tu ayuda hace la diferencia en la vida de muchos animales.
+              Únete a nuestro equipo de voluntarios y ayuda a transformar la cultura de adopción 
+              y bienestar animal en Colombia. Tu tiempo y dedicación pueden cambiar vidas.
             </p>
             <a 
               href="https://forms.gle/S9ZeuoJP4yuX6MVg6"
@@ -273,7 +273,7 @@ export default function Voluntario() {
               rel="noopener noreferrer"
               className="bg-accent-orange text-white px-8 py-4 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200 inline-block"
             >
-              Aplicar como Voluntario
+              Aplicar Ahora
             </a>
           </div>
         </div>

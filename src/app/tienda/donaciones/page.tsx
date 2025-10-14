@@ -1,4 +1,3 @@
-
 export default function Donaciones() {
   return (
     <div className="bg-secondary">
@@ -10,7 +9,7 @@ export default function Donaciones() {
               Donaciones y Apadrinamientos
             </h1>
             <p className="text-xl text-secondary/80 max-w-3xl mx-auto">
-              Apoya nuestra misión de bienestar animal de diferentes maneras
+              Tu contribución hace posible nuestro trabajo por el bienestar animal
             </p>
           </div>
         </div>
@@ -19,99 +18,37 @@ export default function Donaciones() {
       {/* Main Content */}
       <section className="py-20 bg-secondary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">
-              Formas de Apoyar
-            </h2>
-            <p className="text-lg text-primary/80 max-w-3xl mx-auto">
-              Cada forma de apoyo nos ayuda a seguir transformando vidas y creando 
-              un mundo mejor para los animales.
-            </p>
-          </div>
-
-          {/* Donation Types */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-              <div className="w-20 h-20 bg-accent-orange rounded-full mx-auto mb-6 flex items-center justify-center">
-                <span className="text-3xl">💰</span>
-              </div>
-              <h3 className="text-2xl font-bold text-primary mb-4">Donación Única</h3>
-              <p className="text-primary/80 mb-6">
-                Realiza una donación única para apoyar nuestros programas de rescate y rehabilitación.
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+            <div className="space-y-6">
+              <h2 className="text-3xl md:text-4xl font-bold text-primary">
+                Tu Apoyo Transforma Vidas
+              </h2>
+              <p className="text-lg text-primary/80 leading-relaxed">
+                Cada donación nos permite continuar con nuestra misión de promover la adopción responsable, 
+                brindar cuidado a animales rescatados y educar a la comunidad sobre el bienestar animal.
               </p>
-              <div className="space-y-2 mb-6">
-                <div className="flex justify-between">
-                  <span className="text-primary/70">$25.000</span>
-                  <span className="text-accent-orange font-semibold">Alimentación básica</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-primary/70">$50.000</span>
-                  <span className="text-accent-orange font-semibold">Vacunación completa</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-primary/70">$100.000</span>
-                  <span className="text-accent-orange font-semibold">Esterilización</span>
-                </div>
-              </div>
-              <button className="w-full bg-accent-orange text-white py-2 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200">
-                Donar Ahora
-              </button>
+              <p className="text-lg text-primary/80 leading-relaxed">
+                Con tu apoyo podemos esterilizar más mascotas, rescatar más animales y llegar a más personas 
+                con nuestro mensaje de amor y responsabilidad hacia los animales.
+              </p>
             </div>
-
-            <div className="bg-white rounded-lg shadow-lg p-8 text-center border-2 border-accent-blue">
-              <div className="w-20 h-20 bg-accent-blue rounded-full mx-auto mb-6 flex items-center justify-center">
-                <span className="text-3xl">🔄</span>
-              </div>
-              <h3 className="text-2xl font-bold text-primary mb-4">Donación Recurrente</h3>
-              <p className="text-primary/80 mb-6">
-                Hazte padrino o madrina con una donación mensual que nos permite planificar mejor.
-              </p>
-              <div className="space-y-2 mb-6">
-                <div className="flex justify-between">
-                  <span className="text-primary/70">$30.000/mes</span>
-                  <span className="text-accent-blue font-semibold">Apadrinamiento básico</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-primary/70">$50.000/mes</span>
-                  <span className="text-accent-blue font-semibold">Apadrinamiento premium</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-primary/70">$100.000/mes</span>
-                  <span className="text-accent-blue font-semibold">Apadrinamiento completo</span>
+            <div className="relative">
+              <div className="relative w-full h-96">
+                <div className="absolute inset-0 bg-accent-orange rounded-2xl flex items-center justify-center">
+                  <span className="text-6xl">💝</span>
                 </div>
               </div>
-              <button className="w-full bg-accent-blue text-white py-2 rounded-lg font-semibold hover:bg-accent-blue/90 transition-colors duration-200">
-                Hacerse Padrino
-              </button>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-              <div className="w-20 h-20 bg-accent-green rounded-full mx-auto mb-6 flex items-center justify-center">
-                <span className="text-3xl">🎁</span>
-              </div>
-              <h3 className="text-2xl font-bold text-primary mb-4">Donación en Especie</h3>
-              <p className="text-primary/80 mb-6">
-                Dona alimentos, medicamentos, juguetes u otros elementos que necesitamos.
-              </p>
-              <div className="space-y-2 mb-6">
-                <div className="text-primary/70 text-sm">• Alimento para perros y gatos</div>
-                <div className="text-primary/70 text-sm">• Medicamentos veterinarios</div>
-                <div className="text-primary/70 text-sm">• Juguetes y accesorios</div>
-                <div className="text-primary/70 text-sm">• Materiales de limpieza</div>
-              </div>
-              <button className="w-full bg-accent-green text-white py-2 rounded-lg font-semibold hover:bg-accent-green/90 transition-colors duration-200">
-                Ver Lista de Necesidades
-              </button>
             </div>
           </div>
 
-          {/* Bank Information */}
+          {/* Donation Methods */}
           <div className="mb-16">
             <h3 className="text-2xl font-bold text-primary mb-8 text-center">
-              Información Bancaria
+              Formas de Donar
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-white rounded-lg shadow-lg p-8">
+              {/* Bank Transfer */}
+              <div className="bg-white rounded-2xl p-8 shadow-lg">
                 <h4 className="text-xl font-bold text-primary mb-4">Transferencia Bancaria</h4>
                 <div className="space-y-3">
                   <div className="bg-accent-orange/10 p-4 rounded-lg">
@@ -126,7 +63,8 @@ export default function Donaciones() {
                 </button>
               </div>
 
-              <div className="bg-white rounded-lg shadow-lg p-8">
+              {/* Mobile Payment */}
+              <div className="bg-white rounded-2xl p-8 shadow-lg">
                 <h4 className="text-xl font-bold text-primary mb-4">Pago Móvil</h4>
                 <div className="space-y-3">
                   <div className="bg-accent-blue/10 p-4 rounded-lg">
@@ -142,60 +80,169 @@ export default function Donaciones() {
             </div>
           </div>
 
-          {/* Impact */}
+          {/* Sponsorship Form */}
           <div className="mb-16">
             <h3 className="text-2xl font-bold text-primary mb-8 text-center">
-              Tu Impacto
+              Formulario de Apadrinamiento
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              <div className="bg-accent-orange/10 rounded-2xl p-6 text-center">
-                <h4 className="text-4xl font-bold text-primary mb-2">120+</h4>
-                <p className="text-accent-orange font-semibold">Animales Esterilizados</p>
-                <p className="text-primary/80 text-sm">Con tu apoyo</p>
+            <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+              <div className="w-20 h-20 bg-accent-green rounded-full mx-auto mb-6 flex items-center justify-center">
+                <span className="text-3xl">📝</span>
               </div>
-              <div className="bg-accent-blue/10 rounded-2xl p-6 text-center">
-                <h4 className="text-4xl font-bold text-primary mb-2">300+</h4>
-                <p className="text-accent-blue font-semibold">Animales Desparasitados</p>
-                <p className="text-primary/80 text-sm">Este año</p>
+              <h4 className="text-xl font-bold text-primary mb-4">Formulario de Apadrinamiento</h4>
+              <p className="text-primary/80 mb-6">
+                Completa nuestro formulario para apadrinar un animal específico o contribuir a nuestros programas
+              </p>
+              <a 
+                href="https://forms.gle/S9ZeuoJP4yuX6MVg6" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="bg-accent-green text-white px-8 py-4 rounded-lg font-semibold hover:bg-accent-green/90 transition-colors duration-200 inline-block"
+              >
+                Completar Formulario
+              </a>
+            </div>
+          </div>
+
+          {/* Impact of Donations */}
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold text-primary mb-8 text-center">
+              Impacto de tus Donaciones
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="bg-accent-orange/10 rounded-2xl p-8 text-center">
+                <div className="w-16 h-16 bg-accent-orange rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <span className="text-2xl">✂️</span>
+                </div>
+                <h4 className="text-2xl font-bold text-accent-orange mb-2">$50.000</h4>
+                <p className="text-primary font-semibold">Esterilización</p>
+                <p className="text-primary/80 text-sm mt-2">Cubre el costo de una esterilización</p>
               </div>
-              <div className="bg-accent-green/10 rounded-2xl p-6 text-center">
-                <h4 className="text-4xl font-bold text-primary mb-2">50+</h4>
-                <p className="text-accent-green font-semibold">Adopciones Exitosas</p>
-                <p className="text-primary/80 text-sm">Gracias a tu ayuda</p>
+
+              <div className="bg-accent-blue/10 rounded-2xl p-8 text-center">
+                <div className="w-16 h-16 bg-accent-blue rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <span className="text-2xl">🏥</span>
+                </div>
+                <h4 className="text-2xl font-bold text-accent-blue mb-2">$100.000</h4>
+                <p className="text-primary font-semibold">Atención Veterinaria</p>
+                <p className="text-primary/80 text-sm mt-2">Cubre consulta y medicamentos</p>
               </div>
-              <div className="bg-accent-orange/10 rounded-2xl p-6 text-center">
-                <h4 className="text-4xl font-bold text-primary mb-2">850+</h4>
-                <p className="text-accent-orange font-semibold">Personas Educadas</p>
-                <p className="text-primary/80 text-sm">En tenencia responsable</p>
+
+              <div className="bg-accent-green/10 rounded-2xl p-8 text-center">
+                <div className="w-16 h-16 bg-accent-green rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <span className="text-2xl">🍖</span>
+                </div>
+                <h4 className="text-2xl font-bold text-accent-green mb-2">$30.000</h4>
+                <p className="text-primary font-semibold">Alimentación</p>
+                <p className="text-primary/80 text-sm mt-2">Alimenta un animal por un mes</p>
+              </div>
+
+              <div className="bg-accent-orange/10 rounded-2xl p-8 text-center">
+                <div className="w-16 h-16 bg-accent-orange rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <span className="text-2xl">📚</span>
+                </div>
+                <h4 className="text-2xl font-bold text-accent-orange mb-2">$200.000</h4>
+                <p className="text-primary font-semibold">Charla Educativa</p>
+                <p className="text-primary/80 text-sm mt-2">Financia una charla en colegio</p>
               </div>
             </div>
           </div>
 
-          {/* Call to Action */}
+          {/* Monthly Sponsorship */}
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold text-primary mb-8 text-center">
+              Apadrinamiento Mensual
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+                <h4 className="text-xl font-bold text-primary mb-4">Apadrinamiento Básico</h4>
+                <div className="text-3xl font-bold text-accent-orange mb-4">$50.000</div>
+                <p className="text-primary/80 text-sm mb-6">mensual</p>
+                <ul className="space-y-2 text-left mb-6">
+                  <li className="flex items-center space-x-2">
+                    <span className="text-accent-orange">✓</span>
+                    <span className="text-primary/80 text-sm">Lorem ipsum dolor sit amet</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <span className="text-accent-orange">✓</span>
+                    <span className="text-primary/80 text-sm">Lorem ipsum dolor sit amet</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <span className="text-accent-orange">✓</span>
+                    <span className="text-primary/80 text-sm">Lorem ipsum dolor sit amet</span>
+                  </li>
+                </ul>
+                <button className="w-full bg-accent-orange text-white py-2 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200">
+                  Apadrinar
+                </button>
+              </div>
+
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center border-2 border-accent-blue">
+                <div className="bg-accent-blue text-white px-3 py-1 rounded-full text-sm font-semibold mb-4 inline-block">
+                  Más Popular
+                </div>
+                <h4 className="text-xl font-bold text-primary mb-4">Apadrinamiento Completo</h4>
+                <div className="text-3xl font-bold text-accent-blue mb-4">$100.000</div>
+                <p className="text-primary/80 text-sm mb-6">mensual</p>
+                <ul className="space-y-2 text-left mb-6">
+                  <li className="flex items-center space-x-2">
+                    <span className="text-accent-blue">✓</span>
+                    <span className="text-primary/80 text-sm">Lorem ipsum dolor sit amet</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <span className="text-accent-blue">✓</span>
+                    <span className="text-primary/80 text-sm">Lorem ipsum dolor sit amet</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <span className="text-accent-blue">✓</span>
+                    <span className="text-primary/80 text-sm">Lorem ipsum dolor sit amet</span>
+                  </li>
+                </ul>
+                <button className="w-full bg-accent-blue text-white py-2 rounded-lg font-semibold hover:bg-accent-blue/90 transition-colors duration-200">
+                  Apadrinar
+                </button>
+              </div>
+
+              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+                <h4 className="text-xl font-bold text-primary mb-4">Apadrinamiento Premium</h4>
+                <div className="text-3xl font-bold text-accent-green mb-4">$200.000</div>
+                <p className="text-primary/80 text-sm mb-6">mensual</p>
+                <ul className="space-y-2 text-left mb-6">
+                  <li className="flex items-center space-x-2">
+                    <span className="text-accent-green">✓</span>
+                    <span className="text-primary/80 text-sm">Lorem ipsum dolor sit amet</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <span className="text-accent-green">✓</span>
+                    <span className="text-primary/80 text-sm">Lorem ipsum dolor sit amet</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <span className="text-accent-green">✓</span>
+                    <span className="text-primary/80 text-sm">Lorem ipsum dolor sit amet</span>
+                  </li>
+                </ul>
+                <button className="w-full bg-accent-green text-white py-2 rounded-lg font-semibold hover:bg-accent-green/90 transition-colors duration-200">
+                  Apadrinar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA Section */}
           <div className="bg-primary text-secondary rounded-2xl p-8 text-center">
             <h3 className="text-2xl font-bold mb-4">
-              ¿Listo para hacer la diferencia?
+              ¿Tienes preguntas sobre las donaciones?
             </h3>
             <p className="text-secondary/80 mb-6 max-w-2xl mx-auto">
-              Cada donación, sin importar el monto, nos ayuda a seguir transformando vidas. 
-              Tu generosidad es la esperanza de muchos animales.
+              Si necesitas más información sobre cómo donar o sobre el uso de los recursos, 
+              no dudes en contactarnos. Estamos aquí para ayudarte.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a 
-                href="https://forms.gle/S9ZeuoJP4yuX6MVg6"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-accent-orange text-white px-8 py-4 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200"
-              >
-                Formulario de Donación
-              </a>
-              <a 
-                href="/contacto/escribenos"
-                className="border-2 border-secondary text-secondary px-8 py-4 rounded-lg font-semibold hover:bg-secondary hover:text-primary transition-colors duration-200"
-              >
-                Contactar para Más Info
-              </a>
-            </div>
+            <a 
+              href="/contacto/escribenos"
+              className="bg-accent-orange text-white px-8 py-4 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200 inline-block"
+            >
+              Contactar
+            </a>
           </div>
         </div>
       </section>
