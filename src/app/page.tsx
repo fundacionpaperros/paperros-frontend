@@ -1,103 +1,618 @@
-import Image from "next/image";
+'use client';
+
+import Link from 'next/link';
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [currentSlide, setCurrentSlide] = useState(0);
+  
+  const events = [
+    {
+      id: 1,
+      image: "/Valles de la Florida_1810.png",
+      alt: "Campaña de Tenencia Responsable - Valles de la Florida"
+    },
+    {
+      id: 2,
+      image: "/Esterilización San Sebastián_2210.png",
+      alt: "Jornada de Esterilización - San Sebastián"
+    },
+    {
+      id: 3,
+      image: "/Ciprés de Bella Suiza_2510.png",
+      alt: "Campaña de Tenencia Responsable - Ciprés de Bella Suiza"
+    },
+    {
+      id: 4,
+      image: "/Carrera del Corazón_2610.png",
+      alt: "Carrera del Corazón"
+    }
+  ];
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+  // Auto-advance carousel - responsive behavior
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Check if mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // md breakpoint
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Calculate max slides based on screen size
+  const maxSlides = isMobile ? events.length : events.length - 1; // 1 on mobile, 2 on desktop
+  
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % maxSlides);
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(timer);
+  }, [maxSlides]);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % maxSlides);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + maxSlides) % maxSlides);
+  };
+
+  // Get current events to display (responsive)
+  const getCurrentEvents = () => {
+    const itemsToShow = isMobile ? 1 : 2; // 1 on mobile, 2 on desktop
+    return events.slice(currentSlide, currentSlide + itemsToShow);
+  };
+
+  return (
+    <div className="bg-secondary">
+      {/* Hero Section */}
+      <section className="bg-secondary py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <div className="space-y-8">
+              <div className="space-y-4">
+                  <p className="text-accent-orange text-sm font-medium uppercase tracking-wide">
+                    Bienvenidos a Fundación Pa&apos; Perros
+                  </p>
+                <h1 className="text-4xl md:text-6xl font-bold text-primary leading-tight">
+                  Transformando vidas, una pata a la vez
+                </h1>
+                  <p className="text-lg text-primary/80 leading-relaxed max-w-lg">
+                    En Fundación Pa&apos; Perros creemos que cada vida merece una segunda oportunidad. 
+                    Nacimos para cuidar, proteger y transformar la historia de los animales que han sufrido 
+                    el abandono o la indiferencia.
+                  </p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link 
+                  href="/adopta"
+                  className="bg-accent-orange text-white px-8 py-4 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200 text-center"
+                >
+                  Adoptar Ahora
+                </Link>
+                <Link 
+                  href="/la-manada/nuestra-historia"
+                  className="border-2 border-primary text-primary px-8 py-4 rounded-lg font-semibold hover:bg-primary hover:text-secondary transition-colors duration-200 text-center"
+                >
+                  Conoce Nuestra Historia
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Content - Images */}
+            <div className="relative">
+              <div className="relative w-full h-96 lg:h-[500px]">
+                <div className="absolute inset-0 bg-accent-blue rounded-full flex items-center justify-center">
+        <Image
+                    src="/Perro inicio.png"
+                    alt="Cuidado de mascotas"
+                    width={400}
+                    height={400}
+                    className="object-cover rounded-full w-full h-full"
+                  />
+                </div>
+                {/* Small overlapping image */}
+                <div className="absolute -bottom-1 w-32 h-32 rounded-full flex items-center justify-centershadow-lg">
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+                    src="/perro1.png"
+                    alt="Perro feliz"
+                    width={128}
+                    height={128}
+                    className="object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+      </section>
+
+      {/* Novedades y Eventos - Carrusel */}
+      <section className="py-16 bg-primary">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-secondary mb-4">
+              Novedades y Eventos
+            </h2>
+            <p className="text-secondary/80 text-lg">
+              Mantente al día con nuestras actividades y campañas
+            </p>
+          </div>
+          
+          {/* Carousel Container */}
+          <div className="relative">
+            {/* Main Carousel */}
+            <div className="overflow-hidden rounded-2xl">
+              <div 
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{ 
+                  transform: `translateX(-${currentSlide * (isMobile ? 100 : 50)}%)` 
+                }}
+              >
+                {events.map((event, index) => (
+                  <div key={event.id} className={`${isMobile ? 'w-full' : 'w-1/2'} flex-shrink-0 p-1`}>
+                    <div className="bg-secondary rounded-2xl p-1 shadow-lg hover:shadow-xl h-full border-2 border-accent-orange hover:border-accent-blue transition-all duration-300">
+                      <div className="relative w-full h-96 rounded-xl overflow-hidden flex items-center justify-center">
+                        <Image
+                          src={event.image}
+                          alt={event.alt}
+                          width={isMobile ? 450 : 400}
+                          height={isMobile ? 450 : 400}
+                          className="object-contain rounded-lg"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Navigation Arrows - Show when multiple slides */}
+            {maxSlides > 1 && (
+              <>
+                <button
+                  onClick={prevSlide}
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-secondary/90 hover:bg-secondary text-primary p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 z-10"
+                  aria-label="Evento anterior"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                
+                <button
+                  onClick={nextSlide}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-secondary/90 hover:bg-secondary text-primary p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 z-10"
+                  aria-label="Siguiente evento"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </>
+            )}
+          </div>
+          
+          {/* Dots Indicator - Show when multiple slides */}
+          {maxSlides > 1 && (
+            <div className="flex justify-center mt-8 space-x-3">
+              {Array.from({ length: maxSlides }, (_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                    index === currentSlide 
+                      ? 'bg-accent-orange scale-125' 
+                      : 'bg-secondary/50 hover:bg-secondary/70'
+                  }`}
+                  aria-label={`Ir al slide ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
+          
+        </div>
+      </section>
+
+      {/* Historias Felices Section - Reorganizada */}
+      <section className="py-20 bg-secondary text-primary">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6">
+              Historias Felices
+            </h2>
+            <p className="text-xl text-primary/80 max-w-3xl mx-auto">
+              Cada adopción exitosa es una historia de amor, esperanza y segundas oportunidades que nos inspira a seguir adelante
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Historia 1 - Max */}
+            <div className="bg-primary/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary/20 hover:bg-primary/20 transition-all duration-300 hover:scale-105 group">
+              <div className="mb-6">
+                <div className="w-24 h-24 bg-gradient-to-br from-accent-orange to-accent-orange/80 rounded-full mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg mb-4">
+                  <span className="text-3xl text-white">🐕</span>
+                </div>
+                <h3 className="text-2xl font-bold mb-3 text-accent-orange">Max</h3>
+              </div>
+              <p className="text-primary/90 leading-relaxed mb-6">
+                Max llegó a nosotros después de ser abandonado en la calle. Estaba desnutrido y asustado. 
+                Hoy es el compañero más fiel de la familia Rodríguez y el mejor amigo de sus dos hijos.
+              </p>
+              <div className="bg-accent-orange/20 rounded-lg p-4 border-l-4 border-accent-orange">
+                <p className="text-sm text-accent-orange font-semibold italic">
+                  "Su transformación nos llena de orgullo y alegría cada día"
+                </p>
+                <p className="text-xs text-primary/70 mt-1">- Familia Rodríguez</p>
+              </div>
+            </div>
+            
+            {/* Historia 2 - Luna */}
+            <div className="bg-primary/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary/20 hover:bg-primary/20 transition-all duration-300 hover:scale-105 group">
+              <div className="mb-6">
+                <div className="w-24 h-24 bg-gradient-to-br from-accent-blue to-accent-blue/80 rounded-full mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg mb-4">
+                  <span className="text-3xl text-white">🐱</span>
+                </div>
+                <h3 className="text-2xl font-bold mb-3 text-accent-blue">Luna</h3>
+              </div>
+              <p className="text-primary/90 leading-relaxed mb-6">
+                Luna era muy tímida cuando la rescatamos de un refugio. Le costaba confiar en las personas. 
+                Con paciencia y amor, se convirtió en la reina de la casa y la consentida de toda la familia.
+              </p>
+              <div className="bg-accent-blue/20 rounded-lg p-4 border-l-4 border-accent-blue">
+                <p className="text-sm text-accent-blue font-semibold italic">
+                  "No podemos imaginar la vida sin ella"
+                </p>
+                <p className="text-xs text-primary/70 mt-1">- María González</p>
+              </div>
+            </div>
+            
+            {/* Historia 3 - Rocky */}
+            <div className="bg-primary/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary/20 hover:bg-primary/20 transition-all duration-300 hover:scale-105 group">
+              <div className="mb-6">
+                <div className="w-24 h-24 bg-gradient-to-br from-accent-green to-accent-green/80 rounded-full mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg mb-4">
+                  <span className="text-3xl text-white">🐕</span>
+                </div>
+                <h3 className="text-2xl font-bold mb-3 text-accent-green">Rocky</h3>
+              </div>
+              <p className="text-primary/90 leading-relaxed mb-6">
+                Rocky tenía miedo de los humanos debido a maltratos anteriores. Era agresivo y desconfiado. 
+                Hoy es el mejor amigo de los niños del barrio y un ejemplo de cómo el amor puede transformar cualquier vida.
+              </p>
+              <div className="bg-accent-green/20 rounded-lg p-4 border-l-4 border-accent-green">
+                <p className="text-sm text-accent-green font-semibold italic">
+                  "El amor todo lo puede"
+                </p>
+                <p className="text-xs text-primary/70 mt-1">- Comunidad del Barrio San José</p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Call to Action para Historias */}
+          <div className="text-center mt-16">
+            <div className="bg-primary/10 backdrop-blur-sm rounded-2xl p-8 border border-primary/20 max-w-4xl mx-auto">
+              <h3 className="text-2xl font-bold mb-4 text-accent-orange">
+                ¿Quieres ser parte de una historia feliz?
+              </h3>
+              <p className="text-primary/80 mb-6">
+                Cada día, más animales esperan una segunda oportunidad. Únete a nuestra misión y 
+                transforma una vida para siempre.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link 
+                  href="/adopta"
+                  className="bg-accent-orange text-white px-8 py-4 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200"
+                >
+                  Ver Animales Disponibles
+                </Link>
+                <Link 
+                  href="/contacto/voluntario"
+                  className="border-2 border-accent-orange text-accent-orange px-8 py-4 rounded-lg font-semibold hover:bg-accent-orange hover:text-white transition-colors duration-200"
+                >
+                  Ser Voluntario
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section className="py-20 bg-secondary">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-30">
+            <h2 className="text-3xl md:text-5xl font-bold text-primary mb-6">
+              Nuestros Servicios
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Paseos Felices */}
+            <div className="text-center">
+              <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-90 md:h-90 mx-auto mb-6">
+                {/* Image overlapping from top */}
+                <div className="absolute -top-12 sm:-top-16 md:-top-20 left-1/2 transform -translate-x-1/2 z-10">
+                  <Image 
+                    src="/perroanimado1.png" 
+                    alt="Paseos felices" 
+                    width={80} 
+                    height={80} 
+                    className="object-contain sm:w-24 sm:h-24 md:w-30 md:h-30"
+                  />
+                </div>
+                {/* Circle container with content */}
+                <div className="w-full h-full bg-accent-green rounded-full flex flex-col items-center justify-center px-4 sm:px-6 md:px-8">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-primary mb-2 sm:mb-3 md:mb-4">Paseos Felices</h3>
+                  <p className="text-primary/80 leading-relaxed text-center text-sm sm:text-base">
+                    Paseo consciente cumpliendo con la Ley Kiara. Técnicos auxiliares veterinarios a cargo. 
+                    Grupos pequeños, sin mezclar tamaños, priorizando su bienestar y seguridad.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Mimos en Casa */}
+            <div className="text-center">
+              <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-90 md:h-90 mx-auto mb-6">
+                {/* Image overlapping from top */}
+                <div className="absolute -top-12 sm:-top-16 md:-top-20 left-1/2 transform -translate-x-1/2 z-10">
+                  <Image
+                    src="/gatoanimado1.png" 
+                    alt="Mimos en casa" 
+                    width={80} 
+                    height={80} 
+                    className="object-contain sm:w-24 sm:h-24 md:w-30 md:h-30"
+                  />
+                </div>
+                {/* Circle container with content */}
+                <div className="w-full h-full bg-accent-orange rounded-full flex flex-col items-center justify-center px-4 sm:px-6 md:px-8">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-primary mb-2 sm:mb-3 md:mb-4">Mimos en Casa</h3>
+                  <p className="text-primary/80 leading-relaxed text-center text-sm sm:text-base">
+                    Servicio de niñera en el hogar de tu mascota. Reducimos el estrés y brindamos 
+                    cuidado integral: físico, emocional y recreativo con amor y responsabilidad.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Charlas Educativas */}
+            <div className="text-center">
+              <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-90 md:h-90 mx-auto mb-6">
+                {/* Image overlapping from top */}
+                <div className="absolute -top-12 sm:-top-16 md:-top-20 left-1/2 transform -translate-x-1/2 z-10">
+                  <Image
+                    src="/perroanimado2.png" 
+                    alt="Charlas educativas" 
+                    width={80} 
+                    height={80} 
+                    className="object-contain sm:w-24 sm:h-24 md:w-30 md:h-30"
+                  />
+                </div>
+                {/* Circle container with content */}
+                <div className="w-full h-full bg-accent-blue rounded-full flex flex-col items-center justify-center px-4 sm:px-6 md:px-8">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-primary mb-2 sm:mb-3 md:mb-4">Charlas Educativas</h3>
+                  <p className="text-primary/80 leading-relaxed text-center text-sm sm:text-base">
+                    Charlas y talleres especializados para promover la tenencia responsable. 
+                    Educamos sobre bienestar animal, cuidados básicos y adopción responsable.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Process Section */}
+      <section className="py-20 bg-primary text-secondary">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <p className="text-accent-orange text-sm font-medium uppercase tracking-wide mb-4">
+              Nuestro Proceso
+            </p>
+            <h2 className="text-3xl md:text-5xl font-bold mb-6">
+              Cómo funciona la adopción responsable
+            </h2>
+            <p className="text-xl text-secondary/80 max-w-3xl mx-auto">
+              Un proceso diseñado para garantizar el bienestar animal y la compatibilidad perfecta
+            </p>
+          </div>
+          
+          {/* Process Flow */}
+          <div className="relative">
+            {/* Connection Line - Hidden on mobile */}
+            <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-accent-orange/30 transform -translate-y-1/2 z-0"></div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
+              {/* Step 1 */}
+              <div className="text-center group">
+                <div className="relative mb-8">
+                  <div className="w-20 h-20 bg-accent-orange rounded-full mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <span className="text-2xl font-bold text-white">1</span>
+                  </div>
+                  {/* Connection arrow to next step */}
+                  <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2">
+                    <div className="w-0 h-0 border-l-8 border-l-accent-orange border-t-4 border-b-4 border-t-transparent border-b-transparent"></div>
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold mb-3 text-accent-orange">Registro</h3>
+                <p className="text-secondary/80 leading-relaxed text-sm">
+                  Registro del adoptante y validación en bases de datos internas
+                </p>
+              </div>
+              
+              {/* Step 2 */}
+              <div className="text-center group">
+                <div className="relative mb-8">
+                  <div className="w-20 h-20 bg-accent-orange rounded-full mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <span className="text-2xl font-bold text-white">2</span>
+                  </div>
+                  {/* Connection arrow to next step */}
+                  <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2">
+                    <div className="w-0 h-0 border-l-8 border-l-accent-orange border-t-4 border-b-4 border-t-transparent border-b-transparent"></div>
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold mb-3 text-accent-orange">Formación</h3>
+                <p className="text-secondary/80 leading-relaxed text-sm">
+                  Curso formativo sobre adopción responsable y normativa colombiana
+                </p>
+              </div>
+              
+              {/* Step 3 */}
+              <div className="text-center group">
+                <div className="relative mb-8">
+                  <div className="w-20 h-20 bg-accent-orange rounded-full mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <span className="text-2xl font-bold text-white">3</span>
+                  </div>
+                  {/* Connection arrow to next step */}
+                  <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2">
+                    <div className="w-0 h-0 border-l-8 border-l-accent-orange border-t-4 border-b-4 border-t-transparent border-b-transparent"></div>
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold mb-3 text-accent-orange">Evaluación</h3>
+                <p className="text-secondary/80 leading-relaxed text-sm">
+                  Evaluación mediante preguntas y certificación digital
+                </p>
+              </div>
+              
+              {/* Step 4 */}
+              <div className="text-center group">
+                <div className="relative mb-8">
+                  <div className="w-20 h-20 bg-accent-orange rounded-full mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <span className="text-2xl font-bold text-white">4</span>
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold mb-3 text-accent-orange">Seguimiento</h3>
+                <p className="text-secondary/80 leading-relaxed text-sm">
+                  Acompañamiento posterior con revisiones periódicas y seguimiento anual
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Process Summary */}
+          <div className="mt-16 text-center">
+            <div className="bg-accent-orange/10 rounded-2xl p-8 max-w-4xl mx-auto">
+              <h3 className="text-2xl font-bold text-accent-orange mb-4">
+                Proceso Completo de Adopción
+              </h3>
+              <p className="text-secondary/80 leading-relaxed">
+                Desde el registro inicial hasta el seguimiento continuo, cada paso está diseñado para garantizar 
+                que tanto el adoptante como la mascota tengan la mejor experiencia posible. Nuestro compromiso 
+                es con el bienestar animal y la adopción responsable.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us Section */}
+      <section className="py-20 bg-secondary">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <p className="text-accent-orange text-sm font-medium uppercase tracking-wide">
+                  ¿Por qué elegirnos?
+                </p>
+                <h2 className="text-3xl md:text-4xl font-bold text-primary">
+                  Transformamos la cultura de adopción en Colombia
+                </h2>
+                <p className="text-lg text-primary/80 leading-relaxed">
+                  A diferencia de un albergue tradicional, nuestra misión se enfoca en promover 
+                  la adopción responsable y generar conciencia sobre el bienestar animal. 
+                  Garantizamos que cada proceso se realice de forma ética y sostenible.
+                </p>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-accent-orange rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-white text-sm">✓</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-primary">Proceso Riguroso</h3>
+                    <p className="text-primary/80">Evaluación completa y certificación digital</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-accent-orange rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-white text-sm">✓</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-primary">Seguimiento Continuo</h3>
+                    <p className="text-primary/80">Acompañamiento posterior con revisiones periódicas</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-accent-orange rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-white text-sm">✓</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-primary">Albergues Aliados</h3>
+                    <p className="text-primary/80">Trabajamos con rescatistas y albergues confiables</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Content - Image */}
+            <div className="relative">
+              <div className="relative w-full h-96">
+                <div className="absolute inset-0 rounded-2xl overflow-hidden">
           <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+                    src="/image 13.png"
+                    alt="Fundación Pa' Perros"
+                    width={400}
+                    height={300}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+                {/* Decorative elements */}
+                <div className="absolute -top-4 -right-4 w-8 h-8 bg-accent-orange rounded-full"></div>
+                <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-accent-blue rounded-full"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action */}
+      <section className="py-20 bg-primary text-secondary">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6">
+            ¿Listo para darle un hogar a tu mejor amigo?
+          </h2>
+          <p className="text-xl mb-8 text-secondary/80">
+            Únete a nuestra misión de promover la adopción responsable en Colombia. 
+            Educamos, acompañamos y garantizamos que cada decisión esté guiada por el respeto a la vida animal.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link 
+              href="/adopta"
+              className="bg-accent-orange text-white px-8 py-4 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200"
+            >
+              Ver Animales Disponibles
+            </Link>
+            <Link 
+              href="/contacto/escribenos"
+              className="border-2 border-secondary text-secondary px-8 py-4 rounded-lg font-semibold hover:bg-secondary hover:text-primary transition-colors duration-200"
+            >
+              Contáctanos
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
