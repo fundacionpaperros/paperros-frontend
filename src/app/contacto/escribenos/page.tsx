@@ -285,14 +285,14 @@ export default function Escribenos() {
                 ¿Cómo puedo ser voluntario?
               </h3>
               <p className="text-primary">
-                Puedes contactarnos a través del formulario seleccionando "Voluntariado" o enviando un email 
+                Puedes contactarnos a través del formulario seleccionando &ldquo;Voluntariado&rdquo; o enviando un email 
                 a voluntarios@fundacionpaperros.com. Trabajamos con albergues aliados y rescatistas.
               </p>
             </div>
             
             <div className="bg-accent-green p-6 rounded-lg">
               <h3 className="text-xl font-semibold text-primary mb-3">
-                ¿Qué diferencia a la Fundación Pa' Perros?
+                ¿Qué diferencia a la Fundación Pa&apos; Perros?
               </h3>
               <p className="text-primary">
                 A diferencia de un albergue tradicional, nos enfocamos en promover la adopción responsable 

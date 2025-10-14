@@ -63,11 +63,6 @@ export default function Home() {
     setCurrentSlide((prev) => (prev - 1 + maxSlides) % maxSlides);
   };
 
-  // Get current events to display (responsive)
-  const getCurrentEvents = () => {
-    const itemsToShow = isMobile ? 1 : 2; // 1 on mobile, 2 on desktop
-    return events.slice(currentSlide, currentSlide + itemsToShow);
-  };
 
   return (
     <div className="bg-secondary">
@@ -157,7 +152,7 @@ export default function Home() {
                   transform: `translateX(-${currentSlide * (isMobile ? 100 : 50)}%)` 
                 }}
               >
-                {events.map((event, index) => (
+                {events.map((event) => (
                   <div key={event.id} className={`${isMobile ? 'w-full' : 'w-1/2'} flex-shrink-0 p-1`}>
                     <div className="bg-secondary rounded-2xl p-1 shadow-lg hover:shadow-xl h-full border-2 border-accent-orange hover:border-accent-blue transition-all duration-300">
                       <div className="relative w-full h-96 rounded-xl overflow-hidden flex items-center justify-center">
@@ -249,7 +244,7 @@ export default function Home() {
               </p>
               <div className="bg-accent-orange/20 rounded-lg p-4 border-l-4 border-accent-orange">
                 <p className="text-sm text-accent-orange font-semibold italic">
-                  "Su transformación nos llena de orgullo y alegría cada día"
+                  &ldquo;Su transformación nos llena de orgullo y alegría cada día&rdquo;
                 </p>
                 <p className="text-xs text-primary/70 mt-1">- Familia Rodríguez</p>
               </div>
@@ -269,7 +264,7 @@ export default function Home() {
               </p>
               <div className="bg-accent-blue/20 rounded-lg p-4 border-l-4 border-accent-blue">
                 <p className="text-sm text-accent-blue font-semibold italic">
-                  "No podemos imaginar la vida sin ella"
+                  &ldquo;No podemos imaginar la vida sin ella&rdquo;
                 </p>
                 <p className="text-xs text-primary/70 mt-1">- María González</p>
               </div>
@@ -289,7 +284,7 @@ export default function Home() {
               </p>
               <div className="bg-accent-green/20 rounded-lg p-4 border-l-4 border-accent-green">
                 <p className="text-sm text-accent-green font-semibold italic">
-                  "El amor todo lo puede"
+                  &ldquo;El amor todo lo puede&rdquo;
                 </p>
                 <p className="text-xs text-primary/70 mt-1">- Comunidad del Barrio San José</p>
               </div>

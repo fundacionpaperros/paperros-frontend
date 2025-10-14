@@ -113,9 +113,9 @@ export default function SegundasOportunidades() {
                 </div>
                 <h4 className="text-xl font-bold text-primary mb-3">Bella</h4>
                 <p className="text-primary/80 text-sm mb-4">
-                  "Bella llegó con miedo extremo a los humanos después de ser abandonada. 
+                  &ldquo;Bella llegó con miedo extremo a los humanos después de ser abandonada. 
                   Después de 6 meses de trabajo paciente, hoy es la mascota más cariñosa 
-                  de la familia Martínez."
+                  de la familia Martínez.&rdquo;
                 </p>
                 <div className="text-accent-orange font-semibold text-sm">
                   Tiempo de rehabilitación: 6 meses
@@ -128,9 +128,9 @@ export default function SegundasOportunidades() {
                 </div>
                 <h4 className="text-xl font-bold text-primary mb-3">Simón</h4>
                 <p className="text-primary/80 text-sm mb-4">
-                  "Simón tenía problemas de agresividad por maltrato. Con terapia 
+                  &ldquo;Simón tenía problemas de agresividad por maltrato. Con terapia 
                   especializada y mucho amor, se convirtió en el gato más tranquilo 
-                  y cariñoso del refugio."
+                  y cariñoso del refugio.&rdquo;
                 </p>
                 <div className="text-accent-blue font-semibold text-sm">
                   Tiempo de rehabilitación: 4 meses
@@ -143,8 +143,8 @@ export default function SegundasOportunidades() {
                 </div>
                 <h4 className="text-xl font-bold text-primary mb-3">Rex</h4>
                 <p className="text-primary/80 text-sm mb-4">
-                  "Rex llegó con una pata fracturada y desnutrido. Hoy corre y juega 
-                  como cualquier perro sano, y es el mejor amigo de los niños del barrio."
+                  &ldquo;Rex llegó con una pata fracturada y desnutrido. Hoy corre y juega 
+                  como cualquier perro sano, y es el mejor amigo de los niños del barrio.&rdquo;
                 </p>
                 <div className="text-accent-green font-semibold text-sm">
                   Tiempo de rehabilitación: 8 meses

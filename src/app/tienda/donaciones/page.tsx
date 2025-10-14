@@ -1,4 +1,3 @@
-import Image from 'next/image';
 
 export default function Donaciones() {
   return (
@@ -118,7 +117,7 @@ export default function Donaciones() {
                   <div className="bg-accent-orange/10 p-4 rounded-lg">
                     <p className="font-semibold text-primary">Banco: Bancolombia</p>
                     <p className="text-primary/80">Cuenta: 123-456789-01</p>
-                    <p className="text-primary/80">A nombre de: Fundación Pa' Perros</p>
+                    <p className="text-primary/80">A nombre de: Fundación Pa&apos; Perros</p>
                     <p className="text-primary/80">NIT: 900.123.456-7</p>
                   </div>
                 </div>
@@ -132,7 +131,7 @@ export default function Donaciones() {
                 <div className="space-y-3">
                   <div className="bg-accent-blue/10 p-4 rounded-lg">
                     <p className="font-semibold text-primary">Número: 300-123-4567</p>
-                    <p className="text-primary/80">Referencia: Donación Pa' Perros</p>
+                    <p className="text-primary/80">Referencia: Donación Pa&apos; Perros</p>
                     <p className="text-primary/80">Cédula: 900.123.456-7</p>
                   </div>
                 </div>
