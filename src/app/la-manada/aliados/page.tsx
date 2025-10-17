@@ -98,24 +98,6 @@ export default function Aliados() {
               </div>
 
               <div className="bg-white rounded-2xl p-8 shadow-lg">
-                <div className="w-20 h-20 bg-accent-orange rounded-full mx-auto mb-6 flex items-center justify-center">
-                  <span className="text-3xl">🎯</span>
-                </div>
-                <h4 className="text-xl font-bold text-primary mb-4 text-center">K9 Coaching Colombia</h4>
-                <p className="text-primary/80 text-center mb-4">
-                  Entrenamiento especializado y rehabilitación canina
-                </p>
-                <a 
-                  href="https://instagram.com/k9coachingcolombia" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="block text-center bg-accent-orange text-white px-6 py-2 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200"
-                >
-                  Ver Instagram
-                </a>
-              </div>
-
-              <div className="bg-white rounded-2xl p-8 shadow-lg">
                 <div className="w-20 h-20 bg-accent-blue rounded-full mx-auto mb-6 flex items-center justify-center">
                   <span className="text-3xl">🧠</span>
                 </div>
