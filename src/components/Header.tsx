@@ -73,30 +73,24 @@ const Header = () => {
 
   return (
     <header className="bg-primary shadow-lg sticky top-0 z-50">
-      <nav className="max-w-7xl mx-auto">
+      <nav className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center space-x-4">
-              {/* Logo del animal con fondo circular */}
-              <div className="relative">
-                <div className="w-16 h-16 flex items-center justify-center">
-                  <img 
-                    src="/logoseparado1.png" 
-                    alt="Logo Fundación Pa' Perros" 
-                    className="w-10 h-10 object-contain" 
-                  />
-                </div>
-              </div>
-              
-              {/* Texto del logo */}
+              <img 
+                src="/logoseparado1.png" 
+                alt="Logo Fundación Pa&apos; Perros" 
+                className="h-8 w-auto object-contain"
+              />
               <img 
                 src="/logoFinal.png" 
-                alt="Fundación Pa' Perros" 
-                className="h-8 w-auto border-2 rounded-lg" 
+                alt="Logo Fundación Pa&apos; Perros" 
+                className="h-8 w-auto object-contain"
               />
             </Link>
           </div>
           
+          {/* Navigation menu */}
           <div className="hidden lg:block">
             <div className="ml-10 flex items-baseline space-x-2">
               {navigation.map((item) => (
@@ -138,7 +132,7 @@ const Header = () => {
             <button
               type="button"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="bg-accent-blue inline-flex items-center justify-center p-2 rounded-md text-primary hover:text-secondary hover:bg-accent-orange focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent-orange"
+              className="bg-accent-blue inline-flex items-center justify-center p-2 rounded-md text-primary hover:text-secondary hover:bg-accent-orange focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent-orange cursor-pointer"
               aria-controls="mobile-menu"
               aria-expanded={isMenuOpen}
             >

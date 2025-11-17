@@ -1,34 +1,118 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import { EventSkeleton } from '@/components/SkeletonLoader';
+import api, { checkApiAvailability } from '@/lib/api';
+
+interface ApiEvent {
+  id: number;
+  nombre: string;
+  imagen_url: string;
+  fecha: string;
+  lugar?: string;
+}
 
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [apiEvents, setApiEvents] = useState<ApiEvent[]>([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
+  const [apiAvailable, setApiAvailable] = useState(false);
   
-  const events = [
+  // Eventos hardcodeados como fallback
+  const fallbackEvents = [
     {
       id: 1,
-      image: "/Valles de la Florida_1810.png",
-      alt: "Campaña de Tenencia Responsable - Valles de la Florida"
+      image: "/Banner página web_Invitación 1.png",
+      alt: "Festival Pa Dejar Huella - Invitación 1"
     },
     {
       id: 2,
-      image: "/Esterilización San Sebastián_2210.png",
-      alt: "Jornada de Esterilización - San Sebastián"
+      image: "/Banner página web_Invitación 2.png",
+      alt: "Festival Pa Dejar Huella - Invitación 2"
     },
     {
       id: 3,
-      image: "/Ciprés de Bella Suiza_2510.png",
-      alt: "Campaña de Tenencia Responsable - Ciprés de Bella Suiza"
+      image: "/Banner página web_Programación viernes 21.png",
+      alt: "Festival Pa Dejar Huella - Programación Viernes 21"
     },
     {
       id: 4,
-      image: "/Carrera del Corazón_2610.png",
-      alt: "Carrera del Corazón"
+      image: "/Banner página web_Programación sábado 22.png",
+      alt: "Festival Pa Dejar Huella - Programación Sábado 22"
     }
   ];
+
+  const loadEvents = async () => {
+    const available = await checkApiAvailability();
+    setApiAvailable(available);
+    
+    if (!available) {
+      setLoadingEvents(false);
+      return;
+    }
+
+    try {
+      const response = await api.get('/events?active_only=true&limit=100');
+      
+      // Filter out past events
+      const now = new Date();
+      const upcomingEvents = response.data.filter((event: ApiEvent) => {
+        const eventDate = new Date(event.fecha);
+        return eventDate >= now;
+      });
+
+      // Sort by date
+      upcomingEvents.sort((a: ApiEvent, b: ApiEvent) => {
+        return new Date(a.fecha).getTime() - new Date(b.fecha).getTime();
+      });
+
+      setApiEvents(upcomingEvents);
+    } catch (error) {
+      console.error('Error loading events:', error);
+    } finally {
+      setLoadingEvents(false);
+    }
+  };
+
+  useEffect(() => {
+    loadEvents();
+  }, []);
+
+  // Función para construir la URL correcta de la imagen
+  const getEventImageUrl = (imageUrl: string): string => {
+    if (!imageUrl) return '';
+    
+    // Si la URL empieza con /static/, construir la URL completa del backend
+    if (imageUrl.startsWith('/static/')) {
+      const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8000';
+      return `${backendUrl}${imageUrl}`;
+    }
+    
+    // Si es una URL completa (http:// o https://), usarla directamente
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      return imageUrl;
+    }
+    
+    // Si es una ruta relativa que no empieza con /static/, asumir que es del backend
+    return `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8000'}${imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl}`;
+  };
+
+  // Use API events if available and have events, otherwise use fallback
+  const events = (apiAvailable && apiEvents.length > 0)
+    ? apiEvents
+        .filter(event => event.imagen_url && event.imagen_url.trim() !== '')
+        .map(event => ({
+          id: event.id,
+          image: getEventImageUrl(event.imagen_url),
+          alt: event.nombre
+        }))
+    : fallbackEvents;
+  
+  // If no valid events from API, use fallback
+  const finalEvents = (apiAvailable && apiEvents.length > 0 && events.length === 0) 
+    ? fallbackEvents 
+    : events;
 
   // Auto-advance carousel - responsive behavior
   const [isMobile, setIsMobile] = useState(false);
@@ -45,9 +129,11 @@ export default function Home() {
   }, []);
 
   // Calculate max slides based on screen size
-  const maxSlides = isMobile ? events.length : events.length - 1; // 1 on mobile, 2 on desktop
+  const maxSlides = loadingEvents ? 0 : (isMobile ? finalEvents.length : finalEvents.length - 1); // 1 on mobile, 2 on desktop
   
   useEffect(() => {
+    if (maxSlides === 0) return;
+    
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % maxSlides);
     }, 5000); // Change slide every 5 seconds
@@ -89,13 +175,13 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link 
                   href="/adopta"
-                  className="bg-accent-orange text-white px-8 py-4 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200 text-center"
+                  className="bg-accent-orange text-white px-8 py-4 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200 text-center cursor-pointer"
                 >
                   Adoptar Ahora
                 </Link>
                 <Link 
                   href="/la-manada/nuestra-historia"
-                  className="border-2 border-primary text-primary px-8 py-4 rounded-lg font-semibold hover:bg-primary hover:text-secondary transition-colors duration-200 text-center"
+                  className="border-2 border-primary text-primary px-8 py-4 rounded-lg font-semibold hover:bg-primary hover:text-secondary transition-colors duration-200 text-center cursor-pointer"
                 >
                   Conoce Nuestra Historia
                 </Link>
@@ -106,22 +192,18 @@ export default function Home() {
             <div className="relative">
               <div className="relative w-full h-96 lg:h-[500px]">
                 <div className="absolute inset-0 bg-accent-blue rounded-full flex items-center justify-center">
-        <Image
+                  <img
                     src="/Perro inicio.png"
                     alt="Cuidado de mascotas"
-                    width={400}
-                    height={400}
                     className="object-cover rounded-full w-full h-full"
                   />
                 </div>
                 {/* Small overlapping image */}
                 <div className="absolute -bottom-1 w-32 h-32 rounded-full flex items-center justify-centershadow-lg">
-            <Image
+                  <img
                     src="/perro1.png"
                     alt="Perro feliz"
-                    width={128}
-                    height={128}
-                    className="object-contain"
+                    className="object-contain w-full h-full"
                   />
                 </div>
               </div>
@@ -144,34 +226,43 @@ export default function Home() {
           
           {/* Carousel Container */}
           <div className="relative">
-            {/* Main Carousel */}
-            <div className="overflow-hidden rounded-2xl">
-              <div 
-                className="flex transition-transform duration-500 ease-in-out"
-                style={{ 
-                  transform: `translateX(-${currentSlide * (isMobile ? 100 : 50)}%)` 
-                }}
-              >
-                {events.map((event) => (
-                  <div key={event.id} className={`${isMobile ? 'w-full' : 'w-1/2'} flex-shrink-0 p-1`}>
-                    <div className="bg-secondary rounded-2xl p-1 shadow-lg hover:shadow-xl h-full border-2 border-accent-orange hover:border-accent-blue transition-all duration-300">
-                      <div className="relative w-full h-96 rounded-xl overflow-hidden flex items-center justify-center">
-                        <Image
-                          src={event.image}
-                          alt={event.alt}
-                          width={isMobile ? 450 : 400}
-                          height={isMobile ? 450 : 400}
-                          className="object-contain rounded-lg"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
+            {loadingEvents ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <EventSkeleton />
+                <EventSkeleton />
               </div>
-            </div>
+            ) : (
+              <>
+                {/* Main Carousel */}
+                <div className="overflow-hidden rounded-2xl">
+                  <div 
+                    className="flex transition-transform duration-500 ease-in-out"
+                    style={{ 
+                      transform: `translateX(-${currentSlide * (isMobile ? 100 : 50)}%)` 
+                    }}
+                  >
+                    {finalEvents.map((event) => (
+                      <div key={event.id} className={`${isMobile ? 'w-full' : 'w-1/2'} flex-shrink-0 p-1`}>
+                        <div className="bg-secondary rounded-2xl p-1 shadow-lg hover:shadow-xl h-full border-2 border-accent-orange hover:border-accent-blue transition-all duration-300">
+                          <div className="relative w-full h-96 rounded-xl overflow-hidden flex items-center justify-center">
+                            {event.image && event.image.trim() !== '' ? (
+                              <img
+                                src={event.image}
+                                alt={event.alt}
+                                className="object-contain rounded-lg w-full h-full"
+                              />
+                            ) : null}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
             
             {/* Navigation Arrows - Show when multiple slides */}
-            {maxSlides > 1 && (
+            {!loadingEvents && maxSlides > 1 && (
               <>
                 <button
                   onClick={prevSlide}
@@ -197,7 +288,7 @@ export default function Home() {
           </div>
           
           {/* Dots Indicator - Show when multiple slides */}
-          {maxSlides > 1 && (
+          {!loadingEvents && maxSlides > 1 && (
             <div className="flex justify-center mt-8 space-x-3">
               {Array.from({ length: maxSlides }, (_, index) => (
                 <button
@@ -335,12 +426,10 @@ export default function Home() {
               <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-90 md:h-90 mx-auto mb-6">
                 {/* Image overlapping from top */}
                 <div className="absolute -top-12 sm:-top-16 md:-top-20 left-1/2 transform -translate-x-1/2 z-10">
-                  <Image 
+                  <img 
                     src="/perroanimado1.png" 
                     alt="Paseos felices" 
-                    width={80} 
-                    height={80} 
-                    className="object-contain sm:w-24 sm:h-24 md:w-30 md:h-30"
+                    className="object-contain w-20 h-20 sm:w-24 sm:h-24 md:w-30 md:h-30"
                   />
                 </div>
                 {/* Circle container with content */}
@@ -359,12 +448,10 @@ export default function Home() {
               <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-90 md:h-90 mx-auto mb-6">
                 {/* Image overlapping from top */}
                 <div className="absolute -top-12 sm:-top-16 md:-top-20 left-1/2 transform -translate-x-1/2 z-10">
-                  <Image
+                  <img
                     src="/gatoanimado1.png" 
                     alt="Mimos en casa" 
-                    width={80} 
-                    height={80} 
-                    className="object-contain sm:w-24 sm:h-24 md:w-30 md:h-30"
+                    className="object-contain w-20 h-20 sm:w-24 sm:h-24 md:w-30 md:h-30"
                   />
                 </div>
                 {/* Circle container with content */}
@@ -383,12 +470,10 @@ export default function Home() {
               <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-90 md:h-90 mx-auto mb-6">
                 {/* Image overlapping from top */}
                 <div className="absolute -top-12 sm:-top-16 md:-top-20 left-1/2 transform -translate-x-1/2 z-10">
-                  <Image
+                  <img
                     src="/perroanimado2.png" 
                     alt="Charlas educativas" 
-                    width={80} 
-                    height={80} 
-                    className="object-contain sm:w-24 sm:h-24 md:w-30 md:h-30"
+                    className="object-contain w-20 h-20 sm:w-24 sm:h-24 md:w-30 md:h-30"
                   />
                 </div>
                 {/* Circle container with content */}
@@ -565,11 +650,9 @@ export default function Home() {
             <div className="relative">
               <div className="relative w-full h-96">
                 <div className="absolute inset-0 rounded-2xl overflow-hidden">
-          <Image
+                  <img
                     src="/image 13.png"
-                    alt="Fundación Pa' Perros"
-                    width={400}
-                    height={300}
+                    alt="Fundación Pa&apos; Perros"
                     className="object-cover w-full h-full"
                   />
                 </div>

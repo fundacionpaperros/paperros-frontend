@@ -1,4 +1,7 @@
+'use client';
+
 import Link from "next/link";
+import Image from 'next/image';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -51,7 +54,13 @@ const Footer = () => {
           {/* Logo and Description */}
           <div className="md:col-span-2">
             <div className="flex items-center mb-6">
-              <img src="/logo.png" alt="Fundación Pa' Perros" className="h-12 w-auto rounded-lg mr-4" />
+              <Image 
+                src="/logo.png" 
+                alt="Fundación Pa' Perros" 
+                width={120}
+                height={48}
+                className="h-12 w-auto rounded-lg mr-4"
+              />
               <h3 className="text-2xl font-bold text-primary">Fundación Pa&apos; Perros</h3>
             </div>
             <p className="text-primary/80 mb-6 max-w-md leading-relaxed">

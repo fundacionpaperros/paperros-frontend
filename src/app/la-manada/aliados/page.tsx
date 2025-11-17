@@ -1,3 +1,7 @@
+'use client';
+
+import { DynamicSponsors } from '@/components/DynamicSponsors';
+
 export default function Aliados() {
   return (
     <div className="bg-secondary">
@@ -171,6 +175,14 @@ export default function Aliados() {
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* Dynamic Sponsors from API */}
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold text-primary mb-8 text-center">
+              Patrocinadores
+            </h3>
+            <DynamicSponsors />
           </div>
 
           {/* Join as Ally CTA */}
