@@ -217,12 +217,6 @@ export default function LoginPage() {
             </Link>
           </p>
         </div>
-
-        <div className="mt-6 text-sm text-gray-600 text-center border-t pt-4">
-          <p className="font-semibold mb-2">Credenciales de prueba:</p>
-          <p>Admin: admin@paperros.org / admin123</p>
-          <p>Albergue: albergue1@paperros.org / albergue123</p>
-        </div>
       </div>
     </div>
   );
