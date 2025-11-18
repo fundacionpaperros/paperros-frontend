@@ -112,5 +112,25 @@ export const authService = {
     const response = await api.get('/adoption-process/progress');
     return response.data;
   },
+
+  /**
+   * Valida que la sesión sea válida haciendo una petición al backend
+   * Si el token está expirado o es inválido, limpia la sesión y retorna false
+   */
+  validateSession: async (): Promise<boolean> => {
+    if (!auth.isAuthenticated()) {
+      return false;
+    }
+
+    try {
+      // Intentar obtener el usuario actual - si el token es válido, esto funcionará
+      await authService.getCurrentUser();
+      return true;
+    } catch (error) {
+      // Si hay error (401, 403, etc.), el token es inválido o expiró
+      auth.removeToken();
+      return false;
+    }
+  },
 };
 

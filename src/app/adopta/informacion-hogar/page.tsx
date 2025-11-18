@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth } from '@/lib/auth';
+import { auth, authService } from '@/lib/auth';
 import api from '@/lib/api';
 import { ApiErrorResponse, getErrorMessage } from '@/lib/types';
 
@@ -49,30 +49,52 @@ export default function HomeInfoPage() {
 
   const validateAccess = useCallback(async () => {
     try {
+      // Validar que la sesión sea realmente válida
+      const authenticated = await authService.validateSession();
+      if (!authenticated) {
+        router.push('/auth/login');
+        return;
+      }
+
+      // Validar que el usuario tenga bandera verde
+      const progress = await api.get<{ bandera: string }>('/adoption-process/progress');
+      const { bandera } = progress.data;
+      
+      if (bandera !== 'verde') {
+        // Redirigir inmediatamente a /adopta con el parámetro de bandera
+        router.push(`/adopta?bandera=${bandera}`);
+        return;
+      }
+
       // Verificar que tenga certificado
       await api.get('/adoption-process/certificate');
       loadHomeInfo();
     } catch (err: unknown) {
       const apiError = err as ApiErrorResponse;
-      if (apiError.response?.status === 404) {
-        setError('Debe completar la certificación antes de continuar');
-        setTimeout(() => router.push('/adopta/certificacion'), 2000);
-      } else {
-        setError('Error al validar acceso');
+      if (apiError.response?.status === 401 || apiError.response?.status === 403) {
+        router.push('/auth/login');
+        return;
       }
+      if (apiError.response?.status === 404) {
+        // Puede ser que no tenga certificado o no tenga progreso
+        try {
+          await api.get('/adoption-process/certificate');
+        } catch {
+          setError('Debe completar la certificación antes de continuar');
+          setTimeout(() => router.push('/adopta/certificacion'), 2000);
+          setLoading(false);
+          return;
+        }
+      }
+      setError('Error al validar acceso');
       setLoading(false);
     }
   }, [router, loadHomeInfo]);
 
   useEffect(() => {
-    if (!auth.isAuthenticated()) {
-      router.push('/auth/login');
-      return;
-    }
-
     // Validar certificado antes de cargar
     validateAccess();
-  }, [router, validateAccess]);
+  }, [validateAccess]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

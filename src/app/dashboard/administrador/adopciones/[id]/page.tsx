@@ -14,8 +14,21 @@ interface Adoption {
   fecha_match?: string;
   fecha_cita?: string;
   fecha_adopcion_final?: string;
-  animal_nombre?: string;
-  adoptante_nombre?: string;
+  animal?: {
+    id: number;
+    nombre: string;
+    especie: string;
+    raza: string;
+    foto_url?: string;
+  };
+  adoptante?: {
+    id: number;
+    nombre: string;
+    email: string;
+    cedula: string;
+    telefono?: string;
+    ciudad?: string;
+  };
 }
 
 interface Appointment {
@@ -125,11 +138,19 @@ export default function AdoptionDetailPage() {
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
             <p className="text-sm text-gray-600">Adoptante</p>
-            <p className="font-semibold">{adoption.adoptante_nombre || `#${adoption.adoptante_id}`}</p>
+            <p className="font-semibold">{adoption.adoptante?.nombre || 'Sin nombre'}</p>
+            {adoption.adoptante?.email && (
+              <p className="text-xs text-gray-500">{adoption.adoptante.email}</p>
+            )}
           </div>
           <div>
             <p className="text-sm text-gray-600">Animal</p>
-            <p className="font-semibold">{adoption.animal_nombre || `#${adoption.animal_id}`}</p>
+            <p className="font-semibold">{adoption.animal?.nombre || 'Sin nombre'}</p>
+            {adoption.animal && (
+              <p className="text-xs text-gray-500 capitalize">
+                {adoption.animal.especie || ''} {adoption.animal.raza ? `• ${adoption.animal.raza}` : ''}
+              </p>
+            )}
           </div>
           <div>
             <p className="text-sm text-gray-600">Estado Actual</p>

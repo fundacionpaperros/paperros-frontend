@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { auth } from '@/lib/auth';
+import { auth, authService } from '@/lib/auth';
 import api from '@/lib/api';
+import { ApiErrorResponse } from '@/lib/types';
 
 interface Adoption {
   id: number;
@@ -43,11 +44,36 @@ export default function AppointmentsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!auth.isAuthenticated()) {
-      router.push('/auth/login');
-      return;
-    }
-    loadData();
+    const validateAndLoad = async () => {
+      // Validar que la sesión sea realmente válida
+      const authenticated = await authService.validateSession();
+      if (!authenticated) {
+        router.push('/auth/login');
+        return;
+      }
+
+      // Validar que el usuario tenga bandera verde
+      try {
+        const progress = await api.get<{ bandera: string }>('/adoption-process/progress');
+        const { bandera } = progress.data;
+        
+        if (bandera !== 'verde') {
+          // Redirigir inmediatamente a /adopta con el parámetro de bandera
+          router.push(`/adopta?bandera=${bandera}`);
+          return;
+        }
+      } catch (err: unknown) {
+        const apiError = err as ApiErrorResponse;
+        if (apiError.response?.status === 401 || apiError.response?.status === 403) {
+          router.push('/auth/login');
+          return;
+        }
+      }
+
+      loadData();
+    };
+
+    validateAndLoad();
   }, [router]);
 
   const loadData = async () => {
@@ -181,14 +207,18 @@ export default function AppointmentsPage() {
 
                     <div className="border-l-4 border-primary pl-4 space-y-2">
                       <p className="font-semibold text-lg">
-                        {new Date(appointment.fecha_hora).toLocaleString('es-CO', {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
+                        {(() => {
+                          // Las fechas vienen en GMT+5, mostrarlas directamente sin conversiones
+                          const date = new Date(appointment.fecha_hora);
+                          return date.toLocaleString('es-CO', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          });
+                        })()}
                       </p>
                       <p className="text-gray-600">
                         <span className="font-semibold">Lugar:</span> {appointment.lugar}

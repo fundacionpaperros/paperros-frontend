@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { auth } from '@/lib/auth';
+import { auth, authService } from '@/lib/auth';
 import api from '@/lib/api';
 import { ApiErrorResponse, getErrorMessage } from '@/lib/types';
 
@@ -44,18 +44,45 @@ export default function MatchPage() {
   }, []);
 
   useEffect(() => {
-    if (!auth.isAuthenticated()) {
-      router.push('/auth/login');
-      return;
-    }
+    const validateAndLoad = async () => {
+      // Validar que la sesión sea realmente válida
+      const authenticated = await authService.validateSession();
+      if (!authenticated) {
+        router.push('/auth/login');
+        return;
+      }
 
-    // Mostrar animación por mínimo 5 segundos
-    const animationTimer = setTimeout(() => {
-      setShowAnimation(false);
-      loadMatches();
-    }, 5000);
+      // Validar que el usuario tenga bandera verde
+      try {
+        const progress = await api.get<{ bandera: string }>('/adoption-process/progress');
+        const { bandera } = progress.data;
+        
+        if (bandera !== 'verde') {
+          // Redirigir inmediatamente a /adopta con el parámetro de bandera
+          router.push(`/adopta?bandera=${bandera}`);
+          return;
+        }
+      } catch (err: unknown) {
+        const apiError = err as ApiErrorResponse;
+        if (apiError.response?.status === 401 || apiError.response?.status === 403) {
+          router.push('/auth/login');
+          return;
+        }
+        setError('Error al validar acceso');
+        setLoading(false);
+        return;
+      }
 
-    return () => clearTimeout(animationTimer);
+      // Mostrar animación por mínimo 5 segundos
+      const animationTimer = setTimeout(() => {
+        setShowAnimation(false);
+        loadMatches();
+      }, 5000);
+
+      return () => clearTimeout(animationTimer);
+    };
+
+    validateAndLoad();
   }, [router, loadMatches]);
 
   const handleToggleAnimal = (animalId: number) => {

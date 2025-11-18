@@ -42,7 +42,6 @@ export default function AdoptionsPage() {
   const fetchAdoptions = async () => {
     try {
       const response = await api.get('/adoption-process/adoptions?limit=100');
-      console.log('Adoptions response:', response.data); // Debug
       setAdoptions(response.data || []);
     } catch (error: unknown) {
       const apiError = error as ApiErrorResponse;
@@ -120,16 +119,20 @@ export default function AdoptionsPage() {
               filteredAdoptions.map((adoption) => (
                 <tr key={adoption.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    {adoption.adoptante?.nombre || `#${adoption.adoptante_id}`}
+                    <div className="font-medium">
+                      {adoption.adoptante?.nombre || 'Sin nombre'}
+                    </div>
                     {adoption.adoptante?.email && (
                       <div className="text-xs text-gray-500">{adoption.adoptante.email}</div>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    {adoption.animal?.nombre || `#${adoption.animal_id}`}
-                    {adoption.animal?.raza && (
+                    <div className="font-medium">
+                      {adoption.animal?.nombre || 'Sin nombre'}
+                    </div>
+                    {adoption.animal && (
                       <div className="text-xs text-gray-500 capitalize">
-                        {adoption.animal.especie} • {adoption.animal.raza}
+                        {adoption.animal.especie || ''} {adoption.animal.raza ? `• ${adoption.animal.raza}` : ''}
                       </div>
                     )}
                   </td>

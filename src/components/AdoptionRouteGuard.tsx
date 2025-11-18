@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth } from '@/lib/auth';
+import { auth, authService } from '@/lib/auth';
 import api from '@/lib/api';
 import { ApiErrorResponse } from '@/lib/types';
 
@@ -30,7 +30,10 @@ export default function AdoptionRouteGuard({
 
   useEffect(() => {
     const validateAccess = async () => {
-      if (!auth.isAuthenticated()) {
+      // Validar que la sesión sea realmente válida
+      const authenticated = await authService.validateSession();
+      
+      if (!authenticated) {
         router.push('/auth/login');
         return;
       }
@@ -84,7 +87,13 @@ export default function AdoptionRouteGuard({
         }
 
         setLoading(false);
-      } catch {
+      } catch (error) {
+        const apiError = error as ApiErrorResponse;
+        // Si es 401 o 403, la sesión expiró - ya se limpió en validateSession
+        if (apiError.response?.status === 401 || apiError.response?.status === 403) {
+          router.push('/auth/login');
+          return;
+        }
         setError('Error al validar acceso');
         setLoading(false);
       }

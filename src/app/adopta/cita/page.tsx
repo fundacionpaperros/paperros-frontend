@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth } from '@/lib/auth';
+import { auth, authService } from '@/lib/auth';
 import api from '@/lib/api';
 import { ApiErrorResponse, getErrorMessage } from '@/lib/types';
 
@@ -32,6 +32,7 @@ export default function CitaPage() {
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
+  const [selectedSlot, setSelectedSlot] = useState<string>(''); // Slot ISO completo seleccionado
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -83,18 +84,45 @@ export default function CitaPage() {
   }, [router]);
 
   useEffect(() => {
-    if (!auth.isAuthenticated()) {
-      router.push('/auth/login');
-      return;
-    }
+    const validateAndLoad = async () => {
+      // Validar que la sesión sea realmente válida
+      const authenticated = await authService.validateSession();
+      if (!authenticated) {
+        router.push('/auth/login');
+        return;
+      }
 
-    loadData();
+      // Validar que el usuario tenga bandera verde
+      try {
+        const progress = await api.get<{ bandera: string }>('/adoption-process/progress');
+        const { bandera } = progress.data;
+        
+        if (bandera !== 'verde') {
+          // Redirigir inmediatamente a /adopta con el parámetro de bandera
+          router.push(`/adopta?bandera=${bandera}`);
+          return;
+        }
+      } catch (err: unknown) {
+        const apiError = err as ApiErrorResponse;
+        if (apiError.response?.status === 401 || apiError.response?.status === 403) {
+          router.push('/auth/login');
+          return;
+        }
+        setError('Error al validar acceso');
+        setLoading(false);
+        return;
+      }
+
+      loadData();
+    };
+
+    validateAndLoad();
   }, [router, loadData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!selectedDate || !selectedTime) {
+    if (!selectedSlot) {
       setError('Debe seleccionar fecha y hora');
       return;
     }
@@ -108,9 +136,7 @@ export default function CitaPage() {
     setError('');
 
     try {
-      // Combinar fecha y hora
-      const fechaHora = new Date(`${selectedDate}T${selectedTime}`);
-      
+      // Usar directamente el slot ISO del backend
       // Crear una sola cita para todas las adopciones del proceso
       const adoptionIds = adoptions.map(a => a.id);
       const animalNames = adoptions.map(a => a.animal?.nombre || `Animal #${a.animal_id}`).join(', ');
@@ -118,7 +144,7 @@ export default function CitaPage() {
       // Crear la cita con todas las adopciones
       await api.post('/adoption-process/appointments', {
         adopcion_ids: adoptionIds,
-        fecha_hora: fechaHora.toISOString(),
+        fecha_hora: selectedSlot, // Usar el slot ISO directamente
         lugar: 'Fundación Pa&apos; Perros - Sede Principal',
         observaciones: `Cita para conocer ${adoptions.length === 1 ? 'la mascota' : 'las mascotas'}: ${animalNames}`,
       });
@@ -134,16 +160,26 @@ export default function CitaPage() {
   };
 
   // Agrupar slots por fecha
-  const slotsByDate: Record<string, string[]> = {};
+  // Mantener el slot ISO completo para cada hora
+  // Los slots vienen en GMT+5 (Colombia), sin conversiones
+  const slotsByDate: Record<string, Array<{ time: string; slot: string }>> = {};
   availableSlots.forEach(slot => {
+    // Parsear el slot ISO que viene en GMT+5
     const date = new Date(slot);
-    const dateStr = date.toISOString().split('T')[0];
-    const timeStr = date.toTimeString().split(' ')[0].slice(0, 5);
+    
+    // Extraer fecha y hora directamente (ya está en GMT+5)
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const timeStr = `${hours}:${minutes}`;
     
     if (!slotsByDate[dateStr]) {
       slotsByDate[dateStr] = [];
     }
-    slotsByDate[dateStr].push(timeStr);
+    slotsByDate[dateStr].push({ time: timeStr, slot: slot });
   });
 
   // Ordenar fechas
@@ -268,21 +304,28 @@ export default function CitaPage() {
                   onChange={(e) => {
                     setSelectedDate(e.target.value);
                     setSelectedTime(''); // Reset time when date changes
+                    setSelectedSlot(''); // Reset slot when date changes
                   }}
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
                   <option value="">Seleccione una fecha</option>
-                  {sortedDates.map(date => (
-                    <option key={date} value={date}>
-                      {new Date(date).toLocaleDateString('es-CO', { 
-                        weekday: 'long', 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                      })}
-                    </option>
-                  ))}
+                  {sortedDates.map(date => {
+                    // Parsear la fecha directamente (ya está en GMT+5)
+                    const [year, month, day] = date.split('-').map(Number);
+                    const dateObj = new Date(year, month - 1, day);
+                    
+                    return (
+                      <option key={date} value={date}>
+                        {dateObj.toLocaleDateString('es-CO', { 
+                          weekday: 'long', 
+                          year: 'numeric', 
+                          month: 'long', 
+                          day: 'numeric'
+                        })}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 
@@ -294,13 +337,17 @@ export default function CitaPage() {
                   <select
                     id="hora"
                     value={selectedTime}
-                    onChange={(e) => setSelectedTime(e.target.value)}
+                    onChange={(e) => {
+                      const selectedTimeSlot = slotsByDate[selectedDate].find(t => t.time === e.target.value);
+                      setSelectedTime(e.target.value);
+                      setSelectedSlot(selectedTimeSlot?.slot || '');
+                    }}
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   >
                     <option value="">Seleccione una hora</option>
-                    {slotsByDate[selectedDate].map(time => (
-                      <option key={time} value={time}>
+                    {slotsByDate[selectedDate].map(({ time, slot }) => (
+                      <option key={slot} value={time}>
                         {time}
                       </option>
                     ))}
@@ -316,7 +363,7 @@ export default function CitaPage() {
 
               <button
                 type="submit"
-                disabled={saving || !selectedDate || !selectedTime || availableSlots.length === 0}
+                disabled={saving || !selectedSlot || availableSlots.length === 0}
                 className="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary/90 font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 {saving ? 'Agendando...' : 'Confirmar Cita'}

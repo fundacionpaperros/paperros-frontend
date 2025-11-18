@@ -20,6 +20,7 @@ export const dashboardRoutes: RouteConfig[] = [
   { href: '/dashboard/administrador/adopciones', label: 'Adopciones', roles: ['admin', 'fundacion'] },
   { href: '/dashboard/administrador/adoptantes', label: 'Adoptantes', roles: ['admin', 'fundacion'] },
   { href: '/dashboard/administrador/seguimiento', label: 'Seguimiento', roles: ['admin', 'fundacion'] },
+  { href: '/dashboard/administrador/mensajes', label: 'Mensajes', roles: ['admin', 'fundacion'] },
   
   // Rutas de albergue (solo albergue)
   { href: '/dashboard/albergue/animales', label: 'Mis Animales', roles: ['albergue'] },

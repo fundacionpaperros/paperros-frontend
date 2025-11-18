@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { auth } from '@/lib/auth';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { auth, authService } from '@/lib/auth';
 import api from '@/lib/api';
 import { ApiErrorResponse } from '@/lib/types';
 
@@ -19,24 +19,75 @@ const STEPS = [
   { id: 4, title: 'Agendamiento de Cita', route: '/adopta/cita', description: 'Agenda una cita para conocer a tus mascotas seleccionadas' },
 ];
 
-export default function AdoptaPage() {
+function AdoptaPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [progress, setProgress] = useState<AdoptionProgress | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentStep, setCurrentStep] = useState<number | null>(null);
   const [hasActiveAdoptions, setHasActiveAdoptions] = useState(false);
   const [allAdoptionsTerminal, setAllAdoptionsTerminal] = useState(false);
+  const [flagAlert, setFlagAlert] = useState<{ type: 'roja' | 'amarilla' | 'naranja'; message: string } | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
-      const authenticated = auth.isAuthenticated();
+      // Validar que la sesión sea realmente válida
+      const authenticated = await authService.validateSession();
       setIsAuthenticated(authenticated);
+      
+      if (!authenticated) {
+        setLoading(false);
+        return;
+      }
       
       if (authenticated) {
         try {
+          // Verificar que el usuario sea adoptante antes de intentar obtener progreso
+          const user = await authService.getCurrentUser();
+          if (user.rol !== 'adoptante') {
+            // Si no es adoptante, no puede acceder a esta página
+            setIsAuthenticated(false);
+            setLoading(false);
+            return;
+          }
+
           const response = await api.get<AdoptionProgress>('/adoption-process/progress');
           setProgress(response.data);
+          
+          // Verificar bandera y mostrar alerta si es necesario
+          const bandera = response.data.bandera;
+          const banderaParam = searchParams.get('bandera');
+          
+          // Si viene de un redirect de una página hija, mostrar alerta
+          if (banderaParam && (banderaParam === 'roja' || banderaParam === 'amarilla' || banderaParam === 'naranja')) {
+            if (banderaParam === 'roja') {
+              setFlagAlert({
+                type: 'roja',
+                message: 'No es apto para adoptar y no puede seguir el proceso.'
+              });
+            } else if (banderaParam === 'amarilla' || banderaParam === 'naranja') {
+              setFlagAlert({
+                type: banderaParam === 'amarilla' ? 'amarilla' : 'naranja',
+                message: 'Debe esperar a que la Fundación lo contacte. No puede continuar con el proceso por ahora.'
+              });
+            }
+            // Limpiar el parámetro de la URL
+            router.replace('/adopta', { scroll: false });
+          } else if (bandera && bandera !== 'verde') {
+            // Si la bandera actual no es verde, mostrar alerta
+            if (bandera === 'roja') {
+              setFlagAlert({
+                type: 'roja',
+                message: 'No es apto para adoptar y no puede seguir el proceso.'
+              });
+            } else if (bandera === 'amarilla' || bandera === 'naranja') {
+              setFlagAlert({
+                type: bandera === 'amarilla' ? 'amarilla' : 'naranja',
+                message: 'Debe esperar a que la Fundación lo contacte. No puede continuar con el proceso por ahora.'
+              });
+            }
+          }
           
           // Verificar estado de adopciones
           try {
@@ -90,6 +141,23 @@ export default function AdoptaPage() {
             setCurrentStep(null);
           }
         } catch (error) {
+          const apiError = error as ApiErrorResponse;
+          // Si es 401 o 403, la sesión expiró - ya se limpió en validateSession
+          if (apiError.response?.status === 401 || apiError.response?.status === 403) {
+            setIsAuthenticated(false);
+            setLoading(false);
+            return;
+          }
+          // Si es 404, el usuario no tiene perfil de adoptante o no tiene progreso
+          // Esto puede pasar si el usuario está autenticado pero no completó el registro como adoptante
+          if (apiError.response?.status === 404) {
+            // El usuario está autenticado pero no tiene perfil de adoptante
+            // Dejar que continúe como si no estuviera autenticado para el proceso de adopción
+            setIsAuthenticated(false);
+            setCurrentStep(1);
+            setLoading(false);
+            return;
+          }
           console.error('Error loading progress:', error);
           // Si no tiene progreso, está en el paso 1
           setCurrentStep(1);
@@ -104,6 +172,11 @@ export default function AdoptaPage() {
   }, []);
 
   const handleContinue = () => {
+    // Si hay alerta de bandera, no permitir continuar
+    if (flagAlert) {
+      return;
+    }
+
     if (!isAuthenticated) {
       router.push('/auth/registro');
       return;
@@ -132,7 +205,16 @@ export default function AdoptaPage() {
   const handleRestartProcess = async () => {
     try {
       await api.post('/adoption-process/restart');
-      router.push('/adopta/informacion-hogar');
+      // Recargar el progreso para obtener la nueva bandera
+      const response = await api.get<AdoptionProgress>('/adoption-process/progress');
+      setProgress(response.data);
+      // Mostrar alerta de bandera amarilla
+      setFlagAlert({
+        type: 'amarilla',
+        message: 'Debe esperar a que la Fundación lo contacte. No puede continuar con el proceso por ahora.'
+      });
+      // Recargar la página para actualizar el estado
+      window.location.reload();
     } catch (error: unknown) {
       const apiError = error as ApiErrorResponse;
       alert(apiError.response?.data?.detail || 'Error al reiniciar el proceso');
@@ -166,8 +248,19 @@ export default function AdoptaPage() {
           </p>
         </div>
 
+        {/* Alerta de bandera */}
+        {flagAlert && (
+          <div className={`mb-6 p-4 rounded-lg border ${
+            flagAlert.type === 'roja'
+              ? 'bg-red-100 border-red-400 text-red-700'
+              : 'bg-yellow-100 border-yellow-400 text-yellow-700'
+          }`}>
+            <p className="font-semibold text-lg">{flagAlert.message}</p>
+          </div>
+        )}
+
         {/* Indicador de Progreso */}
-        {isAuthenticated && currentStep && (
+        {isAuthenticated && currentStep && !flagAlert && (
           <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
             <h2 className="text-2xl font-bold text-primary mb-4 text-center">
               Tu Progreso
@@ -196,7 +289,7 @@ export default function AdoptaPage() {
         )}
 
         {/* Mensaje cuando ya agendó la cita */}
-        {isAuthenticated && progress && progress.proceso_paso && progress.proceso_paso >= 6 && !currentStep && (
+        {isAuthenticated && progress && progress.proceso_paso && progress.proceso_paso >= 6 && !currentStep && !flagAlert && (
           <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
             <h2 className="text-2xl font-bold text-primary mb-4 text-center">
               Proceso Completado
@@ -213,8 +306,8 @@ export default function AdoptaPage() {
           </div>
         )}
 
-        {/* Botón para reiniciar proceso si todas las adopciones están terminales */}
-        {isAuthenticated && allAdoptionsTerminal && (
+        {/* Botón para reiniciar proceso si todas las adopciones están terminales y bandera es verde */}
+        {isAuthenticated && allAdoptionsTerminal && !flagAlert && progress && progress.bandera === 'verde' && (
           <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
             <h2 className="text-2xl font-bold text-primary mb-4 text-center">
               ¿Quieres Adoptar Otra Mascota?
@@ -278,7 +371,7 @@ export default function AdoptaPage() {
           </div>
         )}
 
-        {!isAuthenticated && (
+        {!isAuthenticated && !flagAlert && (
           <div className="text-center">
             <button
               onClick={handleContinue}
@@ -290,5 +383,17 @@ export default function AdoptaPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function AdoptaPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Cargando...</div>
+      </div>
+    }>
+      <AdoptaPageContent />
+    </Suspense>
   );
 }

@@ -146,8 +146,8 @@ const Header = () => {
 
         {/* Mobile menu */}
         {isMenuOpen && (
-          <div className="lg:hidden" id="mobile-menu">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-primary border-t border-accent-orange">
+          <div className="lg:hidden fixed inset-x-0 top-16 bottom-0 bg-primary border-t border-accent-orange overflow-y-auto z-40" id="mobile-menu">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               {navigation.map((item) => (
                 <div key={item.name}>
                   <Link

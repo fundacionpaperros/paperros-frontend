@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth } from '@/lib/auth';
+import { auth, authService } from '@/lib/auth';
 import api from '@/lib/api';
 import { ApiErrorResponse, getErrorMessage } from '@/lib/types';
 import Link from 'next/link';
@@ -55,12 +55,38 @@ export default function ConfirmacionPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (!auth.isAuthenticated()) {
-      router.push('/auth/login');
-      return;
-    }
+    const validateAndLoad = async () => {
+      // Validar que la sesión sea realmente válida
+      const authenticated = await authService.validateSession();
+      if (!authenticated) {
+        router.push('/auth/login');
+        return;
+      }
 
-    loadData();
+      // Validar que el usuario tenga bandera verde
+      try {
+        const progress = await api.get<{ bandera: string }>('/adoption-process/progress');
+        const { bandera } = progress.data;
+        
+        if (bandera !== 'verde') {
+          // Redirigir inmediatamente a /adopta con el parámetro de bandera
+          router.push(`/adopta?bandera=${bandera}`);
+          return;
+        }
+      } catch (err: unknown) {
+        const apiError = err as ApiErrorResponse;
+        if (apiError.response?.status === 401 || apiError.response?.status === 403) {
+          router.push('/auth/login');
+          return;
+        }
+        setError('Error al validar acceso');
+        return;
+      }
+
+      loadData();
+    };
+
+    validateAndLoad();
   }, [router]);
 
   const loadData = async () => {
@@ -119,6 +145,7 @@ export default function ConfirmacionPage() {
   };
 
   const formatDate = (dateString: string | Date) => {
+    // Las fechas vienen en GMT+5, mostrarlas directamente sin conversiones
     const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
     return date.toLocaleDateString('es-CO', {
       weekday: 'long',

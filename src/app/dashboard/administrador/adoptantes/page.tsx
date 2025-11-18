@@ -111,7 +111,7 @@ export default function AdoptersPage() {
             {filteredAdopters.map((adopter) => (
               <tr key={adopter.id}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  {adopter.usuario_nombre || `Adoptante #${adopter.id}`}
+                  {adopter.usuario_nombre || 'Sin nombre'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{adopter.cedula}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{adopter.telefono}</td>

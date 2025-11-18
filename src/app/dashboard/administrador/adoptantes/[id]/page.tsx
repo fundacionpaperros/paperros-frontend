@@ -21,6 +21,13 @@ interface Adoption {
   animal_id: number;
   estado: string;
   fecha_match?: string;
+  animal?: {
+    id: number;
+    nombre: string;
+    especie: string;
+    raza: string;
+    foto_url?: string;
+  };
 }
 
 export default function AdopterDetailPage() {
@@ -37,7 +44,7 @@ export default function AdopterDetailPage() {
       setAdopter(adopterRes.data);
 
       // Load adoptions for this adopter
-      const adoptionsRes = await api.get(`/adoption-process/adoptions?adoptante_id=${adopterId}`).catch(() => ({ data: [] }));
+      const adoptionsRes = await api.get(`/adoption-process/adoptions?adoptante_id=${adopterId}&limit=100`).catch(() => ({ data: [] }));
       setAdoptions(adoptionsRes.data);
     } catch (error) {
       console.error('Error loading data:', error);
@@ -90,7 +97,7 @@ export default function AdopterDetailPage() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-sm text-gray-600">Nombre</p>
-            <p className="font-semibold">{adopter.usuario_nombre || `Adoptante #${adopter.id}`}</p>
+            <p className="font-semibold">{adopter.usuario_nombre || 'Sin nombre'}</p>
           </div>
           <div>
             <p className="text-sm text-gray-600">Email</p>
@@ -129,10 +136,18 @@ export default function AdopterDetailPage() {
               <div key={adoption.id} className="border-l-4 border-primary pl-4 py-2">
                 <Link
                   href={`/dashboard/administrador/adopciones/${adoption.id}`}
-                  className="text-primary hover:underline"
+                  className="text-primary hover:underline font-semibold"
                 >
-                  Adopción #{adoption.id} - Animal #{adoption.animal_id}
+                  Adopción #{adoption.id}
                 </Link>
+                <p className="text-sm text-gray-600">
+                  Animal: {adoption.animal?.nombre || 'Sin nombre'}
+                  {adoption.animal && (
+                    <span className="text-xs text-gray-500 capitalize ml-2">
+                      {adoption.animal.especie || ''} {adoption.animal.raza ? `• ${adoption.animal.raza}` : ''}
+                    </span>
+                  )}
+                </p>
                 <p className="text-sm text-gray-600">Estado: {adoption.estado}</p>
                 {adoption.fecha_match && (
                   <p className="text-sm text-gray-500">

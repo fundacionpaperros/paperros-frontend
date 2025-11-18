@@ -6,28 +6,6 @@ import { authService, auth, User } from '@/lib/auth';
 import Link from 'next/link';
 import api from '@/lib/api';
 
-interface Adoption {
-  id: number;
-  animal_id?: number;
-  adoptante_id?: number;
-  estado: string;
-  animal?: {
-    id: number;
-    nombre: string;
-    especie: string;
-    raza: string;
-    foto_url?: string;
-  };
-  adoptante?: {
-    id: number;
-    nombre: string;
-    email: string;
-    cedula: string;
-  };
-  fecha_cita?: string;
-  created_at: string;
-}
-
 interface Appointment {
   id: number;
   fecha_hora: string;
@@ -59,7 +37,6 @@ export default function DashboardPage() {
     seguimientos: 0,
     citas_proximas: 0,
   });
-  const [recentAdoptions, setRecentAdoptions] = useState<Adoption[]>([]);
   const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
 
   useEffect(() => {
@@ -85,13 +62,71 @@ export default function DashboardPage() {
               citas_proximas: statsResponse.data.citas_proximas || 0,
             });
 
-            // Cargar adopciones recientes (últimas 5)
-            const adoptionsResponse = await api.get('/adoption-process/adoptions?limit=5');
-            setRecentAdoptions(adoptionsResponse.data || []);
-
             // Cargar citas próximas (próximas 5)
             const appointmentsResponse = await api.get('/adoption-process/appointments?upcoming_only=true&limit=5');
-            setUpcomingAppointments(appointmentsResponse.data || []);
+            const appointmentsData = appointmentsResponse.data || [];
+            
+            // Si alguna cita no tiene animales pero tiene adoption_ids, cargarlos
+            const appointmentsWithAnimals = await Promise.all(
+              appointmentsData.map(async (appointment: Appointment) => {
+                // Si ya tiene animales, devolverlo tal cual
+                if (appointment.animals && appointment.animals.length > 0) {
+                  return appointment;
+                }
+                
+                // Si no tiene animales pero tiene adoption_ids, cargarlos
+                if (appointment.adoption_ids && appointment.adoption_ids.length > 0) {
+                  try {
+                    const animals: Array<{ id: number; nombre: string; especie: string; raza: string; foto_url?: string }> = [];
+                    
+                    // Cargar información de cada adopción para obtener los animales
+                    for (const adoptionId of appointment.adoption_ids) {
+                      try {
+                        const adoptionResponse = await api.get(`/adoption-process/adoptions/${adoptionId}`);
+                        const adoption = adoptionResponse.data;
+                        
+                        if (adoption.animal) {
+                          animals.push({
+                            id: adoption.animal.id,
+                            nombre: adoption.animal.nombre || '',
+                            especie: adoption.animal.especie || '',
+                            raza: adoption.animal.raza || '',
+                            foto_url: adoption.animal.foto_url,
+                          });
+                        } else if (adoption.animal_id) {
+                          // Si no tiene animal en la adopción, cargarlo directamente
+                          try {
+                            const animalResponse = await api.get(`/animals/${adoption.animal_id}`);
+                            animals.push({
+                              id: animalResponse.data.id,
+                              nombre: animalResponse.data.nombre || '',
+                              especie: animalResponse.data.especie || '',
+                              raza: animalResponse.data.raza || '',
+                              foto_url: animalResponse.data.foto_url,
+                            });
+                          } catch {
+                            // Si falla, continuar
+                          }
+                        }
+                      } catch {
+                        // Si falla cargar una adopción, continuar con las demás
+                      }
+                    }
+                    
+                    return {
+                      ...appointment,
+                      animals: animals.length > 0 ? animals : appointment.animals,
+                    };
+                  } catch {
+                    return appointment;
+                  }
+                }
+                
+                return appointment;
+              })
+            );
+            
+            setUpcomingAppointments(appointmentsWithAnimals);
           } catch {
             console.error('Error loading dashboard data');
           }
@@ -135,28 +170,6 @@ export default function DashboardPage() {
 
   const statCards = getStatCards();
 
-  const getEstadoLabel = (estado: string) => {
-    const estados: Record<string, string> = {
-      pendiente_match: 'Pendiente de Match',
-      match_realizado: 'Match Realizado',
-      cita_agendada: 'Cita Agendada',
-      cita_completada: 'Cita Completada',
-      periodo_prueba_2dias: 'Periodo de Prueba (2 días)',
-      periodo_prueba_2meses: 'Periodo de Prueba (2 meses)',
-      adoptado_final: 'Adoptado',
-      adopcion_no_concretada: 'Adopción No Concretada',
-      cancelada: 'Cancelada',
-    };
-    return estados[estado] || estado;
-  };
-
-  const getEstadoColor = (estado: string) => {
-    if (estado === 'adoptado_final') return 'bg-green-100 text-green-800';
-    if (estado === 'adopcion_no_concretada' || estado === 'cancelada') return 'bg-red-100 text-red-800';
-    if (estado.includes('prueba')) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-blue-100 text-blue-800';
-  };
-
   return (
     <div>
       <div className="mb-8">
@@ -179,65 +192,6 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Sección de Adopciones Recientes - Solo para admin y fundacion */}
-      {(user.rol === 'admin' || user.rol === 'fundacion') && recentAdoptions.length > 0 && (
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Adopciones Recientes</h2>
-            <Link
-              href="/dashboard/administrador/adopciones"
-              className="text-primary hover:underline text-sm cursor-pointer"
-            >
-              Ver todas →
-            </Link>
-          </div>
-          <div className="space-y-4">
-            {recentAdoptions.map((adoption) => (
-              <div key={adoption.id} className="border-l-4 border-primary pl-4 py-2">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      {adoption.animal?.foto_url && (
-                        <img
-                          src={adoption.animal.foto_url.startsWith('http') ? adoption.animal.foto_url : `http://localhost:8000${adoption.animal.foto_url}`}
-                          alt={adoption.animal.nombre}
-                          className="w-12 h-12 rounded-full object-cover"
-                        />
-                      )}
-                      <div>
-                        <h3 className="font-semibold">
-                          {adoption.animal?.nombre || `Animal #${adoption.animal_id}`}
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          {adoption.adoptante?.nombre || `Adoptante #${adoption.adoptante_id}`}
-                          {adoption.adoptante?.email && ` • ${adoption.adoptante.email}`}
-                        </p>
-                      </div>
-                    </div>
-                    {adoption.fecha_cita && (
-                      <p className="text-sm text-gray-500">
-                        Cita: {new Date(adoption.fecha_cita).toLocaleString('es-CO')}
-                      </p>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getEstadoColor(adoption.estado)}`}>
-                      {getEstadoLabel(adoption.estado)}
-                    </span>
-                    <Link
-                      href={`/dashboard/administrador/adopciones/${adoption.id}`}
-                      className="block mt-2 text-sm text-primary hover:underline cursor-pointer"
-                    >
-                      Ver detalles →
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Sección de Citas Próximas - Solo para admin y fundacion */}
       {(user.rol === 'admin' || user.rol === 'fundacion') && upcomingAppointments.length > 0 && (
         <div className="bg-white rounded-lg shadow p-6 mb-8">
@@ -258,17 +212,17 @@ export default function DashboardPage() {
                     <div className="mb-2">
                       <p className="text-sm text-gray-600 mb-1">Mascotas incluidas:</p>
                       <div className="flex flex-wrap gap-2 mb-2">
-                        {appointment.animals && appointment.animals.length > 0 ? (
+                        {appointment.animals && Array.isArray(appointment.animals) && appointment.animals.length > 0 ? (
                           appointment.animals.map((animal, idx) => (
-                            <span key={idx} className="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
+                            <span key={animal.id || idx} className="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
                               {animal.foto_url && (
                                 <img
-                                  src={animal.foto_url.startsWith('http') ? animal.foto_url : `http://localhost:8000${animal.foto_url}`}
+                                  src={animal.foto_url.startsWith('http') ? animal.foto_url : `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8000'}${animal.foto_url.startsWith('/') ? animal.foto_url : '/' + animal.foto_url}`}
                                   alt={animal.nombre}
                                   className="w-6 h-6 rounded-full object-cover"
                                 />
                               )}
-                              {animal.nombre}
+                              {animal.nombre || `Animal ${idx + 1}`}
                             </span>
                           ))
                         ) : (
@@ -276,7 +230,7 @@ export default function DashboardPage() {
                         )}
                       </div>
                       <p className="text-sm text-gray-600">
-                        {appointment.adoptante?.nombre || 'Adoptante'}
+                        Adoptante: {appointment.adoptante?.nombre || 'N/A'}
                         {appointment.adoptante?.email && ` • ${appointment.adoptante.email}`}
                       </p>
                     </div>
@@ -352,6 +306,13 @@ export default function DashboardPage() {
               >
                 <h3 className="font-semibold">Seguimiento</h3>
                 <p className="text-sm text-gray-600">Visitas y recordatorios</p>
+              </Link>
+              <Link
+                href="/dashboard/administrador/mensajes"
+                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+              >
+                <h3 className="font-semibold">Mensajes de Contacto</h3>
+                <p className="text-sm text-gray-600">Ver y gestionar mensajes recibidos</p>
               </Link>
             </>
           )}

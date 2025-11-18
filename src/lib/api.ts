@@ -54,10 +54,11 @@ api.interceptors.response.use(
   },
   (error: AxiosError) => {
     // Handle common errors
-    if (error.response?.status === 401) {
-      // Handle unauthorized access
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      // Handle unauthorized/forbidden access - token expired or invalid
+      // Limpiar el token, pero dejar que los componentes manejen el redirect
+      // para evitar loops de redirect y dar mejor control
       auth.removeToken();
-      // Redirect to login if needed (can be handled by components)
     }
     return Promise.reject(error);
   }
