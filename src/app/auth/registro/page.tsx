@@ -28,6 +28,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [alertMessage, setAlertMessage] = useState<{ type: 'roja' | 'naranja' | null; message: string } | null>(null);
+  const [aceptaPolitica, setAceptaPolitica] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -76,6 +77,13 @@ export default function RegisterPage() {
     e.preventDefault();
     setError('');
     setAlertMessage(null);
+    
+    // Validar aceptación de política
+    if (!aceptaPolitica) {
+      setError('Debe aceptar la política de tratamiento de datos personales para continuar.');
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -304,6 +312,30 @@ export default function RegisterPage() {
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               />
+            </div>
+
+            <div className="flex items-start">
+              <input
+                id="aceptaPolitica"
+                name="aceptaPolitica"
+                type="checkbox"
+                checked={aceptaPolitica}
+                onChange={(e) => setAceptaPolitica(e.target.checked)}
+                required
+                className="mt-1 mr-3 h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+              />
+              <label htmlFor="aceptaPolitica" className="text-sm text-gray-700">
+                Acepto la{' '}
+                <Link 
+                  href="/politica-tratamiento-datos" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline font-medium"
+                >
+                  Política de Tratamiento de Datos Personales
+                </Link>
+                {' '}*
+              </label>
             </div>
 
             <button

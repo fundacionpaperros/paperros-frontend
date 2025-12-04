@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { authService, auth, User } from '@/lib/auth';
 import Link from 'next/link';
 import api from '@/lib/api';
+import { ApiErrorResponse } from '@/lib/types';
 
 interface Appointment {
   id: number;
@@ -50,8 +51,8 @@ export default function DashboardPage() {
         const userData = await authService.getCurrentUser();
         setUser(userData);
         
-        // Cargar estadísticas solo para admin y fundacion
-        if (userData.rol === 'admin' || userData.rol === 'fundacion') {
+        // Cargar estadísticas para admin, fundacion y albergue
+        if (userData.rol === 'admin' || userData.rol === 'fundacion' || userData.rol === 'albergue') {
           try {
             const statsResponse = await api.get('/adoption-process/stats');
             setStats({
@@ -62,78 +63,93 @@ export default function DashboardPage() {
               citas_proximas: statsResponse.data.citas_proximas || 0,
             });
 
-            // Cargar citas próximas (próximas 5)
-            const appointmentsResponse = await api.get('/adoption-process/appointments?upcoming_only=true&limit=5');
-            const appointmentsData = appointmentsResponse.data || [];
-            
-            // Si alguna cita no tiene animales pero tiene adoption_ids, cargarlos
-            const appointmentsWithAnimals = await Promise.all(
-              appointmentsData.map(async (appointment: Appointment) => {
-                // Si ya tiene animales, devolverlo tal cual
-                if (appointment.animals && appointment.animals.length > 0) {
-                  return appointment;
-                }
+            // Cargar citas próximas (próximas 5) - Solo para admin y fundacion
+            if (userData.rol === 'admin' || userData.rol === 'fundacion') {
+              try {
+                const appointmentsResponse = await api.get('/adoption-process/appointments?upcoming_only=true&limit=5');
+                const appointmentsData = appointmentsResponse.data || [];
                 
-                // Si no tiene animales pero tiene adoption_ids, cargarlos
-                if (appointment.adoption_ids && appointment.adoption_ids.length > 0) {
-                  try {
-                    const animals: Array<{ id: number; nombre: string; especie: string; raza: string; foto_url?: string }> = [];
+                // Si alguna cita no tiene animales pero tiene adoption_ids, cargarlos
+                const appointmentsWithAnimals = await Promise.all(
+                  appointmentsData.map(async (appointment: Appointment) => {
+                    // Si ya tiene animales, devolverlo tal cual
+                    if (appointment.animals && appointment.animals.length > 0) {
+                      return appointment;
+                    }
                     
-                    // Cargar información de cada adopción para obtener los animales
-                    for (const adoptionId of appointment.adoption_ids) {
+                    // Si no tiene animales pero tiene adoption_ids, cargarlos
+                    if (appointment.adoption_ids && appointment.adoption_ids.length > 0) {
                       try {
-                        const adoptionResponse = await api.get(`/adoption-process/adoptions/${adoptionId}`);
-                        const adoption = adoptionResponse.data;
+                        const animals: Array<{ id: number; nombre: string; especie: string; raza: string; foto_url?: string }> = [];
                         
-                        if (adoption.animal) {
-                          animals.push({
-                            id: adoption.animal.id,
-                            nombre: adoption.animal.nombre || '',
-                            especie: adoption.animal.especie || '',
-                            raza: adoption.animal.raza || '',
-                            foto_url: adoption.animal.foto_url,
-                          });
-                        } else if (adoption.animal_id) {
-                          // Si no tiene animal en la adopción, cargarlo directamente
+                        // Cargar información de cada adopción para obtener los animales
+                        for (const adoptionId of appointment.adoption_ids) {
                           try {
-                            const animalResponse = await api.get(`/animals/${adoption.animal_id}`);
-                            animals.push({
-                              id: animalResponse.data.id,
-                              nombre: animalResponse.data.nombre || '',
-                              especie: animalResponse.data.especie || '',
-                              raza: animalResponse.data.raza || '',
-                              foto_url: animalResponse.data.foto_url,
-                            });
+                            const adoptionResponse = await api.get(`/adoption-process/adoptions/${adoptionId}`);
+                            const adoption = adoptionResponse.data;
+                            
+                            if (adoption.animal) {
+                              animals.push({
+                                id: adoption.animal.id,
+                                nombre: adoption.animal.nombre || '',
+                                especie: adoption.animal.especie || '',
+                                raza: adoption.animal.raza || '',
+                                foto_url: adoption.animal.foto_url,
+                              });
+                            } else if (adoption.animal_id) {
+                              // Si no tiene animal en la adopción, cargarlo directamente
+                              try {
+                                const animalResponse = await api.get(`/animals/${adoption.animal_id}`);
+                                animals.push({
+                                  id: animalResponse.data.id,
+                                  nombre: animalResponse.data.nombre || '',
+                                  especie: animalResponse.data.especie || '',
+                                  raza: animalResponse.data.raza || '',
+                                  foto_url: animalResponse.data.foto_url,
+                                });
+                              } catch {
+                                // Si falla, continuar
+                              }
+                            }
                           } catch {
-                            // Si falla, continuar
+                            // Si falla cargar una adopción, continuar con las demás
                           }
                         }
+                        
+                        return {
+                          ...appointment,
+                          animals: animals.length > 0 ? animals : appointment.animals,
+                        };
                       } catch {
-                        // Si falla cargar una adopción, continuar con las demás
+                        return appointment;
                       }
                     }
                     
-                    return {
-                      ...appointment,
-                      animals: animals.length > 0 ? animals : appointment.animals,
-                    };
-                  } catch {
                     return appointment;
-                  }
-                }
+                  })
+                );
                 
-                return appointment;
-              })
-            );
-            
-            setUpcomingAppointments(appointmentsWithAnimals);
-          } catch {
-            console.error('Error loading dashboard data');
+                setUpcomingAppointments(appointmentsWithAnimals);
+              } catch (err) {
+                // Error al cargar citas, pero no es crítico - solo loguear
+                console.error('Error loading appointments:', err);
+              }
+            }
+          } catch (err) {
+            // Error al cargar estadísticas - loguear pero no deslogear
+            console.error('Error loading dashboard stats:', err);
           }
         }
-      } catch {
-        auth.removeToken();
-        router.push('/auth/login');
+      } catch (err: unknown) {
+        // Solo deslogear si es un error de autenticación (401/403)
+        const apiError = err as ApiErrorResponse;
+        if (apiError.response?.status === 401 || apiError.response?.status === 403) {
+          auth.removeToken();
+          router.push('/auth/login');
+        } else {
+          // Otros errores no deberían deslogear al usuario
+          console.error('Error loading dashboard:', err);
+        }
       } finally {
         setLoading(false);
       }
@@ -280,6 +296,13 @@ export default function DashboardPage() {
               >
                 <h3 className="font-semibold">Gestionar Eventos</h3>
                 <p className="text-sm text-gray-600">Administrar eventos públicos</p>
+              </Link>
+              <Link
+                href="/dashboard/administrador/preguntas-certificado"
+                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+              >
+                <h3 className="font-semibold">Preguntas de Certificado</h3>
+                <p className="text-sm text-gray-600">Gestionar preguntas del examen de certificación</p>
               </Link>
             </>
           )}

@@ -13,7 +13,7 @@ interface Question {
   respuesta_correcta: number;
 }
 
-const VIDEO_URL = 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // Hardcoded por ahora
+const VIDEO_URL = 'https://www.youtube.com/embed/P9aex_NTm24';
 
 export default function CertificacionPage() {
   const router = useRouter();
@@ -22,8 +22,11 @@ export default function CertificacionPage() {
   const [showExam, setShowExam] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [result, setResult] = useState<{ aprobado: boolean; correctas: number; total: number; message: string } | null>(null);
+  const [result, setResult] = useState<{ aprobado: boolean; correctas: number; total: number; porcentaje: number; message: string } | null>(null);
   const [error, setError] = useState('');
+  const [timeLeft, setTimeLeft] = useState(600); // 10 minutos en segundos
+  const [timerActive, setTimerActive] = useState(false);
+  const [timeExpired, setTimeExpired] = useState(false);
 
   const loadQuestions = useCallback(async () => {
     try {
@@ -57,6 +60,39 @@ export default function CertificacionPage() {
     // Si no tiene certificado, cargar las preguntas
     loadQuestions();
   }, [router, loadQuestions]);
+
+  // Timer effect
+  useEffect(() => {
+    if (!timerActive || timeExpired) return;
+
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          setTimeExpired(true);
+          setTimerActive(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timerActive, timeExpired]);
+
+  // Scroll to top when result is set
+  useEffect(() => {
+    if (result) {
+      // Pequeño delay para asegurar que el DOM se actualice
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // También intentar hacer scroll al elemento si existe
+        const resultElement = document.getElementById('result-alert');
+        if (resultElement) {
+          resultElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, [result]);
 
   useEffect(() => {
     const validateAndCheck = async () => {
@@ -97,6 +133,9 @@ export default function CertificacionPage() {
 
   const handleStartExam = () => {
     setShowExam(true);
+    setTimerActive(true);
+    setTimeLeft(600); // Reiniciar a 10 minutos
+    setTimeExpired(false);
   };
 
   const handleAnswerChange = (questionId: number, answerIndex: number) => {
@@ -109,24 +148,42 @@ export default function CertificacionPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (timeExpired) {
+      setError('El tiempo ha expirado. Por favor, intenta nuevamente.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    
     // Verificar que todas las preguntas estén respondidas
     if (Object.keys(answers).length !== questions.length) {
       setError('Debe responder todas las preguntas');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
     setSubmitting(true);
     setError('');
+    setTimerActive(false);
 
     try {
       const response = await api.post('/adoption-process/certificate-exam', answers);
       setResult(response.data);
+      // Hacer scroll hacia arriba para mostrar el resultado
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err: unknown) {
       const apiError = err as ApiErrorResponse;
       setError(getErrorMessage(apiError, 'Error al enviar respuestas'));
+      // Hacer scroll hacia arriba para mostrar el error
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
   if (loading) {
@@ -151,14 +208,21 @@ export default function CertificacionPage() {
         )}
 
         {result && (
-          <div className="bg-white rounded-lg shadow-lg p-8">
+          <div className="bg-white rounded-lg shadow-lg p-8" id="result-alert">
             <div className={`mb-6 p-4 rounded-lg ${
               result.aprobado 
                 ? 'bg-green-100 border border-green-400 text-green-700'
                 : 'bg-red-100 border border-red-400 text-red-700'
             }`}>
               <p className="font-semibold text-lg">{result.message}</p>
-              <p className="mt-2">Respuestas correctas: {result.correctas} de {result.total}</p>
+              <p className="mt-2">
+                Porcentaje obtenido: <span className="font-bold">{result.porcentaje.toFixed(1)}%</span>
+                {result.aprobado ? (
+                  <span className="ml-2 text-sm">({result.correctas} de {result.total} preguntas correctas)</span>
+                ) : (
+                  <span className="ml-2 text-sm">(Necesitas al menos 70% para aprobar)</span>
+                )}
+              </p>
             </div>
             {result.aprobado && (
               <button
@@ -175,6 +239,9 @@ export default function CertificacionPage() {
                   setShowExam(false);
                   setAnswers({});
                   setError('');
+                  setTimeLeft(600);
+                  setTimerActive(false);
+                  setTimeExpired(false);
                 }}
                 className="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary/90 font-semibold cursor-pointer"
               >
@@ -215,12 +282,31 @@ export default function CertificacionPage() {
 
         {showExam && !result && (
           <div className="bg-white rounded-lg shadow-lg p-8">
-            <h2 className="text-2xl font-semibold text-primary mb-6">
-              Examen de Certificación
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Responde las siguientes 10 preguntas. Debes obtener al menos 7 respuestas correctas para aprobar.
-            </p>
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-2xl font-semibold text-primary">
+                  Examen de Certificación
+                </h2>
+                <p className="text-gray-600 mt-2">
+                  Responde todas las preguntas. Debes obtener al menos 70% para aprobar.
+                </p>
+              </div>
+              <div className={`text-2xl font-bold px-4 py-2 rounded-lg ${
+                timeLeft <= 60 
+                  ? 'bg-red-100 text-red-700' 
+                  : timeLeft <= 300 
+                    ? 'bg-yellow-100 text-yellow-700' 
+                    : 'bg-green-100 text-green-700'
+              }`}>
+                {formatTime(timeLeft)}
+              </div>
+            </div>
+            
+            {timeExpired && (
+              <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                <p className="font-semibold">El tiempo ha expirado. Por favor, intenta nuevamente.</p>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-8">
               {questions.map((question, index) => (
@@ -251,10 +337,10 @@ export default function CertificacionPage() {
 
               <button
                 type="submit"
-                disabled={submitting || Object.keys(answers).length !== questions.length}
+                disabled={submitting || Object.keys(answers).length !== questions.length || timeExpired}
                 className="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary/90 font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {submitting ? 'Enviando...' : 'Enviar Respuestas'}
+                {submitting ? 'Enviando...' : timeExpired ? 'Tiempo Expirado' : 'Enviar Respuestas'}
               </button>
             </form>
           </div>

@@ -10,10 +10,15 @@ export const dashboardRoutes: RouteConfig[] = [
   // Dashboard principal
   { href: '/dashboard', label: 'Dashboard', roles: ['admin', 'fundacion', 'albergue'] },
   
+  // Perfil (accesible para todos los roles del dashboard)
+  { href: '/dashboard/perfil', label: 'Mi Perfil', roles: ['admin', 'fundacion', 'albergue'] },
+  
   // Rutas de administración (solo admin)
   { href: '/dashboard/administrador/patrocinadores', label: 'Patrocinadores', roles: ['admin'] },
   { href: '/dashboard/administrador/eventos', label: 'Eventos', roles: ['admin'] },
   { href: '/dashboard/administrador/lista-negra', label: 'Lista Negra', roles: ['admin'] },
+  { href: '/dashboard/administrador/albergues', label: 'Albergues', roles: ['admin'] },
+  { href: '/dashboard/administrador/preguntas-certificado', label: 'Preguntas Certificado', roles: ['admin'] },
   
   // Rutas de empleado/fundación (admin y fundacion)
   { href: '/dashboard/administrador/animales', label: 'Animales', roles: ['admin', 'fundacion'] },
@@ -44,19 +49,22 @@ export function canAccessRoute(role: string, pathname: string): boolean {
     pathname === r.href || pathname.startsWith(r.href + '/')
   );
   
-  if (!route) {
-    // Si la ruta no está en la configuración, verificar si es una ruta protegida
-    // Rutas de administrador: solo admin
-    if (pathname.startsWith('/dashboard/administrador/')) {
-      // Rutas específicas de admin
-      const adminOnlyRoutes = ['/dashboard/administrador/patrocinadores', 
-                               '/dashboard/administrador/eventos', '/dashboard/administrador/lista-negra'];
-      if (adminOnlyRoutes.some(r => pathname.startsWith(r))) {
-        return role === 'admin';
+    if (!route) {
+      // Si la ruta no está en la configuración, verificar si es una ruta protegida
+      // Rutas de administrador: solo admin
+      if (pathname.startsWith('/dashboard/administrador/')) {
+        // Rutas específicas de admin
+        const adminOnlyRoutes = ['/dashboard/administrador/patrocinadores', 
+                                 '/dashboard/administrador/eventos', 
+                                 '/dashboard/administrador/lista-negra',
+                                 '/dashboard/administrador/albergues',
+                                 '/dashboard/administrador/preguntas-certificado'];
+        if (adminOnlyRoutes.some(r => pathname.startsWith(r))) {
+          return role === 'admin';
+        }
+        // Otras rutas de administrador: admin y fundacion
+        return ['admin', 'fundacion'].includes(role);
       }
-      // Otras rutas de administrador: admin y fundacion
-      return ['admin', 'fundacion'].includes(role);
-    }
     
     // Rutas de albergue: solo albergue
     if (pathname.startsWith('/dashboard/albergue/')) {

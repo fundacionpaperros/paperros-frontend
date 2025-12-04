@@ -167,7 +167,7 @@ export default function ShelterAnimalsPage() {
                   {typeof animal.raza === 'string' ? animal.raza : String(animal.raza || '')}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {typeof animal.edad === 'number' ? `${animal.edad} meses` : 'N/A'}
+                  {typeof animal.edad === 'number' ? `${animal.edad} ${animal.edad === 1 ? 'año' : 'años'}` : 'N/A'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {animal.numero_chip && typeof animal.numero_chip === 'string' ? animal.numero_chip : '-'}

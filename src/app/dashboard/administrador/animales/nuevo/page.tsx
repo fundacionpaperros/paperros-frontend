@@ -260,7 +260,7 @@ export default function NewAnimalPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Edad (meses) *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Edad (años) *</label>
             <input
               type="number"
               name="edad"

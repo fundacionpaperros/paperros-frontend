@@ -283,7 +283,7 @@ export default function ConfirmacionPage() {
                     <div className="space-y-1 text-sm text-gray-600">
                       <p><span className="font-semibold">Especie:</span> {animal.especie}</p>
                       <p><span className="font-semibold">Raza:</span> {animal.raza}</p>
-                      <p><span className="font-semibold">Edad:</span> {animal.edad} meses</p>
+                      <p><span className="font-semibold">Edad:</span> {animal.edad} {animal.edad === 1 ? 'año' : 'años'}</p>
                       <p><span className="font-semibold">Talla:</span> {animal.talla}</p>
                       <p><span className="font-semibold">Color:</span> {animal.color}</p>
                     </div>

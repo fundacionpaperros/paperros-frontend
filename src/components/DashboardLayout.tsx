@@ -88,13 +88,15 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-primary text-white p-4">
-        <div className="mb-8">
+      <aside className="fixed left-0 top-0 h-screen w-64 bg-primary text-white flex flex-col">
+        {/* Header - Fixed */}
+        <div className="p-4 flex-shrink-0">
           <h1 className="text-2xl font-bold">Pa&apos; Perros</h1>
           <p className="text-sm text-white/80">{title}</p>
         </div>
 
-        <nav className="space-y-2">
+        {/* Navigation - Scrollable */}
+        <nav className="flex-1 overflow-y-auto px-4 space-y-2">
           {displayItems.map((item) => {
             // Determinar si esta ruta está activa
             const isActive = (() => {
@@ -132,7 +134,8 @@ export default function DashboardLayout({
           })}
         </nav>
 
-        <div className="mt-8 pt-8 border-t border-white/20">
+        {/* Footer - Fixed */}
+        <div className="p-4 pt-8 border-t border-white/20 flex-shrink-0">
           <div className="px-4 py-2 text-sm">
             <p className="font-semibold">{user?.nombre}</p>
             <p className="text-white/70">{user?.email}</p>

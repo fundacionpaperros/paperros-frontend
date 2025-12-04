@@ -92,6 +92,7 @@ const Footer = () => {
               <li><Link href="/adopta" className="text-primary/80 hover:text-accent-orange transition-colors duration-200 block">Adopta</Link></li>
               <li><Link href="/dona" className="text-primary/80 hover:text-accent-orange transition-colors duration-200 block">Dona</Link></li>
               <li><Link href="/contacto/escribenos" className="text-primary/80 hover:text-accent-orange transition-colors duration-200 block">Contáctanos</Link></li>
+              <li><Link href="/politica-tratamiento-datos" className="text-primary/80 hover:text-accent-orange transition-colors duration-200 block">Política de Tratamiento de Datos</Link></li>
             </ul>
           </div>
           
@@ -127,13 +128,18 @@ const Footer = () => {
       
       <div className="border-t border-primary/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-primary/60 text-sm">
               &copy; {currentYear} Fundación Pa&apos; Perros. Todos los derechos reservados.
             </p>
-            <p className="text-primary/60 text-sm mt-2 md:mt-0">
-              Organización sin ánimo de lucro
-            </p>
+            <div className="flex flex-col md:flex-row items-center gap-4">
+              <Link href="/politica-tratamiento-datos" className="text-primary/60 hover:text-accent-orange text-sm transition-colors duration-200">
+                Política de Tratamiento de Datos
+              </Link>
+              <p className="text-primary/60 text-sm">
+                Organización sin ánimo de lucro
+              </p>
+            </div>
           </div>
         </div>
       </div>
