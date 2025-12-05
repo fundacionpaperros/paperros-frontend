@@ -138,7 +138,7 @@ export default function NewAnimalPage() {
       if (animalId) {
         await api.put(`/animals/${animalId}`, formData);
       } else {
-        await api.post('/animals', formData);
+        await api.post('/animals/', formData);
       }
       router.push('/dashboard/administrador/animales');
     } catch (error: unknown) {

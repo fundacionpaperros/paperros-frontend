@@ -118,7 +118,7 @@ export default function NewShelterPage() {
         await api.put(`/shelters/${shelterId}`, updateData);
       } else {
         // Para crear, enviar todos los campos incluyendo password
-        await api.post('/shelters', {
+        await api.post('/shelters/', {
           nombre: formData.nombre,
           direccion: formData.direccion,
           telefono: formData.telefono,

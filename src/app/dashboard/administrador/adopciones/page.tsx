@@ -41,7 +41,7 @@ export default function AdoptionsPage() {
 
   const fetchAdoptions = async () => {
     try {
-      const response = await api.get('/adoption-process/adoptions/?limit=100');
+      const response = await api.get('/adoption-process/adoptions?limit=100');
       setAdoptions(response.data || []);
     } catch (error: unknown) {
       const apiError = error as ApiErrorResponse;

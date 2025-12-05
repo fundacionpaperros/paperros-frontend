@@ -101,7 +101,7 @@ export default function NewAnimalPage() {
       if (animalId) {
         await api.put(`/animals/${animalId}`, submitData);
       } else {
-        await api.post('/animals', submitData);
+        await api.post('/animals/', submitData);
       }
       router.push('/dashboard/albergue/animales');
     } catch (error: unknown) {

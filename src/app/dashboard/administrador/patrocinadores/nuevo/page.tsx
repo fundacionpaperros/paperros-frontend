@@ -118,7 +118,7 @@ export default function NewSponsorPage() {
       if (sponsorId) {
         await api.put(`/sponsors/${sponsorId}`, formData);
       } else {
-        await api.post('/sponsors', formData);
+        await api.post('/sponsors/', formData);
       }
       router.push('/dashboard/administrador/patrocinadores');
     } catch (error: unknown) {

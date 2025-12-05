@@ -120,7 +120,7 @@ export default function NewEventPage() {
       if (eventId) {
         await api.put(`/events/${eventId}`, submitData);
       } else {
-        await api.post('/events', submitData);
+        await api.post('/events/', submitData);
       }
       router.push('/dashboard/administrador/eventos');
     } catch (error: unknown) {

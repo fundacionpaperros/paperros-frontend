@@ -36,7 +36,7 @@ export default function BlacklistPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post('/blacklist', formData);
+      await api.post('/blacklist/', formData);
       setShowForm(false);
       setFormData({ cedula: '', razon_reporte: '' });
       fetchBlacklist();

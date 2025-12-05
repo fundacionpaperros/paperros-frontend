@@ -28,7 +28,7 @@ export default function FollowUpPage() {
   const loadData = async () => {
     try {
       const [upcomingRes, allRes] = await Promise.all([
-        api.get('/follow-up/upcoming/?days_ahead=30').catch(() => ({ data: [] })),
+        api.get('/follow-up/upcoming?days_ahead=30').catch(() => ({ data: [] })),
         api.get('/follow-up/?limit=100').catch(() => ({ data: [] })),
       ]);
       setUpcomingVisits(upcomingRes.data || []);
