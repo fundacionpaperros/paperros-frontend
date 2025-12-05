@@ -44,7 +44,7 @@ export default function AdopterDetailPage() {
       setAdopter(adopterRes.data);
 
       // Load adoptions for this adopter
-      const adoptionsRes = await api.get(`/adoption-process/adoptions?adoptante_id=${adopterId}&limit=100`).catch(() => ({ data: [] }));
+      const adoptionsRes = await api.get(`/adoption-process/adoptions/?adoptante_id=${adopterId}&limit=100`).catch(() => ({ data: [] }));
       setAdoptions(adoptionsRes.data);
     } catch (error) {
       console.error('Error loading data:', error);

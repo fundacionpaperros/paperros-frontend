@@ -53,7 +53,7 @@ export default function NewAnimalPage() {
       // Get shelter associated with user
       // This would need a specific endpoint, for now we'll use a workaround
       await api.get('/auth/me'); // Verificar autenticación pero no usar el resultado
-      const animalsRes = await api.get('/animals?limit=1');
+      const animalsRes = await api.get('/animals/?limit=1');
       if (animalsRes.data.length > 0) {
         setMyShelterId(animalsRes.data[0].albergue_id);
         setFormData(prev => ({ ...prev, albergue_id: animalsRes.data[0].albergue_id }));

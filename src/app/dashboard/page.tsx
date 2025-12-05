@@ -66,7 +66,7 @@ export default function DashboardPage() {
             // Cargar citas próximas (próximas 5) - Solo para admin y fundacion
             if (userData.rol === 'admin' || userData.rol === 'fundacion') {
               try {
-                const appointmentsResponse = await api.get('/adoption-process/appointments?upcoming_only=true&limit=5');
+                const appointmentsResponse = await api.get('/adoption-process/appointments/?upcoming_only=true&limit=5');
                 const appointmentsData = appointmentsResponse.data || [];
                 
                 // Si alguna cita no tiene animales pero tiene adoption_ids, cargarlos

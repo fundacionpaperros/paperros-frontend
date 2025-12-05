@@ -26,7 +26,7 @@ export default function AnimalsPage() {
 
   const fetchAnimals = async () => {
     try {
-      const response = await api.get('/animals?limit=100');
+      const response = await api.get('/animals/?limit=100');
       setAnimals(response.data);
     } catch (err: unknown) {
       const apiError = err as ApiErrorResponse;

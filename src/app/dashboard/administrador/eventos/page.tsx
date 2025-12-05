@@ -23,7 +23,7 @@ export default function EventsPage() {
 
   const fetchEvents = async () => {
     try {
-      const response = await api.get('/events?limit=100');
+      const response = await api.get('/events/?limit=100');
       setEvents(response.data);
     } catch {
       console.error('Error loading events');

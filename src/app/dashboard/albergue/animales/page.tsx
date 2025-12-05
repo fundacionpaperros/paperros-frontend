@@ -27,7 +27,7 @@ export default function ShelterAnimalsPage() {
 
   const fetchAnimals = async () => {
     try {
-      const response = await api.get('/animals?limit=100');
+      const response = await api.get('/animals/?limit=100');
       
       // Verificar si la respuesta es un error
       if (response.data && typeof response.data === 'object' && 'detail' in response.data) {

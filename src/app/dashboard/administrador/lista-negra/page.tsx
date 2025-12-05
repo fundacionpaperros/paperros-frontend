@@ -24,7 +24,7 @@ export default function BlacklistPage() {
 
   const fetchBlacklist = async () => {
     try {
-      const response = await api.get('/blacklist?limit=100');
+      const response = await api.get('/blacklist/?limit=100');
       setEntries(response.data);
     } catch (error) {
       console.error('Error loading blacklist:', error);

@@ -27,7 +27,7 @@ export default function AdoptersPage() {
 
   const fetchAdopters = async () => {
     try {
-      const response = await api.get('/adopters?limit=100');
+      const response = await api.get('/adopters/?limit=100');
       setAdopters(response.data);
     } catch (error) {
       console.error('Error loading adopters:', error);

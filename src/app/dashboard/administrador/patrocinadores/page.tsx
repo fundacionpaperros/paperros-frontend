@@ -24,7 +24,7 @@ export default function SponsorsPage() {
 
   const fetchSponsors = async () => {
     try {
-      const response = await api.get('/sponsors?limit=100');
+      const response = await api.get('/sponsors/?limit=100');
       setSponsors(response.data);
     } catch {
       console.error('Error loading sponsors');

@@ -51,7 +51,7 @@ export default function SheltersPage() {
 
   const fetchShelters = async () => {
     try {
-      const response = await api.get<Shelter[]>('/shelters?limit=100');
+      const response = await api.get<Shelter[]>('/shelters/?limit=100');
       setShelters(response.data);
     } catch (error) {
       console.error('Error loading shelters:', error);

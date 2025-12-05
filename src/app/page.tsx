@@ -53,7 +53,7 @@ export default function Home() {
     }
 
     try {
-      const response = await api.get('/events?active_only=true&limit=100');
+      const response = await api.get('/events/?active_only=true&limit=100');
       
       // Filter out past events
       const now = new Date();

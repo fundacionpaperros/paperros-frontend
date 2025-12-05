@@ -32,7 +32,7 @@ export function DynamicSponsors() {
     }
 
     try {
-      const response = await api.get('/sponsors?active_only=true&limit=100');
+      const response = await api.get('/sponsors/?active_only=true&limit=100');
       const sorted = response.data.sort((a: Sponsor, b: Sponsor) => a.orden - b.orden);
       setSponsors(sorted);
     } catch (error) {

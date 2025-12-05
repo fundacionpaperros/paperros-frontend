@@ -64,7 +64,7 @@ export default function AdoptionDetailPage() {
       const [adoptionRes, appointmentsRes, visitsRes] = await Promise.all([
         api.get(`/adoption-process/adoptions/${adoptionId}`),
         api.get(`/adoption-process/adoptions/${adoptionId}/appointments`).catch(() => ({ data: [] })),
-        api.get(`/follow-up?adopcion_id=${adoptionId}`).catch(() => ({ data: [] })),
+        api.get(`/follow-up/?adopcion_id=${adoptionId}`).catch(() => ({ data: [] })),
       ]);
       setAdoption(adoptionRes.data);
       setSelectedEstado(adoptionRes.data.estado);
