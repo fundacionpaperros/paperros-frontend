@@ -47,7 +47,7 @@ export default function NewEventPage() {
       // Mostrar preview si hay imagen
       if (event.imagen_url) {
         setPreviewUrl(event.imagen_url.startsWith('/static/') 
-          ? `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8000'}${event.imagen_url}`
+          ? `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'https://api.fundacionpaperros.com'}${event.imagen_url}`
           : event.imagen_url);
       }
     } catch (error) {

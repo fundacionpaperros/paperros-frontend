@@ -133,7 +133,7 @@ export default function ConfirmacionPage() {
     if (!imageUrl) return '';
     
     if (imageUrl.startsWith('/static/')) {
-      const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8000';
+      const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'https://api.fundacionpaperros.com';
       return `${backendUrl}${imageUrl}`;
     }
     
@@ -141,7 +141,7 @@ export default function ConfirmacionPage() {
       return imageUrl;
     }
     
-    return `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8000'}${imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl}`;
+    return `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'https://api.fundacionpaperros.com'}${imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl}`;
   };
 
   const formatDate = (dateString: string | Date) => {

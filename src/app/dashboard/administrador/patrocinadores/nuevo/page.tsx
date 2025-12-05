@@ -50,7 +50,7 @@ export default function NewSponsorPage() {
       // Mostrar preview si hay logo
       if (sponsor.logo_url) {
         setPreviewUrl(sponsor.logo_url.startsWith('/static/') 
-          ? `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8000'}${sponsor.logo_url}`
+          ? `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'https://api.fundacionpaperros.com'}${sponsor.logo_url}`
           : sponsor.logo_url);
       }
     } catch (error) {

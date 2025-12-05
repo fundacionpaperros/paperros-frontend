@@ -77,7 +77,7 @@ export default function NewAnimalPage() {
       // Mostrar preview si hay foto
       if (response.data.foto_url) {
         setPreviewUrl(response.data.foto_url.startsWith('/static/') 
-          ? `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8000'}${response.data.foto_url}`
+          ? `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'https://api.fundacionpaperros.com'}${response.data.foto_url}`
           : response.data.foto_url);
       }
     } catch (error) {

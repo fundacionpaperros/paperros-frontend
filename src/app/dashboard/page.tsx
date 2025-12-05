@@ -233,7 +233,7 @@ export default function DashboardPage() {
                             <span key={animal.id || idx} className="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
                               {animal.foto_url && (
                                 <img
-                                  src={animal.foto_url.startsWith('http') ? animal.foto_url : `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8000'}${animal.foto_url.startsWith('/') ? animal.foto_url : '/' + animal.foto_url}`}
+                                  src={animal.foto_url.startsWith('http') ? animal.foto_url : `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'https://api.fundacionpaperros.com'}${animal.foto_url.startsWith('/') ? animal.foto_url : '/' + animal.foto_url}`}
                                   alt={animal.nombre}
                                   className="w-6 h-6 rounded-full object-cover"
                                 />

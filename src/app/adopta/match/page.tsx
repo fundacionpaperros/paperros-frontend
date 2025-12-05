@@ -163,7 +163,7 @@ export default function MatchPage() {
     
     // Si la URL empieza con /static/, construir la URL completa del backend
     if (imageUrl.startsWith('/static/')) {
-      const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8000';
+      const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'https://api.fundacionpaperros.com';
       return `${backendUrl}${imageUrl}`;
     }
     
@@ -173,7 +173,7 @@ export default function MatchPage() {
     }
     
     // Si es una ruta relativa que no empieza con /static/, asumir que es del backend
-    return `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8000'}${imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl}`;
+    return `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'https://api.fundacionpaperros.com'}${imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl}`;
   };
 
   if (showAnimation || loading) {

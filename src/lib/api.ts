@@ -68,7 +68,7 @@ api.interceptors.response.use(
 export const checkApiAvailability = async (): Promise<boolean> => {
   try {
     // Health endpoint is at root, not under /api
-    const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://18.116.45.107:8000/api';
+    const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.fundacionpaperros.com/api';
     const healthURL = baseURL.replace('/api', '') + '/health';
     const response = await axios.get(healthURL, { timeout: 3000 });
     return response.status === 200;

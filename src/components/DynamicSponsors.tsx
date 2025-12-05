@@ -73,7 +73,7 @@ export function DynamicSponsors() {
     
     // Si la URL empieza con /static/, construir la URL completa del backend
     if (logoUrl.startsWith('/static/')) {
-      const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8000';
+      const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'https://api.fundacionpaperros.com';
       return `${backendUrl}${logoUrl}`;
     }
     
@@ -83,7 +83,7 @@ export function DynamicSponsors() {
     }
     
     // Si es una ruta relativa que no empieza con /static/, asumir que es del backend
-    return `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8000'}${logoUrl.startsWith('/') ? logoUrl : '/' + logoUrl}`;
+    return `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'https://api.fundacionpaperros.com'}${logoUrl.startsWith('/') ? logoUrl : '/' + logoUrl}`;
   };
 
   return (
