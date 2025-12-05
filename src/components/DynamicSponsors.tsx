@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { SponsorSkeleton } from './SkeletonLoader';
-import api, { checkApiAvailability } from '@/lib/api';
+import api from '@/lib/api';
 
 interface Sponsor {
   id: number;
@@ -23,20 +23,14 @@ export function DynamicSponsors() {
   }, []);
 
   const loadSponsors = async () => {
-    const available = await checkApiAvailability();
-    setApiAvailable(available);
-    
-    if (!available) {
-      setLoading(false);
-      return;
-    }
-
     try {
       const response = await api.get('/sponsors/?active_only=true&limit=100');
       const sorted = response.data.sort((a: Sponsor, b: Sponsor) => a.orden - b.orden);
       setSponsors(sorted);
+      setApiAvailable(true);
     } catch (error) {
       console.error('Error loading sponsors:', error);
+      setApiAvailable(false);
     } finally {
       setLoading(false);
     }
