@@ -24,6 +24,7 @@ export interface User {
   rol: 'admin' | 'albergue' | 'adoptante' | 'fundacion';
   activo: boolean;
   email_verificado: boolean;
+  created_at?: string;
 }
 
 export interface TokenResponse {
@@ -126,7 +127,7 @@ export const authService = {
       // Intentar obtener el usuario actual - si el token es válido, esto funcionará
       await authService.getCurrentUser();
       return true;
-    } catch (error) {
+    } catch {
       // Si hay error (401, 403, etc.), el token es inválido o expiró
       auth.removeToken();
       return false;

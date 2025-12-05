@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { auth, authService } from '@/lib/auth';
+import { authService } from '@/lib/auth';
 import api from '@/lib/api';
 import { ApiErrorResponse } from '@/lib/types';
 

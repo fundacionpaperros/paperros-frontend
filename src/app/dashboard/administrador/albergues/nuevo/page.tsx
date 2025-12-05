@@ -33,6 +33,27 @@ export default function NewShelterPage() {
     activo: true,
   });
 
+  const loadShelter = useCallback(async () => {
+    if (!shelterId) return;
+    try {
+      const response = await api.get(`/shelters/${shelterId}`);
+      setFormData({
+        nombre: response.data.nombre,
+        direccion: response.data.direccion,
+        telefono: response.data.telefono,
+        email: response.data.email,
+        password: '', // No cargar la contraseña
+        nombre_usuario: response.data.usuario_nombre || '',
+        activo: response.data.activo,
+      });
+    } catch (error) {
+      console.error('Error loading shelter:', error);
+      alert('Error al cargar el albergue');
+    } finally {
+      setLoading(false);
+    }
+  }, [shelterId]);
+
   useEffect(() => {
     const checkAuth = async () => {
       const authenticated = await authService.validateSession();
@@ -58,28 +79,7 @@ export default function NewShelterPage() {
     };
 
     checkAuth();
-  }, [router, shelterId]);
-
-  const loadShelter = useCallback(async () => {
-    if (!shelterId) return;
-    try {
-      const response = await api.get(`/shelters/${shelterId}`);
-      setFormData({
-        nombre: response.data.nombre,
-        direccion: response.data.direccion,
-        telefono: response.data.telefono,
-        email: response.data.email,
-        password: '', // No cargar la contraseña
-        nombre_usuario: response.data.usuario_nombre || '',
-        activo: response.data.activo,
-      });
-    } catch (error) {
-      console.error('Error loading shelter:', error);
-      alert('Error al cargar el albergue');
-    } finally {
-      setLoading(false);
-    }
-  }, [shelterId]);
+  }, [router, shelterId, loadShelter]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -97,7 +97,14 @@ export default function NewShelterPage() {
     try {
       if (shelterId) {
         // Para editar, solo enviar los campos que se pueden actualizar
-        const updateData: any = {
+        const updateData: {
+          nombre: string;
+          direccion: string;
+          telefono: string;
+          email: string;
+          activo: boolean;
+          password?: string;
+        } = {
           nombre: formData.nombre,
           direccion: formData.direccion,
           telefono: formData.telefono,

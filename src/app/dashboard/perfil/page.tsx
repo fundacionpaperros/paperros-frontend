@@ -189,11 +189,11 @@ export default function ProfilePage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de Registro</label>
             <p className="text-gray-900">
-              {new Date(user.created_at).toLocaleDateString('es-ES', {
+              {user.created_at ? new Date(user.created_at).toLocaleDateString('es-ES', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
-              })}
+              }) : 'No disponible'}
             </p>
           </div>
         </div>

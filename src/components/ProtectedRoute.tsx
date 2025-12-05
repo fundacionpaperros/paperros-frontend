@@ -5,13 +5,6 @@ import { useRouter, usePathname } from 'next/navigation';
 import { authService, auth } from '@/lib/auth';
 import { canAccessRoute } from '@/lib/routes';
 
-interface User {
-  id: number;
-  nombre: string;
-  email: string;
-  rol: 'admin' | 'fundacion' | 'albergue' | 'adoptante';
-}
-
 interface ProtectedRouteProps {
   children: ReactNode;
   allowedRoles?: ('admin' | 'fundacion' | 'albergue')[];
