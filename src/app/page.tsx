@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { EventSkeleton } from '@/components/SkeletonLoader';
-import api, { checkApiAvailability } from '@/lib/api';
+import api from '@/lib/api';
 
 interface ApiEvent {
   id: number;
@@ -44,14 +44,6 @@ export default function Home() {
   ];
 
   const loadEvents = async () => {
-    const available = await checkApiAvailability();
-    setApiAvailable(available);
-    
-    if (!available) {
-      setLoadingEvents(false);
-      return;
-    }
-
     try {
       const response = await api.get('/events/?active_only=true&limit=100');
       
@@ -68,8 +60,10 @@ export default function Home() {
       });
 
       setApiEvents(upcomingEvents);
+      setApiAvailable(true);
     } catch (error) {
       console.error('Error loading events:', error);
+      setApiAvailable(false);
     } finally {
       setLoadingEvents(false);
     }
