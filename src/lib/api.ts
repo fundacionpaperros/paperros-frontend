@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios';
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://18.116.45.107:8000/api',
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.fundacionpaperros.com/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
