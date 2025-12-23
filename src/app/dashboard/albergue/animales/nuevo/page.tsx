@@ -50,13 +50,11 @@ export default function NewAnimalPage() {
 
   const loadMyShelter = useCallback(async () => {
     try {
-      // Get shelter associated with user
-      // This would need a specific endpoint, for now we'll use a workaround
-      await api.get('/auth/me'); // Verificar autenticación pero no usar el resultado
-      const animalsRes = await api.get('/animals/?limit=1');
-      if (animalsRes.data.length > 0) {
-        setMyShelterId(animalsRes.data[0].albergue_id);
-        setFormData(prev => ({ ...prev, albergue_id: animalsRes.data[0].albergue_id }));
+      // Get shelter associated with current user
+      const shelterRes = await api.get('/shelters/me');
+      if (shelterRes.data && shelterRes.data.id) {
+        setMyShelterId(shelterRes.data.id);
+        setFormData(prev => ({ ...prev, albergue_id: shelterRes.data.id }));
       }
     } catch (error) {
       console.error('Error loading shelter:', error);
