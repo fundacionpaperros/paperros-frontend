@@ -88,11 +88,11 @@ const Footer = () => {
             <h4 className="text-lg font-semibold mb-6 text-primary">Enlaces Rápidos</h4>
             <ul className="space-y-3">
               <li><Link href="/" className="text-primary/80 hover:text-accent-orange transition-colors duration-200 block">Inicio</Link></li>
-              <li><Link href="/la-manada/nuestra-historia" className="text-primary/80 hover:text-accent-orange transition-colors duration-200 block">Nuestra Historia</Link></li>
+              <li><Link href="/la-manada" className="text-primary/80 hover:text-accent-orange transition-colors duration-200 block">Nuestra Historia</Link></li>
               <li><Link href="/adopta" className="text-primary/80 hover:text-accent-orange transition-colors duration-200 block">Adopta</Link></li>
-              <li><Link href="/dona" className="text-primary/80 hover:text-accent-orange transition-colors duration-200 block">Dona</Link></li>
-              <li><Link href="/contacto/escribenos" className="text-primary/80 hover:text-accent-orange transition-colors duration-200 block">Contáctanos</Link></li>
-              <li><Link href="/politica-tratamiento-datos" className="text-primary/80 hover:text-accent-orange transition-colors duration-200 block">Política de Tratamiento de Datos</Link></li>
+              <li><Link href="/dona" className="text-primary/80 hover:text-accent-orange transition-colors duration-200 block">Plan Padrino</Link></li>
+              <li><Link href="/contacto" className="text-primary/80 hover:text-accent-orange transition-colors duration-200 block">Contáctanos</Link></li>
+              <li><Link href="/politica-privacidad" className="text-primary hover:text-accent-orange transition-colors duration-200 block">Política de Privacidad</Link></li>
             </ul>
           </div>
           
@@ -110,8 +110,9 @@ const Footer = () => {
               <div className="flex items-start space-x-3">
                 <span className="text-accent-orange mt-1">📞</span>
                 <div>
-                  <p className="font-medium text-primary">Teléfono</p>
-                  <p className="text-sm text-primary/70">+57 (1) 234-5678</p>
+                  <p className="font-medium text-primary">Teléfonos</p>
+                  <p className="text-sm text-primary/70">+573206889919</p>
+                  <p className="text-sm text-primary/70">+573022356602</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
@@ -133,7 +134,7 @@ const Footer = () => {
               &copy; {currentYear} Fundación Pa&apos; Perros. Todos los derechos reservados.
             </p>
             <div className="flex flex-col md:flex-row items-center gap-4">
-              <Link href="/politica-tratamiento-datos" className="text-primary/60 hover:text-accent-orange text-sm transition-colors duration-200">
+              <Link href="/politica-privacidad" className="text-primary hover:text-accent-orange text-sm transition-colors duration-200">
                 Política de Tratamiento de Datos
               </Link>
               <p className="text-primary/60 text-sm">

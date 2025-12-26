@@ -327,7 +327,7 @@ export default function RegisterPage() {
               <label htmlFor="aceptaPolitica" className="text-sm text-gray-700">
                 Acepto la{' '}
                 <Link 
-                  href="/politica-tratamiento-datos" 
+                  href="/politica-privacidad" 
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:underline font-medium"

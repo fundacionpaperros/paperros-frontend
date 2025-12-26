@@ -1,221 +1,116 @@
-export default function Dona() {
+import Link from 'next/link';
+
+export default function PlanPadrino() {
   return (
     <div className="bg-secondary">
-      {/* Hero Section */}
-      <section className="bg-primary text-secondary py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Dona
-            </h1>
-            <p className="text-xl text-secondary/80 max-w-3xl mx-auto">
-              Se puede crear un enlace directo a los bancos
-            </p>
-          </div>
+      {/* Hero minimalista */}
+      <section className="py-12 bg-secondary">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
+            Plan Padrino
+          </h1>
+          <p className="text-lg text-primary max-w-2xl mx-auto">
+            Conviértete en padrino y ayuda a transformar vidas
+          </p>
+          <div className="w-16 h-1 bg-accent-orange mx-auto mt-6"></div>
         </div>
       </section>
 
-      {/* Main Content */}
-      <section className="py-20 bg-secondary">
+      {/* Contenido principal */}
+      <section className="pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+          
+          {/* Grid principal */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            
+            {/* Información del plan */}
+            <div className="bg-primary rounded-3xl p-6 md:p-8 shadow-xl">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 bg-accent-orange rounded-2xl flex items-center justify-center">
+                  <span className="text-3xl">💝</span>
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-secondary">¿Por qué ser padrino?</h2>
+                  <p className="text-secondary">Tu apoyo hace la diferencia</p>
+                </div>
+              </div>
+              
+              <p className="text-secondary mb-6">
+                El Plan Padrino es un programa de apoyo mensual que nos permite planificar y ejecutar 
+                nuestros programas de rescate, rehabilitación y adopción de manera sostenible.
+              </p>
+              
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center gap-3 bg-[#FFE9D2]/20 rounded-xl p-3">
+                  <span className="text-accent-orange text-xl">✓</span>
+                  <span className="text-secondary">Impacto sostenible y duradero</span>
+                </div>
+                <div className="flex items-center gap-3 bg-[#FFE9D2]/20 rounded-xl p-3">
+                  <span className="text-accent-orange text-xl">✓</span>
+                  <span className="text-secondary">Reportes mensuales de tu aporte</span>
+                </div>
+                <div className="flex items-center gap-3 bg-[#FFE9D2]/20 rounded-xl p-3">
+                  <span className="text-accent-orange text-xl">✓</span>
+                  <span className="text-secondary">Conexión directa con la fundación</span>
+                </div>
+              </div>
+              
+              <a 
+                href="https://forms.gle/6onYHCNfDXGtxtEQ6" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="bg-accent-orange text-secondary px-6 py-3 rounded-xl font-semibold hover:bg-[#FB7B53]/90 transition-colors duration-200 inline-block w-full text-center"
+              >
+                Quiero ser Padrino
+              </a>
+            </div>
+
+            {/* Cuentas bancarias */}
             <div className="space-y-6">
-              <h2 className="text-3xl md:text-4xl font-bold text-primary">
-                Tu Donación Hace la Diferencia
-              </h2>
-              <p className="text-lg text-primary/80 leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-              </p>
-              <p className="text-lg text-primary/80 leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-              </p>
-            </div>
-            <div className="relative">
-              <div className="relative w-full h-96">
-                <div className="absolute inset-0 bg-accent-orange rounded-2xl flex items-center justify-center">
-                  <span className="text-6xl">💝</span>
+              {/* Bancolombia */}
+              <div className="bg-primary rounded-3xl p-6 shadow-xl">
+                <h3 className="text-xl font-bold text-secondary mb-4">Bancolombia</h3>
+                <div className="bg-[#FFE9D2]/20 rounded-xl p-4 mb-3">
+                  <p className="text-secondary text-sm mb-1">Número de cuenta:</p>
+                  <p className="font-bold text-2xl text-secondary">70600002371</p>
+                </div>
+                <div className="text-secondary text-sm space-y-1">
+                  <p>Tipo: Cuenta de Ahorros</p>
+                  <p>A nombre de: FUNDACIÓN PA PERROS</p>
+                  <p>NIT: 901871359-3</p>
+                </div>
+              </div>
+
+              {/* Davivienda */}
+              <div className="bg-primary rounded-3xl p-6 shadow-xl">
+                <h3 className="text-xl font-bold text-secondary mb-4">Davivienda</h3>
+                <div className="bg-[#FFE9D2]/20 rounded-xl p-4 mb-3">
+                  <p className="text-secondary text-sm mb-1">Número de cuenta:</p>
+                  <p className="font-bold text-2xl text-secondary">084500098383</p>
+                </div>
+                <div className="text-secondary text-sm space-y-1">
+                  <p>Tipo: Cuenta de Ahorros</p>
+                  <p>A nombre de: FUNDACIÓN PA PERROS</p>
+                  <p>NIT: 901871359-3</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Donation Methods */}
-          <div className="mb-16">
-            <h3 className="text-2xl font-bold text-primary mb-8 text-center">
-              Formas de Donar
+          {/* CTA Final */}
+          <div className="bg-accent-orange rounded-3xl p-8 text-center shadow-xl">
+            <h3 className="text-2xl font-bold text-secondary mb-4">
+              ¿Tienes preguntas sobre el Plan Padrino?
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Bank Transfer */}
-              <div className="bg-white rounded-2xl p-8 shadow-lg">
-                <h4 className="text-xl font-bold text-primary mb-4">Transferencia Bancaria</h4>
-                <div className="space-y-3">
-                  <div className="bg-accent-orange/10 p-4 rounded-lg">
-                    <p className="font-semibold text-primary">Banco: Lorem Ipsum</p>
-                    <p className="text-primary/80">Cuenta: Lorem Ipsum</p>
-                    <p className="text-primary/80">A nombre de: Lorem Ipsum</p>
-                    <p className="text-primary/80">NIT: Lorem Ipsum</p>
-                  </div>
-                </div>
-                <button className="w-full mt-4 bg-accent-orange text-white py-2 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200">
-                  Copiar Datos
-                </button>
-              </div>
-
-              {/* Mobile Payment */}
-              <div className="bg-white rounded-2xl p-8 shadow-lg">
-                <h4 className="text-xl font-bold text-primary mb-4">Pago Móvil</h4>
-                <div className="space-y-3">
-                  <div className="bg-accent-blue/10 p-4 rounded-lg">
-                    <p className="font-semibold text-primary">Número: Lorem Ipsum</p>
-                    <p className="text-primary/80">Referencia: Lorem Ipsum</p>
-                    <p className="text-primary/80">Cédula: Lorem Ipsum</p>
-                  </div>
-                </div>
-                <button className="w-full mt-4 bg-accent-blue text-white py-2 rounded-lg font-semibold hover:bg-accent-blue/90 transition-colors duration-200">
-                  Ver Instrucciones
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Impact of Donations */}
-          <div className="mb-16">
-            <h3 className="text-2xl font-bold text-primary mb-8 text-center">
-              Impacto de tus Donaciones
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="bg-accent-orange/10 rounded-2xl p-8 text-center">
-                <div className="w-16 h-16 bg-accent-orange rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl">✂️</span>
-                </div>
-                <h4 className="text-2xl font-bold text-accent-orange mb-2">Lorem</h4>
-                <p className="text-primary font-semibold">Lorem Ipsum</p>
-                <p className="text-primary/80 text-sm mt-2">Lorem ipsum dolor sit amet</p>
-              </div>
-
-              <div className="bg-accent-blue/10 rounded-2xl p-8 text-center">
-                <div className="w-16 h-16 bg-accent-blue rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl">🏥</span>
-                </div>
-                <h4 className="text-2xl font-bold text-accent-blue mb-2">Lorem</h4>
-                <p className="text-primary font-semibold">Lorem Ipsum</p>
-                <p className="text-primary/80 text-sm mt-2">Lorem ipsum dolor sit amet</p>
-              </div>
-
-              <div className="bg-accent-green/10 rounded-2xl p-8 text-center">
-                <div className="w-16 h-16 bg-accent-green rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl">🍖</span>
-                </div>
-                <h4 className="text-2xl font-bold text-accent-green mb-2">Lorem</h4>
-                <p className="text-primary font-semibold">Lorem Ipsum</p>
-                <p className="text-primary/80 text-sm mt-2">Lorem ipsum dolor sit amet</p>
-              </div>
-
-              <div className="bg-accent-orange/10 rounded-2xl p-8 text-center">
-                <div className="w-16 h-16 bg-accent-orange rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl">📚</span>
-                </div>
-                <h4 className="text-2xl font-bold text-accent-orange mb-2">Lorem</h4>
-                <p className="text-primary font-semibold">Lorem Ipsum</p>
-                <p className="text-primary/80 text-sm mt-2">Lorem ipsum dolor sit amet</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Monthly Donation */}
-          <div className="mb-16">
-            <h3 className="text-2xl font-bold text-primary mb-8 text-center">
-              Donación Mensual
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
-                <h4 className="text-xl font-bold text-primary mb-4">Lorem Ipsum</h4>
-                <div className="text-3xl font-bold text-accent-orange mb-4">Lorem</div>
-                <p className="text-primary/80 text-sm mb-6">Lorem ipsum</p>
-                <ul className="space-y-2 text-left mb-6">
-                  <li className="flex items-center space-x-2">
-                    <span className="text-accent-orange">✓</span>
-                    <span className="text-primary/80 text-sm">Lorem ipsum dolor sit amet</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <span className="text-accent-orange">✓</span>
-                    <span className="text-primary/80 text-sm">Lorem ipsum dolor sit amet</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <span className="text-accent-orange">✓</span>
-                    <span className="text-primary/80 text-sm">Lorem ipsum dolor sit amet</span>
-                  </li>
-                </ul>
-                <button className="w-full bg-accent-orange text-white py-2 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200">
-                  Lorem Ipsum
-                </button>
-              </div>
-
-              <div className="bg-white rounded-2xl p-8 shadow-lg text-center border-2 border-accent-blue">
-                <div className="bg-accent-blue text-white px-3 py-1 rounded-full text-sm font-semibold mb-4 inline-block">
-                  Lorem Ipsum
-                </div>
-                <h4 className="text-xl font-bold text-primary mb-4">Lorem Ipsum</h4>
-                <div className="text-3xl font-bold text-accent-blue mb-4">Lorem</div>
-                <p className="text-primary/80 text-sm mb-6">Lorem ipsum</p>
-                <ul className="space-y-2 text-left mb-6">
-                  <li className="flex items-center space-x-2">
-                    <span className="text-accent-blue">✓</span>
-                    <span className="text-primary/80 text-sm">Lorem ipsum dolor sit amet</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <span className="text-accent-blue">✓</span>
-                    <span className="text-primary/80 text-sm">Lorem ipsum dolor sit amet</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <span className="text-accent-blue">✓</span>
-                    <span className="text-primary/80 text-sm">Lorem ipsum dolor sit amet</span>
-                  </li>
-                </ul>
-                <button className="w-full bg-accent-blue text-white py-2 rounded-lg font-semibold hover:bg-accent-blue/90 transition-colors duration-200">
-                  Lorem Ipsum
-                </button>
-              </div>
-
-              <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
-                <h4 className="text-xl font-bold text-primary mb-4">Lorem Ipsum</h4>
-                <div className="text-3xl font-bold text-accent-green mb-4">Lorem</div>
-                <p className="text-primary/80 text-sm mb-6">Lorem ipsum</p>
-                <ul className="space-y-2 text-left mb-6">
-                  <li className="flex items-center space-x-2">
-                    <span className="text-accent-green">✓</span>
-                    <span className="text-primary/80 text-sm">Lorem ipsum dolor sit amet</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <span className="text-accent-green">✓</span>
-                    <span className="text-primary/80 text-sm">Lorem ipsum dolor sit amet</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <span className="text-accent-green">✓</span>
-                    <span className="text-primary/80 text-sm">Lorem ipsum dolor sit amet</span>
-                  </li>
-                </ul>
-                <button className="w-full bg-accent-green text-white py-2 rounded-lg font-semibold hover:bg-accent-green/90 transition-colors duration-200">
-                  Lorem Ipsum
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* CTA Section */}
-          <div className="bg-primary text-secondary rounded-2xl p-8 text-center">
-            <h3 className="text-2xl font-bold mb-4">
-              ¿Tienes preguntas sobre las donaciones?
-            </h3>
-            <p className="text-secondary/80 mb-6 max-w-2xl mx-auto">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
+            <p className="text-secondary mb-6 max-w-2xl mx-auto">
+              Estamos aquí para resolver todas tus dudas sobre cómo ser padrino y el impacto de tu aporte.
             </p>
-            <a 
-              href="/contacto/escribenos"
-              className="bg-accent-orange text-white px-8 py-4 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200 inline-block"
+            <Link 
+              href="/contacto"
+              className="bg-primary text-secondary px-8 py-4 rounded-xl font-semibold hover:bg-[#01778D]/90 transition-colors duration-200 inline-block"
             >
-              Contactar
-            </a>
+              Contáctanos
+            </Link>
           </div>
         </div>
       </section>

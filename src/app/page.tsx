@@ -1,9 +1,62 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { EventSkeleton } from '@/components/SkeletonLoader';
 import api from '@/lib/api';
+
+// Hook para animar contadores cuando son visibles
+function useCounterAnimation(targetValue: number, duration: number = 2000) {
+  const [count, setCount] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+          let startTime: number;
+          const animate = (currentTime: number) => {
+            if (!startTime) startTime = currentTime;
+            const progress = Math.min((currentTime - startTime) / duration, 1);
+            setCount(Math.floor(progress * targetValue));
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            }
+          };
+          requestAnimationFrame(animate);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => observer.disconnect();
+  }, [targetValue, duration, hasAnimated]);
+
+  return { count, ref };
+}
+
+// Componente para cada stat con contador
+function AnimatedStat({ value, label, description, icon }: { value: number; label: string; description: string; icon: string }) {
+  const { count, ref } = useCounterAnimation(value);
+  const prefix = value >= 10 ? '+' : '';
+  
+  return (
+    <div ref={ref} className="bg-white rounded-2xl p-6 shadow-lg text-center hover:shadow-xl transition-shadow duration-300">
+      <div className="w-16 h-16 bg-accent-orange/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+        <span className="text-2xl">{icon}</span>
+      </div>
+      <h3 className="text-3xl font-bold text-accent-orange mb-2">{prefix}{count.toLocaleString()}</h3>
+      <h4 className="text-lg font-semibold text-primary mb-2">{label}</h4>
+      <p className="text-primary/70 text-sm">{description}</p>
+    </div>
+  );
+}
 
 interface ApiEvent {
   id: number;
@@ -108,22 +161,8 @@ export default function Home() {
     ? fallbackEvents 
     : events;
 
-  // Auto-advance carousel - responsive behavior
-  const [isMobile, setIsMobile] = useState(false);
-  
-  // Check if mobile on mount and resize
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768); // md breakpoint
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // Calculate max slides based on screen size
-  const maxSlides = loadingEvents ? 0 : (isMobile ? finalEvents.length : finalEvents.length - 1); // 1 on mobile, 2 on desktop
+  // Calculate max slides - always show 1 image at a time
+  const maxSlides = loadingEvents ? 0 : finalEvents.length;
   
   useEffect(() => {
     if (maxSlides === 0) return;
@@ -174,7 +213,7 @@ export default function Home() {
                   Adoptar Ahora
                 </Link>
                 <Link 
-                  href="/la-manada/nuestra-historia"
+                  href="/la-manada"
                   className="border-2 border-primary text-primary px-8 py-4 rounded-lg font-semibold hover:bg-primary hover:text-secondary transition-colors duration-200 text-center cursor-pointer"
                 >
                   Conoce Nuestra Historia
@@ -221,29 +260,30 @@ export default function Home() {
           {/* Carousel Container */}
           <div className="relative">
             {loadingEvents ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <EventSkeleton />
-                <EventSkeleton />
+              <div className="flex justify-center">
+                <div className="max-w-4xl w-full">
+                  <EventSkeleton />
+                </div>
               </div>
             ) : (
               <>
-                {/* Main Carousel */}
+                {/* Main Carousel - Single large centered image */}
                 <div className="overflow-hidden rounded-2xl">
                   <div 
                     className="flex transition-transform duration-500 ease-in-out"
                     style={{ 
-                      transform: `translateX(-${currentSlide * (isMobile ? 100 : 50)}%)` 
+                      transform: `translateX(-${currentSlide * 100}%)` 
                     }}
                   >
                     {finalEvents.map((event) => (
-                      <div key={event.id} className={`${isMobile ? 'w-full' : 'w-1/2'} flex-shrink-0 p-1`}>
-                        <div className="bg-secondary rounded-2xl p-1 shadow-lg hover:shadow-xl h-full border-2 border-accent-orange hover:border-accent-blue transition-all duration-300">
-                          <div className="relative w-full h-96 rounded-xl overflow-hidden flex items-center justify-center">
+                      <div key={event.id} className="w-full flex-shrink-0 px-4">
+                        <div className="bg-secondary rounded-2xl p-2 shadow-xl hover:shadow-2xl border-2 border-accent-orange hover:border-accent-blue transition-all duration-300 max-w-5xl mx-auto">
+                          <div className="relative w-full h-[500px] md:h-[600px] lg:h-[650px] rounded-xl overflow-hidden flex items-center justify-center bg-white">
                             {event.image && event.image.trim() !== '' ? (
                               <img
                                 src={event.image}
                                 alt={event.alt}
-                                className="object-contain rounded-lg w-full h-full"
+                                className="object-contain w-full h-full"
                               />
                             ) : null}
                           </div>
@@ -260,7 +300,7 @@ export default function Home() {
               <>
                 <button
                   onClick={prevSlide}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-secondary/90 hover:bg-secondary text-primary p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 z-10"
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-[#F5E6D3] hover:bg-accent-orange text-primary hover:text-white p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 z-10 cursor-pointer"
                   aria-label="Evento anterior"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -270,7 +310,7 @@ export default function Home() {
                 
                 <button
                   onClick={nextSlide}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-secondary/90 hover:bg-secondary text-primary p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 z-10"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-[#F5E6D3] hover:bg-accent-orange text-primary hover:text-white p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 z-10 cursor-pointer"
                   aria-label="Siguiente evento"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -288,10 +328,10 @@ export default function Home() {
                 <button
                   key={index}
                   onClick={() => setCurrentSlide(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                  className={`w-3 h-3 rounded-full transition-all duration-200 cursor-pointer ${
                     index === currentSlide 
                       ? 'bg-accent-orange scale-125' 
-                      : 'bg-secondary/50 hover:bg-secondary/70'
+                      : 'bg-[#F5E6D3] hover:bg-accent-orange/50'
                   }`}
                   aria-label={`Ir al slide ${index + 1}`}
                 />
@@ -302,87 +342,154 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Historias Felices Section - Reorganizada */}
-      <section className="py-20 bg-secondary text-primary">
+      {/* Impacto en Números Section */}
+      <section className="py-20 bg-secondary">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-primary mb-6">
+              Nuestro Impacto en Números
+            </h2>
+            <p className="text-xl text-primary/80 max-w-3xl mx-auto">
+              Cada cifra representa vidas transformadas y comunidades más conscientes
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <AnimatedStat value={200} label="Mascotas Esterilizadas" description="Prevención de sobrepoblación" icon="✂️" />
+            <AnimatedStat value={500} label="Animales Desparasitados" description="Cuidado preventivo" icon="💊" />
+            <AnimatedStat value={1500} label="Niños en Charlas" description="Tenencia responsable en escuelas" icon="👨‍👩‍👧‍👦" />
+            <AnimatedStat value={300} label="Policías Capacitados" description="Normativa de bienestar animal" icon="👮‍♂️" />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <AnimatedStat value={50} label="Emprendimientos Apoyados" description="Sector de mascotas" icon="💼" />
+            <AnimatedStat value={30} label="Campañas Realizadas" description="Tenencia responsable" icon="🏢" />
+            <AnimatedStat value={3} label="Convenios Universitarios" description="Educación tecnológica" icon="🎓" />
+            <AnimatedStat value={5} label="Estudiantes UAM" description="Paz y Competitividad" icon="📚" />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <AnimatedStat value={290} label="Kg de Alimento Donado" description="A albergues y fundaciones" icon="🍖" />
+            <AnimatedStat value={50} label="Mascotas en Adopción" description="Entregadas a familias" icon="🏠" />
+            <AnimatedStat value={10} label="Adopciones Acompañadas" description="Procesos responsables" icon="❤️" />
+            <AnimatedStat value={5} label="Casos Financiados" description="Atención especializada" icon="🏥" />
+          </div>
+          
+          <div className="bg-accent-orange/10 rounded-2xl p-6 text-center max-w-2xl mx-auto">
+            <p className="text-lg font-semibold text-primary">
+              <span className="text-accent-orange">Miembros de la Junta Defensora Animal de Manizales</span> desde julio de 2025
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Historias Felices Section - Diseño con imágenes grandes */}
+      <section className="py-20 bg-primary text-secondary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold mb-6">
               Historias Felices
             </h2>
-            <p className="text-xl text-primary/80 max-w-3xl mx-auto">
+            <p className="text-xl text-secondary/80 max-w-3xl mx-auto">
               Cada adopción exitosa es una historia de amor, esperanza y segundas oportunidades que nos inspira a seguir adelante
             </p>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Historia 1 - Max */}
-            <div className="bg-primary/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary/20 hover:bg-primary/20 transition-all duration-300 hover:scale-105 group">
-              <div className="mb-6">
-                <div className="w-24 h-24 bg-gradient-to-br from-accent-orange to-accent-orange/80 rounded-full mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg mb-4">
-                  <span className="text-3xl text-white">🐕</span>
-                </div>
-                <h3 className="text-2xl font-bold mb-3 text-accent-orange">Max</h3>
-              </div>
-              <p className="text-primary/90 leading-relaxed mb-6">
-                Max llegó a nosotros después de ser abandonado en la calle. Estaba desnutrido y asustado. 
-                Hoy es el compañero más fiel de la familia Rodríguez y el mejor amigo de sus dos hijos.
-              </p>
-              <div className="bg-accent-orange/20 rounded-lg p-4 border-l-4 border-accent-orange">
-                <p className="text-sm text-accent-orange font-semibold italic">
-                  &ldquo;Su transformación nos llena de orgullo y alegría cada día&rdquo;
+          <div className="space-y-12">
+            {/* Historia 1 - Samy y Perla Giraldo */}
+            <div className="relative rounded-3xl overflow-hidden group h-[400px] md:h-[500px]">
+              <img 
+                src="/Perla y Samy.jpeg" 
+                alt="Perla y Samy" 
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 p-8 md:p-12 max-w-xl">
+                <h3 className="text-2xl md:text-3xl font-bold mb-4 text-accent-orange">Samy y Perla Giraldo</h3>
+                <p className="text-secondary/90 leading-relaxed text-sm md:text-base mb-4">
+                  &ldquo;Samy llegó de Cartagena, luego de que su dueño le pegó un machetazo, y yo la conocí en la Fundación Huella Amiga. 
+                  Ella estaba en proceso de adopción, pero supongo que por la falta de su manito, no la adoptaron. 
+                  Entonces yo decidí adoptarla.&rdquo;
                 </p>
-                <p className="text-xs text-primary/70 mt-1">- Familia Rodríguez</p>
+                <div className="inline-block bg-accent-orange/30 backdrop-blur-sm rounded-lg px-4 py-2 border-l-4 border-accent-orange">
+                  <p className="text-sm text-secondary font-medium">- Perla Giraldo</p>
+                </div>
               </div>
             </div>
             
-            {/* Historia 2 - Luna */}
-            <div className="bg-primary/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary/20 hover:bg-primary/20 transition-all duration-300 hover:scale-105 group">
-              <div className="mb-6">
-                <div className="w-24 h-24 bg-gradient-to-br from-accent-blue to-accent-blue/80 rounded-full mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg mb-4">
-                  <span className="text-3xl text-white">🐱</span>
-                </div>
-                <h3 className="text-2xl font-bold mb-3 text-accent-blue">Luna</h3>
-              </div>
-              <p className="text-primary/90 leading-relaxed mb-6">
-                Luna era muy tímida cuando la rescatamos de un refugio. Le costaba confiar en las personas. 
-                Con paciencia y amor, se convirtió en la reina de la casa y la consentida de toda la familia.
-              </p>
-              <div className="bg-accent-blue/20 rounded-lg p-4 border-l-4 border-accent-blue">
-                <p className="text-sm text-accent-blue font-semibold italic">
-                  &ldquo;No podemos imaginar la vida sin ella&rdquo;
+            {/* Historia 2 - Monstro y Camilo Bravo */}
+            <div className="relative rounded-3xl overflow-hidden group h-[500px] md:h-[650px]">
+              <img 
+                src="/Camilo y Monstro.jpg" 
+                alt="Camilo y Monstro" 
+                className="absolute inset-0 w-full h-full object-cover object-[center_20%] transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/40 to-transparent"></div>
+              <div className="absolute top-0 right-0 p-8 md:p-12 max-w-xl text-right">
+                <h3 className="text-2xl md:text-3xl font-bold mb-4 text-accent-blue">Monstro y Camilo Bravo</h3>
+                <p className="text-secondary/90 leading-relaxed text-sm md:text-base mb-4">
+                  &ldquo;Desde las ausencias de mis viejos he sufrido de depresión. Pero desde que Monstro llegó a mi vida, 
+                  a mitad de la pandemia, se volvió un perro sanador. Yo lo adopté de una Fundación en Bogotá, 
+                  cuando tenía un mes. Encontraron a la mamá muerta con 3 hermanitos.&rdquo;
                 </p>
-                <p className="text-xs text-primary/70 mt-1">- María González</p>
+                <div className="inline-block bg-accent-blue/30 backdrop-blur-sm rounded-lg px-4 py-2 border-r-4 border-accent-blue">
+                  <p className="text-sm text-secondary font-medium">- Camilo Bravo</p>
+                </div>
               </div>
             </div>
             
-            {/* Historia 3 - Rocky */}
-            <div className="bg-primary/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary/20 hover:bg-primary/20 transition-all duration-300 hover:scale-105 group">
-              <div className="mb-6">
-                <div className="w-24 h-24 bg-gradient-to-br from-accent-green to-accent-green/80 rounded-full mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg mb-4">
-                  <span className="text-3xl text-white">🐕</span>
+            {/* Historia 3 - Aby, Lía y Juliana Salazar - Contenedor unificado */}
+            <div className="bg-accent-green/10 backdrop-blur-sm rounded-3xl overflow-hidden border border-accent-green/30">
+              {/* Imágenes */}
+              <div className="grid grid-cols-1 md:grid-cols-2">
+                {/* Juliana y Lía */}
+                <div className="relative overflow-hidden group h-[350px] md:h-[450px]">
+                  <img 
+                    src="/Juliana y Lía.jpeg" 
+                    alt="Juliana y Lía" 
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <h3 className="text-xl md:text-2xl font-bold text-accent-green">Juliana y Lía</h3>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-accent-green">Rocky</h3>
+                
+                {/* Juliana y Aby */}
+                <div className="relative overflow-hidden group h-[350px] md:h-[450px]">
+                  <img 
+                    src="/Juliana y Aby.jpeg" 
+                    alt="Juliana y Aby" 
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <h3 className="text-xl md:text-2xl font-bold text-accent-green">Juliana y Aby</h3>
+                  </div>
+                </div>
               </div>
-              <p className="text-primary/90 leading-relaxed mb-6">
-                Rocky tenía miedo de los humanos debido a maltratos anteriores. Era agresivo y desconfiado. 
-                Hoy es el mejor amigo de los niños del barrio y un ejemplo de cómo el amor puede transformar cualquier vida.
-              </p>
-              <div className="bg-accent-green/20 rounded-lg p-4 border-l-4 border-accent-green">
-                <p className="text-sm text-accent-green font-semibold italic">
-                  &ldquo;El amor todo lo puede&rdquo;
+              
+              {/* Texto */}
+              <div className="p-8 md:p-10">
+                <h3 className="text-2xl font-bold mb-4 text-accent-green text-center">Aby, Lía y Juliana Salazar</h3>
+                <p className="text-secondary/90 leading-relaxed text-center mb-4 max-w-3xl mx-auto">
+                  &ldquo;Yo tuve una experiencia traumática en Bogotá, cuando fui atracada y, consecuencia de eso, sufrí graves fracturas. 
+                  La recuperación física, pero especialmente la emocional, tuve la fortuna de tener dos acompañantes de lujo: 
+                  Lía y Aby. Ambas rescatadas, ambas con historias tristes, pero con todo el amor para brindarme durante una larga recuperación. 
+                  Siempre que vengo de Argentina, aprovecho para saludarlas.&rdquo;
                 </p>
-                <p className="text-xs text-primary/70 mt-1">- Comunidad del Barrio San José</p>
+                <p className="text-center text-accent-green font-medium">- Juliana Salazar</p>
               </div>
             </div>
           </div>
           
           {/* Call to Action para Historias */}
           <div className="text-center mt-16">
-            <div className="bg-primary/10 backdrop-blur-sm rounded-2xl p-8 border border-primary/20 max-w-4xl mx-auto">
+            <div className="bg-secondary/10 backdrop-blur-sm rounded-2xl p-8 border border-secondary/20 max-w-4xl mx-auto">
               <h3 className="text-2xl font-bold mb-4 text-accent-orange">
                 ¿Quieres ser parte de una historia feliz?
               </h3>
-              <p className="text-primary/80 mb-6">
+              <p className="text-secondary/80 mb-6">
                 Cada día, más animales esperan una segunda oportunidad. Únete a nuestra misión y 
                 transforma una vida para siempre.
               </p>
@@ -394,8 +501,8 @@ export default function Home() {
                   Ver Animales Disponibles
                 </Link>
                 <Link 
-                  href="/contacto/voluntario"
-                  className="border-2 border-accent-orange text-accent-orange px-8 py-4 rounded-lg font-semibold hover:bg-accent-orange hover:text-white transition-colors duration-200"
+                  href="/contacto"
+                  className="border-2 border-secondary text-secondary px-8 py-4 rounded-lg font-semibold hover:bg-secondary hover:text-primary transition-colors duration-200"
                 >
                   Ser Voluntario
                 </Link>
@@ -405,52 +512,33 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Services Section */}
+      {/* Con Propósito Section */}
       <section className="py-20 bg-secondary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-30">
+          <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-primary mb-6">
-              Nuestros Servicios
+              Con Propósito
             </h2>
+            <p className="text-xl text-primary/80 max-w-3xl mx-auto">
+              Servicios diseñados con amor para el bienestar de tu mascota
+            </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Paseos Felices */}
-            <div className="text-center">
-              <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-90 md:h-90 mx-auto mb-6">
-                {/* Image overlapping from top */}
-                <div className="absolute -top-12 sm:-top-16 md:-top-20 left-1/2 transform -translate-x-1/2 z-10">
-                  <img 
-                    src="/perroanimado1.png" 
-                    alt="Paseos felices" 
-                    className="object-contain w-20 h-20 sm:w-24 sm:h-24 md:w-30 md:h-30"
-                  />
-                </div>
-                {/* Circle container with content */}
-                <div className="w-full h-full bg-accent-green rounded-full flex flex-col items-center justify-center px-4 sm:px-6 md:px-8">
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-primary mb-2 sm:mb-3 md:mb-4">Paseos Felices</h3>
-                  <p className="text-primary/80 leading-relaxed text-center text-sm sm:text-base">
-                    Paseo consciente cumpliendo con la Ley Kiara. Técnicos auxiliares veterinarios a cargo. 
-                    Grupos pequeños, sin mezclar tamaños, priorizando su bienestar y seguridad.
-                  </p>
-                </div>
-              </div>
-            </div>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Mimos en Casa */}
             <div className="text-center">
-              <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-90 md:h-90 mx-auto mb-6">
+              <div className="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto mb-6">
                 {/* Image overlapping from top */}
-                <div className="absolute -top-12 sm:-top-16 md:-top-20 left-1/2 transform -translate-x-1/2 z-10">
+                <div className="absolute -top-12 sm:-top-16 left-1/2 transform -translate-x-1/2 z-10">
                   <img
                     src="/gatoanimado1.png" 
                     alt="Mimos en casa" 
-                    className="object-contain w-20 h-20 sm:w-24 sm:h-24 md:w-30 md:h-30"
+                    className="object-contain w-20 h-20 sm:w-24 sm:h-24"
                   />
                 </div>
                 {/* Circle container with content */}
-                <div className="w-full h-full bg-accent-orange rounded-full flex flex-col items-center justify-center px-4 sm:px-6 md:px-8">
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-primary mb-2 sm:mb-3 md:mb-4">Mimos en Casa</h3>
+                <div className="w-full h-full bg-accent-orange rounded-full flex flex-col items-center justify-center px-4 sm:px-6">
+                  <h3 className="text-lg sm:text-xl font-bold text-primary mb-2 sm:mb-3">Mimos en Casa</h3>
                   <p className="text-primary/80 leading-relaxed text-center text-sm sm:text-base">
                     Servicio de niñera en el hogar de tu mascota. Reducimos el estrés y brindamos 
                     cuidado integral: físico, emocional y recreativo con amor y responsabilidad.
@@ -459,27 +547,36 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Charlas Educativas */}
+            {/* Cursos y Talleres */}
             <div className="text-center">
-              <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-90 md:h-90 mx-auto mb-6">
+              <div className="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto mb-6">
                 {/* Image overlapping from top */}
-                <div className="absolute -top-12 sm:-top-16 md:-top-20 left-1/2 transform -translate-x-1/2 z-10">
+                <div className="absolute -top-12 sm:-top-16 left-1/2 transform -translate-x-1/2 z-10">
                   <img
                     src="/perroanimado2.png" 
-                    alt="Charlas educativas" 
-                    className="object-contain w-20 h-20 sm:w-24 sm:h-24 md:w-30 md:h-30"
+                    alt="Cursos y Talleres" 
+                    className="object-contain w-20 h-20 sm:w-24 sm:h-24"
                   />
                 </div>
                 {/* Circle container with content */}
-                <div className="w-full h-full bg-accent-blue rounded-full flex flex-col items-center justify-center px-4 sm:px-6 md:px-8">
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-primary mb-2 sm:mb-3 md:mb-4">Charlas Educativas</h3>
+                <div className="w-full h-full bg-accent-blue rounded-full flex flex-col items-center justify-center px-4 sm:px-6">
+                  <h3 className="text-lg sm:text-xl font-bold text-primary mb-2 sm:mb-3">Cursos y Talleres</h3>
                   <p className="text-primary/80 leading-relaxed text-center text-sm sm:text-base">
-                    Charlas y talleres especializados para promover la tenencia responsable. 
-                    Educamos sobre bienestar animal, cuidados básicos y adopción responsable.
+                    Formación para tutores de mascotas. Primeros auxilios, comportamiento, 
+                    adiestramiento y más. Aprende a convivir mejor con tu peludo.
                   </p>
                 </div>
               </div>
             </div>
+          </div>
+          
+          <div className="text-center mt-12">
+            <Link 
+              href="/con-proposito"
+              className="bg-accent-orange text-white px-8 py-4 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200 inline-block"
+            >
+              Ver Todos los Servicios
+            </Link>
           </div>
         </div>
       </section>
@@ -677,7 +774,7 @@ export default function Home() {
               Ver Animales Disponibles
             </Link>
             <Link 
-              href="/contacto/escribenos"
+              href="/contacto"
               className="border-2 border-secondary text-secondary px-8 py-4 rounded-lg font-semibold hover:bg-secondary hover:text-primary transition-colors duration-200"
             >
               Contáctanos
