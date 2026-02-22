@@ -95,27 +95,17 @@ export default function RegisterPage() {
         nombre: nombreCompleto,
       });
 
-      // Verificar bandera
-      if (result.bandera === 'roja') {
-        setAlertMessage({
-          type: 'roja',
-          message: 'No puede seguir con el proceso ya que no es adoptante apto.',
-        });
-        setLoading(false);
-        return;
+      // Construir parámetros para la página de verificación
+      const params = new URLSearchParams();
+      params.set('registered', 'true');
+      if (result.bandera) {
+        params.set('bandera', result.bandera);
       }
 
-      if (result.bandera === 'amarilla' || result.bandera === 'naranja') {
-        setAlertMessage({
-          type: 'naranja',
-          message: 'Se revisará su información y luego se le contactará. No puede continuar con el proceso por ahora.',
-        });
-        setLoading(false);
-        return;
-      }
-
-      // Si es verde, redirigir a certificación
-      router.push('/adopta/certificacion');
+      // Redirigir siempre a verificación de correo. El servidor habrá enviado
+      // un código al email y la página de verificación mostrará mensajes
+      // adicionales según la bandera.
+      router.push(`/auth/verificar-email?${params.toString()}`);
     } catch (err: unknown) {
       const apiError = err as ApiErrorResponse;
       // Manejar errores de validación de Pydantic

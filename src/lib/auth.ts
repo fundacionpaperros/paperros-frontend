@@ -61,7 +61,7 @@ export const authService = {
     return response.data;
   },
 
-  register: async (data: RegisterData): Promise<{ user: User; bandera?: string }> => {
+  register: async (data: RegisterData): Promise<{ user: User | null; bandera?: string }> => {
     // Create adopter profile (this also creates the user)
     const response = await api.post('/adopters/register', {
       email: data.email,
@@ -73,14 +73,19 @@ export const authService = {
       ciudad: data.ciudad,
     });
 
-    // Login after registration
-    await authService.login({
-      email: data.email,
-      password: data.password,
-    });
-
-    // Get user info
-    const user = await authService.getCurrentUser();
+    // Try logging in, but if it fails (e.g. because email is not verified)
+    // we ignore the error and return null for user. The caller will
+    // still redirect to the verification page.
+    let user: User | null = null;
+    try {
+      await authService.login({
+        email: data.email,
+        password: data.password,
+      });
+      user = await authService.getCurrentUser();
+    } catch (err) {
+      // ignore login errors (most likely email not verified)
+    }
 
     return {
       user,
@@ -101,8 +106,8 @@ export const authService = {
     return response.data;
   },
 
-  verifyEmail: async (token: string): Promise<void> => {
-    await api.post('/auth/verify-email', { token });
+  verifyEmail: async (code: string): Promise<void> => {
+    await api.post('/auth/verify-email', { code });
   },
 
   resendVerification: async (): Promise<void> => {

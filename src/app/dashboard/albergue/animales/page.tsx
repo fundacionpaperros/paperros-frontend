@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import api from '@/lib/api';
 import { ApiErrorResponse } from '@/lib/types';
+import { log } from 'console';
 
 interface Animal {
   id: number;
@@ -57,6 +58,7 @@ export default function ShelterAnimalsPage() {
       
       // Asegurarse de que response.data sea un array
       const animalsData = Array.isArray(response.data) ? response.data : [];
+      console.log('Datos recibidos del servidor:', animalsData);
       // Validar que cada animal tenga los campos necesarios
       const validAnimals = animalsData.filter((animal: unknown) => 
         animal && typeof animal === 'object' && 'id' in animal && 'nombre' in animal
