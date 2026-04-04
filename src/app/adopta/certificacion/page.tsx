@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import { authService } from '@/lib/auth';
@@ -13,6 +13,44 @@ interface Question {
   respuesta_correcta: number;
 }
 
+/** Resultado del POST /certificate-exam (aprobado o no aprobado) */
+interface ExamResult {
+  aprobado: boolean;
+  correctas: number;
+  total: number;
+  puntos_obtenidos?: number;
+  puntos_totales?: number;
+  porcentaje: number;
+  message: string;
+  // Campos cuando no aprobado (intentos y bloqueo)
+  intentos_fallidos_consecutivos?: number;
+  intentos_restantes_hasta_bloqueo?: number;
+  proximo_intento_disponible?: string | null; 
+  bloqueado_hasta?: string | null;            
+}
+
+/** Respuesta de GET /certificate-exam/eligibility */
+interface Eligibility {
+  puede_presentar: boolean;
+  mensaje: string | null;
+  ya_aprobado: boolean;
+  bandera_verde: boolean;
+  intentos_fallidos_consecutivos: number;
+  intentos_restantes_hasta_bloqueo: number;
+  proximo_intento_disponible: string | null;
+  bloqueado_hasta: string | null;
+}
+
+function formatDateForUser(isoDate: string | null | undefined): string {
+  if (!isoDate) return '';
+  try {
+    const d = new Date(isoDate);
+    return d.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  } catch {
+    return isoDate;
+  }
+}
+
 const VIDEO_URL = 'https://www.youtube.com/embed/P9aex_NTm24';
 
 export default function CertificacionPage() {
@@ -22,11 +60,16 @@ export default function CertificacionPage() {
   const [showExam, setShowExam] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [result, setResult] = useState<{ aprobado: boolean; correctas: number; total: number; porcentaje: number; message: string } | null>(null);
+  const [result, setResult] = useState<ExamResult | null>(null);
   const [error, setError] = useState('');
+  const [emailSent, setEmailSent] = useState(false);
+  const [emailSending, setEmailSending] = useState(false);
+  const [emailError, setEmailError] = useState('');
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutos en segundos
   const [timerActive, setTimerActive] = useState(false);
   const [timeExpired, setTimeExpired] = useState(false);
+  const [eligibility, setEligibility] = useState<Eligibility | null>(null);
+  const [loadingQuestions, setLoadingQuestions] = useState(false);
 
   const loadQuestions = useCallback(async () => {
     try {
@@ -36,7 +79,19 @@ export default function CertificacionPage() {
       const apiError = err as ApiErrorResponse;
       setError(getErrorMessage(apiError, 'Error al cargar preguntas'));
     } finally {
-      setLoading(false);
+      setLoadingQuestions(false);
+    }
+  }, []);
+
+  const fetchEligibility = useCallback(async (): Promise<Eligibility | null> => {
+    try {
+      const response = await api.get<Eligibility>('/adoption-process/certificate-exam/eligibility');
+      setEligibility(response.data);
+      return response.data;
+    } catch (err: unknown) {
+      const apiError = err as ApiErrorResponse;
+      setError(getErrorMessage(apiError, 'Error al verificar elegibilidad'));
+      return null;
     }
   }, []);
 
@@ -49,7 +104,7 @@ export default function CertificacionPage() {
       return;
     } catch (certErr: unknown) {
       const apiError = certErr as ApiErrorResponse;
-      // Si no tiene certificado (404), continuar cargando las preguntas
+      // Si no tiene certificado (404), consultar elegibilidad para saber si puede presentar
       if (apiError.response?.status !== 404) {
         setError(getErrorMessage(apiError, 'Error al verificar certificado'));
         setLoading(false);
@@ -57,9 +112,14 @@ export default function CertificacionPage() {
       }
     }
 
-    // Si no tiene certificado, cargar las preguntas
-    loadQuestions();
-  }, [router, loadQuestions]);
+    // No tiene certificado: obtener elegibilidad (intentos, fechas, bloqueo)
+    const data = await fetchEligibility();
+    if (data?.ya_aprobado) {
+      router.push('/adopta/informacion-hogar');
+      return;
+    }
+    setLoading(false);
+  }, [router, fetchEligibility]);
 
   // Timer effect
   useEffect(() => {
@@ -132,10 +192,13 @@ export default function CertificacionPage() {
   }, [router, checkCertificate]);
 
   const handleStartExam = () => {
+    if (!eligibility?.puede_presentar) return;
     setShowExam(true);
     setTimerActive(true);
     setTimeLeft(600); // Reiniciar a 10 minutos
     setTimeExpired(false);
+    setLoadingQuestions(true);
+    loadQuestions();
   };
 
   const handleAnswerChange = (questionId: number, answerIndex: number) => {
@@ -180,6 +243,24 @@ export default function CertificacionPage() {
     }
   };
 
+  // Cuando se aprueba el examen, solicitamos al backend que envíe el certificado por correo.
+  useEffect(() => {
+    if (result?.aprobado && !emailSent && !emailSending) {
+      (async () => {
+        setEmailSending(true);
+        try {
+          await api.post('/adoption-process/certificate/send-email');
+          setEmailSent(true);
+        } catch (err: unknown) {
+          const apiError = err as ApiErrorResponse;
+          setEmailError(getErrorMessage(apiError, 'Error al enviar el certificado por correo'));
+        } finally {
+          setEmailSending(false);
+        }
+      })();
+    }
+  }, [result, emailSent]);
+
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -220,38 +301,91 @@ export default function CertificacionPage() {
                 {result.aprobado ? (
                   <span className="ml-2 text-sm">({result.correctas} de {result.total} preguntas correctas)</span>
                 ) : (
-                  <span className="ml-2 text-sm">(Necesitas al menos 70% para aprobar)</span>
+                  <span className="ml-2 text-sm">({result.correctas} de {result.total} preguntas correctas. Necesitas al menos 70% para aprobar)</span>
                 )}
               </p>
+
+              {/* Información de intentos cuando no aprobado */}
+              {!result.aprobado && (
+                <div className="mt-4 pt-4 border-t border-red-300 space-y-2 text-sm">
+                  {typeof result.intentos_fallidos_consecutivos === 'number' && (
+                    <p>
+                      Intentos fallidos consecutivos: <span className="font-semibold">{result.intentos_fallidos_consecutivos}</span>
+                    </p>
+                  )}
+                  {typeof result.intentos_restantes_hasta_bloqueo === 'number' && (
+                    <p>
+                      Te quedan <span className="font-semibold">{result.intentos_restantes_hasta_bloqueo}</span> intento(s) antes de un bloqueo temporal.
+                    </p>
+                  )}
+                  {result.bloqueado_hasta ? (
+                    <p className="font-medium mt-2">
+                      Has alcanzado el máximo de intentos. Podrás intentar de nuevo después del{' '}
+                      <span className="font-bold">{formatDateForUser(result.bloqueado_hasta)}</span>.
+                      Hasta entonces, un administrador debe reactivar tu acceso si necesitas intentar antes.
+                    </p>
+                  ) : result.proximo_intento_disponible ? (
+                    <p className="font-medium mt-2">
+                      Podrás volver a intentar el{' '}
+                      <span className="font-bold">{formatDateForUser(result.proximo_intento_disponible)}</span>.
+                    </p>
+                  ) : null}
+                </div>
+              )}
             </div>
+
             {result.aprobado && (
-              <button
-                onClick={() => router.push('/adopta/informacion-hogar')}
-                className="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary/90 font-semibold cursor-pointer"
-              >
-                Continuar al Siguiente Paso
-              </button>
+              <>
+                <button
+                  onClick={() => router.push('/adopta/informacion-hogar')}
+                  className="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary/90 font-semibold cursor-pointer"
+                >
+                  Continuar al Siguiente Paso
+                </button>
+
+                {/* mensaje de envío de certificado */}
+                {emailSending && !emailSent && (
+                  <p className="mt-4 text-blue-700 font-medium">
+                    Enviando el certificado a tu correo...
+                  </p>
+                )}
+                {emailSent && (
+                  <p className="mt-4 text-green-700 font-medium">
+                    El certificado ha sido enviado a tu correo.
+                  </p>
+                )}
+                {emailError && (
+                  <div className="mt-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+                    {emailError}
+                  </div>
+                )}
+              </>
             )}
+
             {!result.aprobado && (
               <button
-                onClick={() => {
+                onClick={async () => {
                   setResult(null);
                   setShowExam(false);
                   setAnswers({});
                   setError('');
+                  setEmailSent(false);
+                  setEmailSending(false);
+                  setEmailError('');
                   setTimeLeft(600);
                   setTimerActive(false);
                   setTimeExpired(false);
+                  await fetchEligibility();
                 }}
                 className="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary/90 font-semibold cursor-pointer"
               >
-                Intentar Nuevamente
+                Volver al curso
               </button>
             )}
           </div>
         )}
 
-        {!showExam && !result && (
+        {!showExam && !result && eligibility !== null && (
           <div className="bg-white rounded-lg shadow-lg p-8">
             <h2 className="text-2xl font-semibold text-primary mb-4">
               Video Educativo
@@ -271,17 +405,52 @@ export default function CertificacionPage() {
               </div>
             </div>
 
+            {/* Mensajes según elegibilidad */}
+            {!eligibility.bandera_verde && (
+              <div className="mb-6 p-4 bg-amber-100 border border-amber-400 text-amber-800 rounded-lg">
+                <p className="font-medium">Aún no puedes presentar el examen. La fundación te habilitará cuando esté listo tu proceso.</p>
+              </div>
+            )}
+            {eligibility.bandera_verde && !eligibility.puede_presentar && eligibility.mensaje && (
+              <div className="mb-6 p-4 bg-amber-100 border border-amber-400 text-amber-800 rounded-lg space-y-2">
+                <p className="font-medium">{eligibility.mensaje}</p>
+                {eligibility.bloqueado_hasta && (
+                  <p>
+                    Podrás intentar de nuevo después del{' '}
+                    <span className="font-bold">{formatDateForUser(eligibility.bloqueado_hasta)}</span>.
+                    Hasta entonces, un administrador debe reactivar tu acceso si necesitas intentar antes.
+                  </p>
+                )}
+                {!eligibility.bloqueado_hasta && eligibility.proximo_intento_disponible && (
+                  <p>
+                    Podrás intentar de nuevo el{' '}
+                    <span className="font-bold">{formatDateForUser(eligibility.proximo_intento_disponible)}</span>.
+                  </p>
+                )}
+              </div>
+            )}
+            {eligibility.bandera_verde && eligibility.puede_presentar && (
+              <p className="mb-4 text-gray-700 text-sm">
+                Te quedan <span className="font-semibold">{eligibility.intentos_restantes_hasta_bloqueo}</span> intento(s) antes de un bloqueo temporal.
+              </p>
+            )}
+
             <button
               onClick={handleStartExam}
-              className="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary/90 font-semibold cursor-pointer"
+              disabled={!eligibility.puede_presentar || !eligibility.bandera_verde}
+              className="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary/90 font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Continuar al Examen
+              Presentar examen
             </button>
           </div>
         )}
 
         {showExam && !result && (
           <div className="bg-white rounded-lg shadow-lg p-8">
+            {loadingQuestions || questions.length === 0 ? (
+              <div className="py-12 text-center text-gray-600">Cargando preguntas...</div>
+            ) : (
+              <>
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h2 className="text-2xl font-semibold text-primary">
@@ -343,6 +512,8 @@ export default function CertificacionPage() {
                 {submitting ? 'Enviando...' : timeExpired ? 'Tiempo Expirado' : 'Enviar Respuestas'}
               </button>
             </form>
+              </>
+            )}
           </div>
         )}
       </div>
