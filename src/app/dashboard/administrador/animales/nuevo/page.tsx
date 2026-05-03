@@ -56,9 +56,9 @@ export default function NewAnimalPage() {
 
   const loadShelters = useCallback(async () => {
     try {
-      // Assuming there's an endpoint to get shelters
-      const response = await api.get('/shelters/?limit=100');
+      const response = await api.get('/shelters/simple');
       setShelters(response.data);
+      // Pre-seleccionar el primer shelter (Fundación Pa' Perros para admin)
       if (response.data.length > 0 && !animalId) {
         setFormData(prev => ({ ...prev, albergue_id: response.data[0].id }));
       }

@@ -159,8 +159,13 @@ export default function ShelterAnimalsPage() {
           <tbody className="bg-white divide-y divide-gray-200">
             {animals.map((animal) => (
               <tr key={animal.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {typeof animal.nombre === 'string' ? animal.nombre : String(animal.nombre || '')}
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <Link
+                    href={`/adopciones/${animal.id}`}
+                    className="text-primary hover:text-accent-orange hover:underline transition-colors"
+                  >
+                    {typeof animal.nombre === 'string' ? animal.nombre : String(animal.nombre || '')}
+                  </Link>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
                   {typeof animal.especie === 'string' ? animal.especie : String(animal.especie || '')}
