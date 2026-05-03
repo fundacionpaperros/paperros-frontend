@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios';
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.fundacionpaperros.com/api',
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -69,6 +69,7 @@ export const checkApiAvailability = async (): Promise<boolean> => {
   try {
     // Health endpoint is at root, not under /api
     const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.fundacionpaperros.com/api';
+
     const healthURL = baseURL.replace('/api', '') + '/health';
     const response = await axios.get(healthURL, { timeout: 3000 });
     return response.status === 200;
