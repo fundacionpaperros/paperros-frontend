@@ -69,6 +69,17 @@ export default function AdoptionsPage() {
     return estados[estado] || estado;
   };
 
+  const handleDelete = async (id: number) => {
+    if (!confirm('¿Estás seguro de eliminar esta adopción? Se eliminarán también las visitas de seguimiento asociadas.')) return;
+    try {
+      await api.delete(`/adoption-process/adoptions/${id}`);
+      fetchAdoptions();
+    } catch (error: unknown) {
+      const apiError = error as ApiErrorResponse;
+      alert(apiError.response?.data?.detail || 'Error al eliminar');
+    }
+  };
+
   const filteredAdoptions = filter
     ? adoptions.filter(a => a.estado === filter)
     : adoptions;
@@ -77,8 +88,8 @@ export default function AdoptionsPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Adopciones</h1>
+      <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold">Adopciones</h1>
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
@@ -97,7 +108,7 @@ export default function AdoptionsPage() {
         </select>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -149,13 +160,19 @@ export default function AdoptionsPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {adoption.fecha_match ? new Date(adoption.fecha_match).toLocaleDateString('es-CO') : '-'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
                     <Link
                       href={`/dashboard/administrador/adopciones/${adoption.id}`}
                       className="text-primary hover:text-primary/80 cursor-pointer"
                     >
-                      Ver Detalles
+                      Editar
                     </Link>
+                    <button
+                      onClick={() => handleDelete(adoption.id)}
+                      className="text-red-600 hover:text-red-800 cursor-pointer"
+                    >
+                      Eliminar
+                    </button>
                   </td>
                 </tr>
               ))
