@@ -146,7 +146,7 @@ export default function NewEventPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6">
         {eventId ? 'Editar Evento' : 'Nuevo Evento'}
       </h1>
 
@@ -163,7 +163,7 @@ export default function NewEventPage() {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de Realización *</label>
             <input

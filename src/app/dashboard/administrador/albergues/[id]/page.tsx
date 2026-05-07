@@ -128,10 +128,10 @@ export default function EditShelterPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Editar Albergue</h1>
+      <h1 className="text-2xl md:text-3xl font-bold mb-6">Editar Albergue</h1>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 space-y-6">
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Nombre del Albergue *

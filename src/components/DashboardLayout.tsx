@@ -28,6 +28,7 @@ export default function DashboardLayout({
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [menuItems, setMenuItems] = useState<Array<{ href: string; label: string }>>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -40,20 +41,18 @@ export default function DashboardLayout({
       try {
         const userData = await authService.getCurrentUser();
         setUser(userData);
-        
-        // Check if user has allowed role
+
         if (!allowedRoles.includes(userData.rol)) {
           router.push('/auth/login');
           return;
         }
-        
-        // Obtener rutas según el rol del usuario
+
         const routes = getRoutesForRole(userData.rol);
         setMenuItems(routes.map(route => ({
           href: route.href,
           label: route.label,
         })));
-        
+
         setIsAuthenticated(true);
       } catch {
         auth.removeToken();
@@ -65,6 +64,11 @@ export default function DashboardLayout({
 
     checkAuth();
   }, [pathname, router, allowedRoles]);
+
+  // Cerrar sidebar al cambiar de ruta en móvil
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
 
   if (loading) {
     return (
@@ -82,81 +86,116 @@ export default function DashboardLayout({
     authService.logout();
   };
 
-  // Usar menuItems si están disponibles, sino usar navigationItems como fallback
   const displayItems = menuItems.length > 0 ? menuItems : navigationItems;
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-screen w-64 bg-primary text-white flex flex-col">
-        {/* Header - Fixed */}
-        <div className="p-4 flex-shrink-0">
+  const SidebarContent = () => (
+    <>
+      <div className="p-4 flex-shrink-0 flex items-center justify-between">
+        <div>
           <h1 className="text-2xl font-bold">Pa&apos; Perros</h1>
           <p className="text-sm text-white/80">{title}</p>
         </div>
+        {/* Botón cerrar en móvil */}
+        <button
+          className="md:hidden text-white/80 hover:text-white p-1"
+          onClick={() => setSidebarOpen(false)}
+          aria-label="Cerrar menú"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
 
-        {/* Navigation - Scrollable */}
-        <nav className="flex-1 overflow-y-auto px-4 space-y-2">
-          {displayItems.map((item) => {
-            // Determinar si esta ruta está activa
-            const isActive = (() => {
-              // Si la ruta es exactamente igual al pathname
-              if (pathname === item.href) {
-                return true;
-              }
-              // Si el pathname empieza con la ruta seguida de '/', es una subruta
-              // Pero solo si no hay otra ruta más específica que también coincida
-              if (pathname.startsWith(item.href + '/')) {
-                // Verificar que no haya otra ruta más específica que también coincida
-                const hasMoreSpecificMatch = displayItems.some(otherItem => 
-                  otherItem.href !== item.href && 
-                  otherItem.href.startsWith(item.href + '/') &&
-                  pathname.startsWith(otherItem.href)
-                );
-                return !hasMoreSpecificMatch;
-              }
-              return false;
-            })();
+      <nav className="flex-1 overflow-y-auto px-4 space-y-2">
+        {displayItems.map((item) => {
+          const isActive = (() => {
+            if (pathname === item.href) return true;
+            if (pathname.startsWith(item.href + '/')) {
+              const hasMoreSpecificMatch = displayItems.some(other =>
+                other.href !== item.href &&
+                other.href.startsWith(item.href + '/') &&
+                pathname.startsWith(other.href)
+              );
+              return !hasMoreSpecificMatch;
+            }
+            return false;
+          })();
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`block px-4 py-2 rounded transition-colors ${
-                  isActive
-                    ? 'bg-white/20 font-semibold' 
-                    : 'hover:bg-white/10'
-                }`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`block px-4 py-2 rounded transition-colors ${
+                isActive ? 'bg-white/20 font-semibold' : 'hover:bg-white/10'
+              }`}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
 
-        {/* Footer - Fixed */}
-        <div className="p-4 pt-8 border-t border-white/20 flex-shrink-0">
-          <div className="px-4 py-2 text-sm">
-            <p className="font-semibold">{user?.nombre}</p>
-            <p className="text-white/70">{user?.email}</p>
-            {user?.rol && (
-              <p className="text-white/70 capitalize">{user.rol}</p>
-            )}
-          </div>
-          <button
-            onClick={handleLogout}
-            className="mt-4 w-full px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-sm transition-colors cursor-pointer"
-          >
-            Cerrar Sesión
-          </button>
+      <div className="p-4 pt-8 border-t border-white/20 flex-shrink-0">
+        <div className="px-4 py-2 text-sm">
+          <p className="font-semibold truncate">{user?.nombre}</p>
+          <p className="text-white/70 truncate" title={user?.email}>{user?.email}</p>
+          {user?.rol && (
+            <p className="text-white/70 capitalize">{user.rol}</p>
+          )}
         </div>
+        <button
+          onClick={handleLogout}
+          className="mt-4 w-full px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-sm transition-colors cursor-pointer"
+        >
+          Cerrar Sesión
+        </button>
+      </div>
+    </>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Overlay para móvil */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-20 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar desktop: siempre visible */}
+      <aside className="hidden md:flex fixed left-0 top-0 h-screen w-64 bg-primary text-white flex-col z-30">
+        <SidebarContent />
       </aside>
 
+      {/* Sidebar móvil: drawer deslizante */}
+      <aside
+        className={`fixed left-0 top-0 h-screen w-72 bg-primary text-white flex flex-col z-30 transform transition-transform duration-300 md:hidden ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <SidebarContent />
+      </aside>
+
+      {/* Barra superior móvil con hamburguesa */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-10 bg-primary text-white flex items-center px-4 h-14 shadow">
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="text-white p-1 mr-3"
+          aria-label="Abrir menú"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <span className="font-bold text-lg">Pa&apos; Perros</span>
+      </div>
+
       {/* Main Content */}
-      <main className="ml-64 p-8">
+      <main className="md:ml-64 pt-14 md:pt-0 p-4 md:p-8 min-h-screen">
         {children}
       </main>
     </div>
   );
 }
-
