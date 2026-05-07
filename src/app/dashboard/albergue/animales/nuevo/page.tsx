@@ -6,6 +6,7 @@ import Link from 'next/link';
 import api from '@/lib/api';
 import { uploadFile, validateImageFile } from '@/lib/upload';
 import { ApiErrorResponse } from '@/lib/types';
+import { v, FormErrors, sanitize } from '@/lib/validators';
 
 interface AnimalForm {
   numero_chip?: string;
@@ -21,6 +22,7 @@ interface AnimalForm {
   senales_particulares?: string;
   discapacidad?: string;
   estado: 'disponible' | 'en_proceso' | 'adoptado' | 'fallecido' | 'otro';
+  temperamento?: 'social' | 'agresivo' | 'pasivo_agresivo' | 'timido' | 'independiente';
   albergue_id: number;
   foto_url?: string;
 }
@@ -31,6 +33,7 @@ export default function NewAnimalPage() {
   const animalId = params?.id ? parseInt(params.id as string) : null;
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [myShelterId, setMyShelterId] = useState<number | null>(null);
@@ -87,13 +90,31 @@ export default function NewAnimalPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!myShelterId) {
-      alert('No se pudo determinar tu albergue');
-      return;
-    }
+    if (!myShelterId) { alert('No se pudo determinar tu albergue'); return; }
+
+    const newErrors: FormErrors = {};
+    if (v.pipe(formData.nombre, v.required, v.maxLength(100))) newErrors.nombre = v.pipe(formData.nombre, v.required, v.maxLength(100))!;
+    if (v.pipe(formData.raza, v.required, v.maxLength(100))) newErrors.raza = v.pipe(formData.raza, v.required, v.maxLength(100))!;
+    if (v.pipe(formData.color, v.required, v.maxLength(50))) newErrors.color = v.pipe(formData.color, v.required, v.maxLength(50))!;
+    if (v.numberRange(0, 30)(formData.edad)) newErrors.edad = v.numberRange(0, 30)(formData.edad)!;
+    if (v.pipe(formData.esquema_vacunacion, v.required, v.maxLength(300))) newErrors.esquema_vacunacion = v.pipe(formData.esquema_vacunacion, v.required, v.maxLength(300))!;
+    if (formData.numero_chip && v.maxLength(50)(formData.numero_chip)) newErrors.numero_chip = v.maxLength(50)(formData.numero_chip)!;
+    if (formData.senales_particulares && v.noScript(formData.senales_particulares)) newErrors.senales_particulares = v.noScript(formData.senales_particulares)!;
+    if (formData.discapacidad && v.noScript(formData.discapacidad)) newErrors.discapacidad = v.noScript(formData.discapacidad)!;
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
 
     setSaving(true);
-    const submitData = { ...formData, albergue_id: myShelterId };
+    const submitData = {
+      ...formData,
+      albergue_id: myShelterId,
+      nombre: sanitize(formData.nombre, 100),
+      raza: sanitize(formData.raza, 100),
+      color: sanitize(formData.color, 50),
+      esquema_vacunacion: sanitize(formData.esquema_vacunacion, 300),
+      senales_particulares: formData.senales_particulares ? sanitize(formData.senales_particulares, 500) : undefined,
+      discapacidad: formData.discapacidad ? sanitize(formData.discapacidad, 500) : undefined,
+    };
 
     try {
       if (animalId) {
@@ -164,7 +185,7 @@ export default function NewAnimalPage() {
       </h1>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 space-y-6">
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
             <input
@@ -309,6 +330,24 @@ export default function NewAnimalPage() {
               <option value="adoptado">Adoptado</option>
               <option value="fallecido">Fallecido</option>
               <option value="otro">Otro</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Temperamento *</label>
+            <select
+              name="temperamento"
+              value={formData.temperamento || ''}
+              onChange={handleChange}
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            >
+              <option value="" disabled>Selecciona un temperamento</option>
+              <option value="social">Social</option>
+              <option value="agresivo">Agresivo</option>
+              <option value="pasivo_agresivo">Pasivo-Agresivo</option>
+              <option value="timido">Tímido</option>
+              <option value="independiente">Independiente</option>
             </select>
           </div>
         </div>

@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/lib/api';
 import { ApiErrorResponse, getErrorMessage } from '@/lib/types';
+import { v, FormErrors, sanitize } from '@/lib/validators';
 import { authService } from '@/lib/auth';
 
 interface ShelterForm {
@@ -23,6 +24,7 @@ export default function NewShelterPage() {
   const shelterId = params?.id ? parseInt(params.id as string) : null;
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
   const [formData, setFormData] = useState<ShelterForm>({
     nombre: '',
     direccion: '',
@@ -92,6 +94,17 @@ export default function NewShelterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const newErrors: FormErrors = {};
+    if (v.pipe(formData.nombre, v.required, v.maxLength(100))) newErrors.nombre = v.pipe(formData.nombre, v.required, v.maxLength(100))!;
+    if (v.pipe(formData.email, v.required, v.email)) newErrors.email = v.pipe(formData.email, v.required, v.email)!;
+    if (v.phone(formData.telefono)) newErrors.telefono = v.phone(formData.telefono)!;
+    if (v.pipe(formData.direccion, v.required, v.maxLength(200))) newErrors.direccion = v.pipe(formData.direccion, v.required, v.maxLength(200))!;
+    if (!shelterId && v.pipe(formData.password, v.required, v.password)) newErrors.password = v.pipe(formData.password, v.required, v.password)!;
+    if (shelterId && formData.password && v.password(formData.password)) newErrors.password = v.password(formData.password)!;
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+
     setSaving(true);
 
     try {
@@ -119,12 +132,12 @@ export default function NewShelterPage() {
       } else {
         // Para crear, enviar todos los campos incluyendo password
         await api.post('/shelters/', {
-          nombre: formData.nombre,
-          direccion: formData.direccion,
-          telefono: formData.telefono,
-          email: formData.email,
+          nombre: sanitize(formData.nombre, 100),
+          direccion: sanitize(formData.direccion, 200),
+          telefono: formData.telefono.replace(/\D/g, ''),
+          email: sanitize(formData.email),
           password: formData.password,
-          nombre_usuario: formData.nombre_usuario || undefined,
+          nombre_usuario: formData.nombre_usuario ? sanitize(formData.nombre_usuario, 100) : undefined,
         });
       }
       router.push('/dashboard/administrador/albergues');
@@ -140,12 +153,12 @@ export default function NewShelterPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6">
         {shelterId ? 'Editar Albergue' : 'Nuevo Albergue'}
       </h1>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 space-y-6">
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Nombre del Albergue *
@@ -156,8 +169,10 @@ export default function NewShelterPage() {
               value={formData.nombre}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              maxLength={100}
+              className={`w-full px-3 py-2 border rounded-md ${errors.nombre ? 'border-red-500' : 'border-gray-300'}`}
             />
+            {errors.nombre && <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>}
           </div>
 
           <div>
@@ -170,8 +185,9 @@ export default function NewShelterPage() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className={`w-full px-3 py-2 border rounded-md ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
             />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
           </div>
 
           <div>
@@ -184,8 +200,11 @@ export default function NewShelterPage() {
               value={formData.telefono}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              maxLength={10}
+              placeholder="Ej: 3001234567"
+              className={`w-full px-3 py-2 border rounded-md ${errors.telefono ? 'border-red-500' : 'border-gray-300'}`}
             />
+            {errors.telefono && <p className="text-red-500 text-xs mt-1">{errors.telefono}</p>}
           </div>
 
           <div>
@@ -215,8 +234,10 @@ export default function NewShelterPage() {
               value={formData.password}
               onChange={handleChange}
               required={!shelterId}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className={`w-full px-3 py-2 border rounded-md ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
             />
+            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+            {!shelterId && <p className="text-gray-400 text-xs mt-1">Mínimo 8 caracteres, una letra y un número</p>}
             {shelterId && (
               <p className="text-xs text-gray-500 mt-1">
                 Dejar vacío para mantener la contraseña actual
@@ -234,8 +255,10 @@ export default function NewShelterPage() {
               value={formData.direccion}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              maxLength={200}
+              className={`w-full px-3 py-2 border rounded-md ${errors.direccion ? 'border-red-500' : 'border-gray-300'}`}
             />
+            {errors.direccion && <p className="text-red-500 text-xs mt-1">{errors.direccion}</p>}
           </div>
 
           {shelterId && (

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { ApiErrorResponse } from '@/lib/types';
+import { v, FormErrors, sanitize } from '@/lib/validators';
 
 interface BlacklistEntry {
   id: number;
@@ -17,6 +18,7 @@ export default function BlacklistPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ cedula: '', razon_reporte: '' });
+  const [errors, setErrors] = useState<FormErrors>({});
 
   useEffect(() => {
     fetchBlacklist();
@@ -35,8 +37,17 @@ export default function BlacklistPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const newErrors: FormErrors = {};
+    if (v.pipe(formData.cedula, v.required, v.cedula)) newErrors.cedula = v.pipe(formData.cedula, v.required, v.cedula)!;
+    if (v.pipe(formData.razon_reporte, v.required, v.minLength(10), v.maxLength(500), v.noScript)) newErrors.razon_reporte = v.pipe(formData.razon_reporte, v.required, v.minLength(10), v.maxLength(500), v.noScript)!;
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+
     try {
-      await api.post('/blacklist/', formData);
+      await api.post('/blacklist/', {
+        cedula: formData.cedula.replace(/\D/g, ''),
+        razon_reporte: sanitize(formData.razon_reporte, 500),
+      });
       setShowForm(false);
       setFormData({ cedula: '', razon_reporte: '' });
       fetchBlacklist();
@@ -69,8 +80,8 @@ export default function BlacklistPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Lista Negra</h1>
+      <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold">Lista Negra</h1>
         <button
           onClick={() => setShowForm(!showForm)}
           className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90 cursor-pointer"
@@ -92,8 +103,10 @@ export default function BlacklistPage() {
                 value={formData.cedula}
                 onChange={(e) => setFormData({ ...formData, cedula: e.target.value })}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                maxLength={10}
+                className={`w-full px-3 py-2 border rounded-md ${errors.cedula ? 'border-red-500' : 'border-gray-300'}`}
               />
+              {errors.cedula && <p className="text-red-500 text-xs mt-1">{errors.cedula}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -104,8 +117,10 @@ export default function BlacklistPage() {
                 onChange={(e) => setFormData({ ...formData, razon_reporte: e.target.value })}
                 required
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                maxLength={500}
+                className={`w-full px-3 py-2 border rounded-md ${errors.razon_reporte ? 'border-red-500' : 'border-gray-300'}`}
               />
+              {errors.razon_reporte && <p className="text-red-500 text-xs mt-1">{errors.razon_reporte}</p>}
             </div>
             <button
               type="submit"
@@ -117,7 +132,7 @@ export default function BlacklistPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
