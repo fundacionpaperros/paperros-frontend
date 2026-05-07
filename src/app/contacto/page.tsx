@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import api from '@/lib/api';
 import { ApiErrorResponse, getErrorMessage } from '@/lib/types';
+import { v, FormErrors, sanitize } from '@/lib/validators';
 
 export default function Contacto() {
   const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ export default function Contacto() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -23,17 +25,27 @@ export default function Contacto() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
     setSuccess(false);
 
+    const newErrors: FormErrors = {};
+    if (v.pipe(formData.nombre, v.required, v.maxLength(100))) newErrors.nombre = v.pipe(formData.nombre, v.required, v.maxLength(100))!;
+    if (v.pipe(formData.email, v.required, v.email)) newErrors.email = v.pipe(formData.email, v.required, v.email)!;
+    if (formData.telefono && v.phone(formData.telefono)) newErrors.telefono = v.phone(formData.telefono)!;
+    if (!formData.asunto) newErrors.asunto = 'Selecciona un asunto';
+    if (v.pipe(formData.mensaje, v.required, v.minLength(10), v.maxLength(1000), v.noScript)) newErrors.mensaje = v.pipe(formData.mensaje, v.required, v.minLength(10), v.maxLength(1000), v.noScript)!;
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+
+    setLoading(true);
+
     try {
       await api.post('/contact/', {
-        nombre: formData.nombre,
-        email: formData.email,
-        telefono: formData.telefono || undefined,
+        nombre: sanitize(formData.nombre, 100),
+        email: sanitize(formData.email),
+        telefono: formData.telefono ? formData.telefono.replace(/\D/g, '') : undefined,
         asunto: formData.asunto,
-        mensaje: formData.mensaje
+        mensaje: sanitize(formData.mensaje, 1000),
       });
 
       setSuccess(true);
