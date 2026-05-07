@@ -113,7 +113,7 @@ export default function PreguntasCertificadoPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-8 flex flex-wrap justify-between items-center gap-4">
           <h1 className="text-3xl font-bold text-primary">Preguntas de Certificado</h1>
           <button
             onClick={handleNew}
@@ -152,7 +152,7 @@ export default function PreguntasCertificadoPage() {
           />
         )}
 
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="bg-white rounded-lg shadow-lg overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -348,7 +348,7 @@ function QuestionForm({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6">
-          <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-4">
+          <div className="flex flex-wrap justify-between items-center gap-4 mb-6 border-b border-gray-200 pb-4">
             <h2 className="text-2xl font-bold text-primary">
               {question ? 'Editar Pregunta' : 'Nueva Pregunta'}
             </h2>
@@ -426,7 +426,7 @@ function QuestionForm({
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Ponderación (0.1 - 10.0) *

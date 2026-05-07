@@ -72,6 +72,17 @@ export default function AdoptersPage() {
     }
   };
 
+  const handleDelete = async (adopterId: number) => {
+    if (!confirm('¿Estás seguro de eliminar este adoptante? Se eliminará también su cuenta de usuario y todas sus adopciones.')) return;
+    try {
+      await api.delete(`/adopters/${adopterId}`);
+      fetchAdopters();
+    } catch (error: unknown) {
+      const apiError = error as ApiErrorResponse;
+      alert(apiError.response?.data?.detail || 'Error al eliminar');
+    }
+  };
+
   const filteredAdopters = filter
     ? adopters.filter(a => a.bandera === filter)
     : adopters;
@@ -80,8 +91,8 @@ export default function AdoptersPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Adoptantes</h1>
+      <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold">Adoptantes</h1>
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
@@ -94,7 +105,7 @@ export default function AdoptersPage() {
         </select>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -137,8 +148,14 @@ export default function AdoptersPage() {
                     href={`/dashboard/administrador/adoptantes/${adopter.id}`}
                     className="text-primary hover:text-primary/80 cursor-pointer"
                   >
-                    Ver Detalles
+                    Editar
                   </Link>
+                  <button
+                    onClick={() => handleDelete(adopter.id)}
+                    className="text-red-600 hover:text-red-800 cursor-pointer"
+                  >
+                    Eliminar
+                  </button>
                 </td>
               </tr>
             ))}

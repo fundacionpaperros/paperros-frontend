@@ -46,8 +46,8 @@ export default function EventsPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Eventos</h1>
+      <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold">Eventos</h1>
         <Link
           href="/dashboard/administrador/eventos/nuevo"
           className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90 cursor-pointer"
@@ -56,7 +56,7 @@ export default function EventsPage() {
         </Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>

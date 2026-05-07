@@ -77,8 +77,8 @@ export default function AnimalsPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Animales</h1>
+      <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold">Animales</h1>
         <Link
           href="/dashboard/administrador/animales/nuevo"
           className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90 cursor-pointer"
@@ -113,7 +113,7 @@ export default function AnimalsPage() {
       {loading ? (
         <div className="text-center py-8">Cargando animales...</div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-white rounded-lg shadow overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>

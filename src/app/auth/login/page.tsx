@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { authService, auth } from '@/lib/auth';
 import api from '@/lib/api';
 import { ApiErrorResponse, getErrorMessage } from '@/lib/types';
+import { v, FormErrors } from '@/lib/validators';
 
 interface AdoptionProgress {
   proceso_paso: number | null;
@@ -18,6 +19,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [alertMessage, setAlertMessage] = useState<{ type: 'roja' | 'naranja' | null; message: string } | null>(null);
 
@@ -68,6 +70,14 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
     setAlertMessage(null);
+
+    const newErrors: FormErrors = {};
+    const emailErr = v.pipe(email, v.required, v.email);
+    if (emailErr) newErrors.email = emailErr;
+    if (!password.trim()) newErrors.password = 'Este campo es obligatorio';
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+
     setLoading(true);
 
     try {
@@ -182,8 +192,9 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
             />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
           </div>
 
           <div>
@@ -196,8 +207,9 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
             />
+            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
           </div>
 
           <button

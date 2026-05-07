@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { authService, RegisterData, auth } from '@/lib/auth';
 import api from '@/lib/api';
 import { ApiErrorResponse } from '@/lib/types';
+import { v, FormErrors, sanitize } from '@/lib/validators';
 
 interface AdoptionProgress {
   proceso_paso: number | null;
@@ -25,6 +26,7 @@ export default function RegisterPage() {
     ciudad: '',
   });
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [alertMessage, setAlertMessage] = useState<{ type: 'roja' | 'naranja' | null; message: string } | null>(null);
@@ -78,21 +80,29 @@ export default function RegisterPage() {
     setError('');
     setAlertMessage(null);
     
-    // Validar aceptación de política
-    if (!aceptaPolitica) {
-      setError('Debe aceptar la política de tratamiento de datos personales para continuar.');
-      return;
-    }
-    
+    const newErrors: FormErrors = {};
+    if (v.pipe(formData.nombre, v.required, v.onlyLetters, v.maxLength(50))) newErrors.nombre = v.pipe(formData.nombre, v.required, v.onlyLetters, v.maxLength(50))!;
+    if (v.pipe(formData.apellido, v.required, v.onlyLetters, v.maxLength(50))) newErrors.apellido = v.pipe(formData.apellido, v.required, v.onlyLetters, v.maxLength(50))!;
+    if (v.pipe(formData.email, v.required, v.email)) newErrors.email = v.pipe(formData.email, v.required, v.email)!;
+    if (v.pipe(formData.password, v.required, v.password)) newErrors.password = v.pipe(formData.password, v.required, v.password)!;
+    if (v.pipe(formData.cedula, v.required, v.cedula)) newErrors.cedula = v.pipe(formData.cedula, v.required, v.cedula)!;
+    if (v.phone(formData.telefono)) newErrors.telefono = v.phone(formData.telefono)!;
+    if (v.pipe(formData.ciudad, v.required, v.maxLength(100))) newErrors.ciudad = v.pipe(formData.ciudad, v.required, v.maxLength(100))!;
+    if (v.pipe(formData.direccion, v.required, v.maxLength(200))) newErrors.direccion = v.pipe(formData.direccion, v.required, v.maxLength(200))!;
+    if (!aceptaPolitica) newErrors.aceptaPolitica = 'Debe aceptar la política de tratamiento de datos';
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+
     setLoading(true);
 
     try {
-      // Combinar nombre y apellido
-      const nombreCompleto = `${formData.nombre} ${formData.apellido}`.trim();
-      
+      const nombreCompleto = `${sanitize(formData.nombre, 50)} ${sanitize(formData.apellido, 50)}`.trim();
+
       const result = await authService.register({
         ...formData,
         nombre: nombreCompleto,
+        cedula: formData.cedula.replace(/\D/g, ''),
+        telefono: formData.telefono.replace(/\D/g, ''),
       });
 
       // Construir parámetros para la página de verificación
@@ -193,8 +203,10 @@ export default function RegisterPage() {
                   value={formData.nombre}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  maxLength={50}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${errors.nombre ? 'border-red-500' : 'border-gray-300'}`}
                 />
+                {errors.nombre && <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>}
               </div>
 
               <div>
@@ -208,8 +220,10 @@ export default function RegisterPage() {
                   value={formData.apellido}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  maxLength={50}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${errors.apellido ? 'border-red-500' : 'border-gray-300'}`}
                 />
+                {errors.apellido && <p className="text-red-500 text-xs mt-1">{errors.apellido}</p>}
               </div>
 
               <div>
@@ -223,8 +237,9 @@ export default function RegisterPage() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
                 />
+                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
               </div>
 
               <div>
@@ -238,9 +253,10 @@ export default function RegisterPage() {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  minLength={6}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
                 />
+                {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+                <p className="text-gray-400 text-xs mt-1">Mínimo 8 caracteres, una letra y un número</p>
               </div>
 
               <div>
@@ -254,8 +270,10 @@ export default function RegisterPage() {
                   value={formData.cedula}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  maxLength={10}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${errors.cedula ? 'border-red-500' : 'border-gray-300'}`}
                 />
+                {errors.cedula && <p className="text-red-500 text-xs mt-1">{errors.cedula}</p>}
               </div>
 
               <div>
@@ -269,8 +287,11 @@ export default function RegisterPage() {
                   value={formData.telefono}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  maxLength={10}
+                  placeholder="Ej: 3001234567"
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${errors.telefono ? 'border-red-500' : 'border-gray-300'}`}
                 />
+                {errors.telefono && <p className="text-red-500 text-xs mt-1">{errors.telefono}</p>}
               </div>
 
               <div>
@@ -284,8 +305,10 @@ export default function RegisterPage() {
                   value={formData.ciudad}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  maxLength={100}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${errors.ciudad ? 'border-red-500' : 'border-gray-300'}`}
                 />
+                {errors.ciudad && <p className="text-red-500 text-xs mt-1">{errors.ciudad}</p>}
               </div>
             </div>
 
@@ -300,11 +323,14 @@ export default function RegisterPage() {
                 value={formData.direccion}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                maxLength={200}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${errors.direccion ? 'border-red-500' : 'border-gray-300'}`}
               />
+              {errors.direccion && <p className="text-red-500 text-xs mt-1">{errors.direccion}</p>}
             </div>
 
-            <div className="flex items-start">
+            <div className="flex items-start flex-col gap-1">
+              <div className="flex items-start">
               <input
                 id="aceptaPolitica"
                 name="aceptaPolitica"
@@ -316,8 +342,8 @@ export default function RegisterPage() {
               />
               <label htmlFor="aceptaPolitica" className="text-sm text-gray-700">
                 Acepto la{' '}
-                <Link 
-                  href="/politica-privacidad" 
+                <Link
+                  href="/politica-privacidad"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:underline font-medium"
@@ -326,6 +352,8 @@ export default function RegisterPage() {
                 </Link>
                 {' '}*
               </label>
+              </div>
+              {errors.aceptaPolitica && <p className="text-red-500 text-xs">{errors.aceptaPolitica}</p>}
             </div>
 
             <button

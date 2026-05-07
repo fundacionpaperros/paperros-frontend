@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/lib/api';
 import { ApiErrorResponse } from '@/lib/types';
@@ -50,6 +50,7 @@ interface FollowUpVisit {
 
 export default function AdoptionDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const adoptionId = params?.id ? parseInt(params.id as string) : null;
   const [adoption, setAdoption] = useState<Adoption | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -103,6 +104,18 @@ export default function AdoptionDetailPage() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!adoption) return;
+    if (!confirm('¿Estás seguro de eliminar esta adopción? Se eliminarán también las visitas de seguimiento asociadas.')) return;
+    try {
+      await api.delete(`/adoption-process/adoptions/${adoption.id}`);
+      router.push('/dashboard/administrador/adopciones');
+    } catch (error: unknown) {
+      const apiError = error as ApiErrorResponse;
+      alert(apiError.response?.data?.detail || 'Error al eliminar');
+    }
+  };
+
   const getEstadoLabel = (estado: string) => {
     const estados: Record<string, string> = {
       pendiente_match: 'Pendiente de Match',
@@ -123,19 +136,24 @@ export default function AdoptionDetailPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Detalle de Adopción #{adoption.id}</h1>
-        <Link
-          href="/dashboard/administrador/adopciones"
-          className="text-primary hover:underline"
-        >
-          Volver
-        </Link>
+      <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold">Adopción #{adoption.id}</h1>
+        <div className="flex gap-3 items-center">
+          <button
+            onClick={handleDelete}
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 cursor-pointer text-sm"
+          >
+            Eliminar
+          </button>
+          <Link href="/dashboard/administrador/adopciones" className="text-primary hover:underline text-sm">
+            Volver
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <h2 className="text-xl font-bold mb-4">Información General</h2>
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
             <p className="text-sm text-gray-600">Adoptante</p>
             <p className="font-semibold">{adoption.adoptante?.nombre || 'Sin nombre'}</p>
@@ -227,7 +245,7 @@ export default function AdoptionDetailPage() {
             {visits.map((visit) => (
               <div key={visit.id} className="border-l-4 border-green-500 pl-4">
                 <p className="font-semibold">{new Date(visit.fecha_visita).toLocaleDateString('es-CO')}</p>
-                <div className="grid grid-cols-3 gap-4 mt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
                   <div>
                     <p className="text-sm text-gray-600">Salud</p>
                     <p className="text-sm">{visit.estado_salud}</p>
