@@ -21,6 +21,7 @@ interface Animal {
   discapacidad: string | null;
   numero_chip: string | null;
   estado: string;
+  temperamento: string | null;
   foto_url: string | null;
   albergue_id: number;
 }
@@ -36,6 +37,14 @@ const TALLA_LABELS: Record<string, string> = {
   'pequeño': 'Pequeño',
   mediano: 'Mediano',
   grande: 'Grande',
+};
+
+const TEMPERAMENTO_LABELS: Record<string, string> = {
+  social: 'Social',
+  agresivo: 'Agresivo',
+  pasivo_agresivo: 'Pasivo-Agresivo',
+  timido: 'Tímido',
+  independiente: 'Independiente',
 };
 
 const ESPECIE_EMOJI: Record<string, string> = {
@@ -60,11 +69,11 @@ interface InfoRowProps {
 
 function InfoRow({ icon, label, value }: InfoRowProps) {
   return (
-    <div className="flex items-start gap-4 py-3 pl-6 border-b border-white/10 last:border-0">
+    <div className="flex items-start gap-3 py-3 pl-3 sm:pl-6 border-b border-white/10 last:border-0">
       <span className="text-xl w-7 flex-shrink-0">{icon}</span>
       <div>
         <p className="text-xs text-white/60 uppercase tracking-wide font-medium">{label}</p>
-        <p className="text-white font-semibold capitalize">{value}</p>
+        <p className="text-white font-semibold capitalize break-all">{value}</p>
       </div>
     </div>
   );
@@ -185,7 +194,7 @@ export default function AnimalProfilePage() {
       </div>
 
       {/* Contenido: foto e info al mismo nivel */}
-      <div className="max-w-5xl mx-auto px-4 pt-10 pb-8">
+      <div className="max-w-5xl mx-auto px-2 sm:px-4 pt-10 pb-8">
         <div className="flex flex-col lg:flex-row gap-8 items-start">
 
           {/* Foto — ancho fijo en desktop */}
@@ -217,7 +226,7 @@ export default function AnimalProfilePage() {
           {/* Info — ocupa el resto */}
           <div className="flex-1 space-y-4">
             {/* Datos principales */}
-            <div className="bg-primary rounded-2xl shadow-md overflow-hidden">
+            <div className="bg-primary rounded-2xl shadow-md">
               <InfoRow icon="🐾" label="Raza"   value={animal.raza} />
               <InfoRow icon="🎨" label="Color"  value={animal.color} />
               <InfoRow icon="⚧"  label="Sexo"   value={animal.sexo} />
@@ -229,6 +238,9 @@ export default function AnimalProfilePage() {
                 value={animal.estado_reproductivo === 'esterilizado' ? 'Esterilizado/a' : 'No esterilizado/a'}
               />
               <InfoRow icon="💉" label="Vacunación" value={animal.esquema_vacunacion} />
+              {animal.temperamento && (
+                <InfoRow icon="🧠" label="Temperamento" value={TEMPERAMENTO_LABELS[animal.temperamento] ?? animal.temperamento} />
+              )}
               {animal.numero_chip && (
                 <InfoRow icon="🔖" label="Microchip" value={animal.numero_chip} />
               )}
