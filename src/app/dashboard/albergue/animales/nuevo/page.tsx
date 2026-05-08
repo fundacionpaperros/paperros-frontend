@@ -34,6 +34,7 @@ export default function NewAnimalPage() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [apiError, setApiError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [myShelterId, setMyShelterId] = useState<number | null>(null);
@@ -53,7 +54,6 @@ export default function NewAnimalPage() {
 
   const loadMyShelter = useCallback(async () => {
     try {
-      // Get shelter associated with current user
       const shelterRes = await api.get('/shelters/me');
       if (shelterRes.data && shelterRes.data.id) {
         setMyShelterId(shelterRes.data.id);
@@ -70,9 +70,8 @@ export default function NewAnimalPage() {
       const response = await api.get(`/animals/${animalId}`);
       setFormData(response.data);
       setMyShelterId(response.data.albergue_id);
-      // Mostrar preview si hay foto
       if (response.data.foto_url) {
-        setPreviewUrl(response.data.foto_url.startsWith('/static/') 
+        setPreviewUrl(response.data.foto_url.startsWith('/static/')
           ? `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'https://api.fundacionpaperros.com'}${response.data.foto_url}`
           : response.data.foto_url);
       }
@@ -93,17 +92,32 @@ export default function NewAnimalPage() {
     if (!myShelterId) { alert('No se pudo determinar tu albergue'); return; }
 
     const newErrors: FormErrors = {};
-    if (v.pipe(formData.nombre, v.required, v.maxLength(100))) newErrors.nombre = v.pipe(formData.nombre, v.required, v.maxLength(100))!;
-    if (v.pipe(formData.raza, v.required, v.maxLength(100))) newErrors.raza = v.pipe(formData.raza, v.required, v.maxLength(100))!;
-    if (v.pipe(formData.color, v.required, v.maxLength(50))) newErrors.color = v.pipe(formData.color, v.required, v.maxLength(50))!;
-    if (v.numberRange(0, 30)(formData.edad)) newErrors.edad = v.numberRange(0, 30)(formData.edad)!;
-    if (v.pipe(formData.esquema_vacunacion, v.required, v.maxLength(300))) newErrors.esquema_vacunacion = v.pipe(formData.esquema_vacunacion, v.required, v.maxLength(300))!;
-    if (formData.numero_chip && v.maxLength(50)(formData.numero_chip)) newErrors.numero_chip = v.maxLength(50)(formData.numero_chip)!;
-    if (formData.senales_particulares && v.noScript(formData.senales_particulares)) newErrors.senales_particulares = v.noScript(formData.senales_particulares)!;
-    if (formData.discapacidad && v.noScript(formData.discapacidad)) newErrors.discapacidad = v.noScript(formData.discapacidad)!;
+    const nombreErr = v.pipe(formData.nombre, v.required, v.maxLength(100));
+    if (nombreErr) newErrors.nombre = nombreErr;
+    const razaErr = v.pipe(formData.raza, v.required, v.maxLength(100));
+    if (razaErr) newErrors.raza = razaErr;
+    const colorErr = v.pipe(formData.color, v.required, v.maxLength(50));
+    if (colorErr) newErrors.color = colorErr;
+    const edadErr = v.numberRange(0, 30)(formData.edad);
+    if (edadErr) newErrors.edad = edadErr;
+    const vacunaErr = v.pipe(formData.esquema_vacunacion, v.required, v.maxLength(300));
+    if (vacunaErr) newErrors.esquema_vacunacion = vacunaErr;
+    if (formData.numero_chip) {
+      const chipErr = v.maxLength(50)(formData.numero_chip);
+      if (chipErr) newErrors.numero_chip = chipErr;
+    }
+    if (formData.senales_particulares) {
+      const senalesErr = v.noScript(formData.senales_particulares);
+      if (senalesErr) newErrors.senales_particulares = senalesErr;
+    }
+    if (formData.discapacidad) {
+      const discErr = v.noScript(formData.discapacidad);
+      if (discErr) newErrors.discapacidad = discErr;
+    }
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
+    setApiError(null);
     setSaving(true);
     const submitData = {
       ...formData,
@@ -114,6 +128,7 @@ export default function NewAnimalPage() {
       esquema_vacunacion: sanitize(formData.esquema_vacunacion, 300),
       senales_particulares: formData.senales_particulares ? sanitize(formData.senales_particulares, 500) : undefined,
       discapacidad: formData.discapacidad ? sanitize(formData.discapacidad, 500) : undefined,
+      temperamento: formData.temperamento || undefined,
     };
 
     try {
@@ -124,8 +139,10 @@ export default function NewAnimalPage() {
       }
       router.push('/dashboard/albergue/animales');
     } catch (error: unknown) {
-      const apiError = error as ApiErrorResponse;
-      alert(apiError.response?.data?.detail || 'Error al guardar');
+      const err = error as ApiErrorResponse;
+      const msg = err.response?.data?.detail || 'Error al guardar. Verifica los datos e intenta de nuevo.';
+      setApiError(typeof msg === 'string' ? msg : JSON.stringify(msg));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setSaving(false);
     }
@@ -135,24 +152,17 @@ export default function NewAnimalPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validar archivo
     const validation = validateImageFile(file);
     if (!validation.valid) {
       alert(validation.error);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
+      if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
 
-    // Mostrar preview
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreviewUrl(reader.result as string);
-    };
+    reader.onloadend = () => { setPreviewUrl(reader.result as string); };
     reader.readAsDataURL(file);
 
-    // Subir archivo
     setUploading(true);
     try {
       const filePath = await uploadFile(file, 'animal');
@@ -161,9 +171,7 @@ export default function NewAnimalPage() {
       const uploadError = error as Error;
       alert(uploadError.message || 'Error al subir foto');
       setPreviewUrl(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
+      if (fileInputRef.current) fileInputRef.current.value = '';
     } finally {
       setUploading(false);
     }
@@ -171,16 +179,13 @@ export default function NewAnimalPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
-    if (type === 'number') {
-      setFormData({ ...formData, [name]: parseInt(value) || 0 });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+    const parsed = type === 'number' ? (parseInt(value) || 0) : value;
+    setFormData(prev => ({ ...prev, [name]: parsed }));
   };
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6">
         {animalId ? 'Editar Animal' : 'Nuevo Animal'}
       </h1>
 
@@ -194,8 +199,9 @@ export default function NewAnimalPage() {
               value={formData.nombre}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className={`w-full px-3 py-2 border rounded-md ${errors.nombre ? 'border-red-500' : 'border-gray-300'}`}
             />
+            {errors.nombre && <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>}
           </div>
 
           <div>
@@ -205,8 +211,9 @@ export default function NewAnimalPage() {
               name="numero_chip"
               value={formData.numero_chip || ''}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className={`w-full px-3 py-2 border rounded-md ${errors.numero_chip ? 'border-red-500' : 'border-gray-300'}`}
             />
+            {errors.numero_chip && <p className="text-red-500 text-xs mt-1">{errors.numero_chip}</p>}
           </div>
 
           <div>
@@ -232,8 +239,9 @@ export default function NewAnimalPage() {
               value={formData.raza}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className={`w-full px-3 py-2 border rounded-md ${errors.raza ? 'border-red-500' : 'border-gray-300'}`}
             />
+            {errors.raza && <p className="text-red-500 text-xs mt-1">{errors.raza}</p>}
           </div>
 
           <div>
@@ -244,8 +252,9 @@ export default function NewAnimalPage() {
               value={formData.color}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className={`w-full px-3 py-2 border rounded-md ${errors.color ? 'border-red-500' : 'border-gray-300'}`}
             />
+            {errors.color && <p className="text-red-500 text-xs mt-1">{errors.color}</p>}
           </div>
 
           <div>
@@ -286,8 +295,10 @@ export default function NewAnimalPage() {
               onChange={handleChange}
               required
               min="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              max="30"
+              className={`w-full px-3 py-2 border rounded-md ${errors.edad ? 'border-red-500' : 'border-gray-300'}`}
             />
+            {errors.edad && <p className="text-red-500 text-xs mt-1">{errors.edad}</p>}
           </div>
 
           <div>
@@ -312,8 +323,9 @@ export default function NewAnimalPage() {
               value={formData.esquema_vacunacion}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className={`w-full px-3 py-2 border rounded-md ${errors.esquema_vacunacion ? 'border-red-500' : 'border-gray-300'}`}
             />
+            {errors.esquema_vacunacion && <p className="text-red-500 text-xs mt-1">{errors.esquema_vacunacion}</p>}
           </div>
 
           <div>
@@ -334,21 +346,21 @@ export default function NewAnimalPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Temperamento *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Temperamento</label>
             <select
               name="temperamento"
               value={formData.temperamento || ''}
               onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className={`w-full px-3 py-2 border rounded-md ${errors.temperamento ? 'border-red-500' : 'border-gray-300'}`}
             >
-              <option value="" disabled>Selecciona un temperamento</option>
+              <option value="">Sin especificar</option>
               <option value="social">Social</option>
               <option value="agresivo">Agresivo</option>
               <option value="pasivo_agresivo">Pasivo-Agresivo</option>
               <option value="timido">Tímido</option>
               <option value="independiente">Independiente</option>
             </select>
+            {errors.temperamento && <p className="text-red-500 text-xs mt-1">{errors.temperamento}</p>}
           </div>
         </div>
 
@@ -359,8 +371,9 @@ export default function NewAnimalPage() {
             value={formData.senales_particulares || ''}
             onChange={handleChange}
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            className={`w-full px-3 py-2 border rounded-md ${errors.senales_particulares ? 'border-red-500' : 'border-gray-300'}`}
           />
+          {errors.senales_particulares && <p className="text-red-500 text-xs mt-1">{errors.senales_particulares}</p>}
         </div>
 
         <div>
@@ -370,14 +383,13 @@ export default function NewAnimalPage() {
             value={formData.discapacidad || ''}
             onChange={handleChange}
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            className={`w-full px-3 py-2 border rounded-md ${errors.discapacidad ? 'border-red-500' : 'border-gray-300'}`}
           />
+          {errors.discapacidad && <p className="text-red-500 text-xs mt-1">{errors.discapacidad}</p>}
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Foto del Animal</label>
-          
-          {/* Input de archivo */}
           <div className="mb-3">
             <input
               ref={fileInputRef}
@@ -387,12 +399,8 @@ export default function NewAnimalPage() {
               disabled={uploading}
               className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90 disabled:opacity-50"
             />
-            {uploading && (
-              <p className="text-sm text-blue-600 mt-1">Subiendo foto...</p>
-            )}
+            {uploading && <p className="text-sm text-blue-600 mt-1">Subiendo foto...</p>}
           </div>
-
-          {/* Preview de imagen */}
           {previewUrl && (
             <div className="mb-3">
               <img
@@ -404,10 +412,17 @@ export default function NewAnimalPage() {
           )}
         </div>
 
+        {apiError && (
+          <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <p className="font-medium">Error al guardar</p>
+            <p className="text-sm mt-1">{apiError}</p>
+          </div>
+        )}
+
         <div className="flex gap-4">
           <button
             type="submit"
-            disabled={saving}
+            disabled={saving || uploading}
             className="bg-primary text-white px-6 py-2 rounded hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {saving ? 'Guardando...' : 'Guardar'}
@@ -423,4 +438,3 @@ export default function NewAnimalPage() {
     </div>
   );
 }
-
