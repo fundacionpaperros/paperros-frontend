@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import api from '@/lib/api';
 import { ApiErrorResponse } from '@/lib/types';
-import { log } from 'console';
 
 interface Animal {
   id: number;
