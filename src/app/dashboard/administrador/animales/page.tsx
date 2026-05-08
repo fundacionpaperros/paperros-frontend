@@ -75,6 +75,7 @@ export default function AnimalsPage() {
   const shelterName = (id: number) =>
     shelters.find((s) => s.id === id)?.nombre ?? `Albergue #${id}`;
 
+
   return (
     <div>
       <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
@@ -124,6 +125,7 @@ export default function AnimalsPage() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Edad (años)</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Talla</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Albergue</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
               </tr>
             </thead>
@@ -148,6 +150,9 @@ export default function AnimalsPage() {
                     }`}>
                       {animal.estado}
                     </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {shelterName(animal.albergue_id)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <Link
