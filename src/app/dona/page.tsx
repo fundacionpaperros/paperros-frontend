@@ -1,4 +1,16 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Dona y apoya el bienestar animal',
+  description: 'Tu donación ayuda a rescatar, rehabilitar y encontrar hogares para animales en Colombia. Apoya a la Fundación Pa\' Perros con cualquier aporte.',
+  alternates: { canonical: 'https://www.fundacionpaperros.com/dona' },
+  openGraph: {
+    title: "Dona — Fundación Pa' Perros",
+    description: 'Cada aporte transforma vidas animales en Colombia.',
+    url: 'https://www.fundacionpaperros.com/dona',
+  },
+};
 
 export default function PlanPadrino() {
   return (

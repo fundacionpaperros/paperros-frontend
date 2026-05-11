@@ -1,4 +1,16 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Con propósito — Cursos y formación en bienestar animal',
+  description: 'Programas educativos de la Fundación Pa\' Perros para formar ciudadanos responsables con los animales en Colombia.',
+  alternates: { canonical: 'https://www.fundacionpaperros.com/con-proposito' },
+  openGraph: {
+    title: "Con propósito — Fundación Pa' Perros",
+    description: 'Formación y educación en bienestar y tenencia responsable de animales.',
+    url: 'https://www.fundacionpaperros.com/con-proposito',
+  },
+};
 
 export default function ConProposito() {
   const cursos = [

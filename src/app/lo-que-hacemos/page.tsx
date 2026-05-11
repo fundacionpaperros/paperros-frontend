@@ -1,4 +1,16 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Lo que hacemos — Rescate y adopción animal',
+  description: 'Conoce las iniciativas de la Fundación Pa\' Perros: rescate, rehabilitación, educación y adopción responsable de animales en Colombia.',
+  alternates: { canonical: 'https://www.fundacionpaperros.com/lo-que-hacemos' },
+  openGraph: {
+    title: "Lo que hacemos — Fundación Pa' Perros",
+    description: 'Rescate, rehabilitación y adopción responsable de animales en Colombia.',
+    url: 'https://www.fundacionpaperros.com/lo-que-hacemos',
+  },
+};
 
 export default function LoQueHacemos() {
   return (
