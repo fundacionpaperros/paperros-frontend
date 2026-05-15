@@ -6,6 +6,7 @@ import Link from 'next/link';
 import api from '@/lib/api';
 import { uploadFile, validateImageFile } from '@/lib/upload';
 import { ApiErrorResponse } from '@/lib/types';
+import toast from 'react-hot-toast';
 
 interface EventForm {
   nombre: string;
@@ -70,7 +71,7 @@ export default function NewEventPage() {
     // Validar archivo
     const validation = validateImageFile(file);
     if (!validation.valid) {
-      alert(validation.error);
+      toast.error(validation.error ?? 'Archivo no válido');
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -91,7 +92,7 @@ export default function NewEventPage() {
       setFormData({ ...formData, imagen_url: filePath });
     } catch (error: unknown) {
       const uploadError = error as Error;
-      alert(uploadError.message || 'Error al subir imagen');
+      toast.error(uploadError.message || 'Error al subir imagen');
       setPreviewUrl(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -105,7 +106,7 @@ export default function NewEventPage() {
     e.preventDefault();
     
     if (!formData.imagen_url && !eventId) {
-      alert('Por favor, sube una imagen para el evento');
+      toast.error('Por favor, sube una imagen para el evento');
       return;
     }
 
@@ -122,10 +123,11 @@ export default function NewEventPage() {
       } else {
         await api.post('/events/', submitData);
       }
+      toast.success('Evento guardado correctamente');
       router.push('/dashboard/administrador/eventos');
     } catch (error: unknown) {
       const apiError = error as ApiErrorResponse;
-      alert(apiError.response?.data?.detail || 'Error al guardar');
+      toast.error((apiError.response?.data?.detail as string) || 'Error al guardar');
     } finally {
       setSaving(false);
     }

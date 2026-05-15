@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { authService } from '@/lib/auth';
 import api from '@/lib/api';
 import { ApiErrorResponse, getErrorMessage } from '@/lib/types';
+import { confirmToast } from '@/lib/confirm-toast';
+import toast from 'react-hot-toast';
 
 interface ContactMessage {
   id: number;
@@ -79,7 +81,8 @@ export default function MensajesPage() {
   const markAsRead = async (messageId: number) => {
     try {
       await api.put(`/contact/${messageId}`, { leido: true });
-      setMessages(prev => prev.map(msg => 
+      toast.success('Mensaje marcado como leído');
+      setMessages(prev => prev.map(msg =>
         msg.id === messageId ? { ...msg, leido: true } : msg
       ));
       if (selectedMessage?.id === messageId) {
@@ -87,14 +90,15 @@ export default function MensajesPage() {
       }
     } catch (err: unknown) {
       const apiError = err as ApiErrorResponse;
-      alert(getErrorMessage(apiError, 'Error al marcar como leído'));
+      toast.error(getErrorMessage(apiError, 'Error al marcar como leído'));
     }
   };
 
   const markAsUnread = async (messageId: number) => {
     try {
       await api.put(`/contact/${messageId}`, { leido: false });
-      setMessages(prev => prev.map(msg => 
+      toast.success('Mensaje marcado como no leído');
+      setMessages(prev => prev.map(msg =>
         msg.id === messageId ? { ...msg, leido: false } : msg
       ));
       if (selectedMessage?.id === messageId) {
@@ -102,24 +106,26 @@ export default function MensajesPage() {
       }
     } catch (err: unknown) {
       const apiError = err as ApiErrorResponse;
-      alert(getErrorMessage(apiError, 'Error al marcar como no leído'));
+      toast.error(getErrorMessage(apiError, 'Error al marcar como no leído'));
     }
   };
 
   const deleteMessage = async (messageId: number) => {
-    if (!confirm('¿Estás seguro de que deseas eliminar este mensaje?')) {
+    const confirmed = await confirmToast('¿Estás seguro de que deseas eliminar este mensaje?');
+    if (!confirmed) {
       return;
     }
 
     try {
       await api.delete(`/contact/${messageId}`);
+      toast.success('Mensaje eliminado');
       setMessages(prev => prev.filter(msg => msg.id !== messageId));
       if (selectedMessage?.id === messageId) {
         setSelectedMessage(null);
       }
     } catch (err: unknown) {
       const apiError = err as ApiErrorResponse;
-      alert(getErrorMessage(apiError, 'Error al eliminar mensaje'));
+      toast.error(getErrorMessage(apiError, 'Error al eliminar mensaje'));
     }
   };
 

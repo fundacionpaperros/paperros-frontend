@@ -7,6 +7,7 @@ import api from '@/lib/api';
 import { uploadFile, validateImageFile } from '@/lib/upload';
 import { ApiErrorResponse } from '@/lib/types';
 import { v, FormErrors, sanitize } from '@/lib/validators';
+import toast from 'react-hot-toast';
 
 interface AnimalForm {
   numero_chip?: string;
@@ -100,7 +101,7 @@ export default function NewAnimalPage() {
 
     const validation = validateImageFile(file);
     if (!validation.valid) {
-      alert(validation.error);
+      toast.error(validation.error ?? 'Archivo no válido');
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
@@ -115,7 +116,7 @@ export default function NewAnimalPage() {
       setFormData(prev => ({ ...prev, foto_url: filePath }));
     } catch (error: unknown) {
       const uploadError = error as Error;
-      alert(uploadError.message || 'Error al subir foto');
+      toast.error(uploadError.message || 'Error al subir foto');
       setPreviewUrl(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
     } finally {
@@ -172,6 +173,7 @@ export default function NewAnimalPage() {
       } else {
         await api.post('/animals/', sanitized);
       }
+      toast.success('Animal guardado correctamente');
       router.push('/dashboard/administrador/animales');
     } catch (error: unknown) {
       const err = error as ApiErrorResponse;

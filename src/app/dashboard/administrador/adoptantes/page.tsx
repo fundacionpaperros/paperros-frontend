@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import api from '@/lib/api';
 import { ApiErrorResponse } from '@/lib/types';
+import { confirmToast } from '@/lib/confirm-toast';
+import toast from 'react-hot-toast';
 
 interface Adopter {
   id: number;
@@ -55,9 +57,8 @@ export default function AdoptersPage() {
   };
 
   const handleChangeBandera = async (adopterId: number) => {
-    if (!confirm('¿Está seguro de cambiar la bandera de NARANJA a VERDE para este adoptante?')) {
-      return;
-    }
+    const confirmed = await confirmToast('¿Está seguro de cambiar la bandera de NARANJA a VERDE para este adoptante?', { confirmLabel: 'Cambiar bandera', danger: false });
+    if (!confirmed) return;
 
     try {
       await api.put(`/adopters/${adopterId}/bandera`, 'verde', {
@@ -65,21 +66,22 @@ export default function AdoptersPage() {
       });
       // Recargar lista
       fetchAdopters();
-      alert('Bandera actualizada exitosamente');
+      toast.success('Bandera actualizada exitosamente');
     } catch (error: unknown) {
       const apiError = error as ApiErrorResponse;
-      alert(apiError.response?.data?.detail || 'Error al actualizar bandera');
+      toast.error((apiError.response?.data?.detail as string) || 'Error al actualizar bandera');
     }
   };
 
   const handleDelete = async (adopterId: number) => {
-    if (!confirm('¿Estás seguro de eliminar este adoptante? Se eliminará también su cuenta de usuario y todas sus adopciones.')) return;
+    const confirmed = await confirmToast('¿Estás seguro de eliminar este adoptante? Se eliminará también su cuenta de usuario y todas sus adopciones.');
+    if (!confirmed) return;
     try {
       await api.delete(`/adopters/${adopterId}`);
       fetchAdopters();
     } catch (error: unknown) {
       const apiError = error as ApiErrorResponse;
-      alert(apiError.response?.data?.detail || 'Error al eliminar');
+      toast.error((apiError.response?.data?.detail as string) || 'Error al eliminar');
     }
   };
 

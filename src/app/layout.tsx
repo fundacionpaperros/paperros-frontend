@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import PublicLayout from "@/components/PublicLayout";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -91,6 +92,14 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}
         suppressHydrationWarning
       >
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            duration: 4000,
+            success: { duration: 3000 },
+            error: { duration: 5000 },
+          }}
+        />
         <PublicLayout>
           {children}
         </PublicLayout>

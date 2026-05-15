@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import { ApiErrorResponse, getErrorMessage } from '@/lib/types';
 import { authService } from '@/lib/auth';
+import { confirmToast } from '@/lib/confirm-toast';
+import toast from 'react-hot-toast';
 
 interface Shelter {
   id: number;
@@ -61,17 +63,18 @@ export default function SheltersPage() {
   };
 
   const handleDelete = async (shelterId: number, nombre: string) => {
-    if (!confirm(`¿Está seguro de eliminar el albergue "${nombre}"? Esta acción también eliminará el usuario asociado.`)) {
+    const confirmed = await confirmToast(`¿Está seguro de eliminar el albergue "${nombre}"? Esta acción también eliminará el usuario asociado.`);
+    if (!confirmed) {
       return;
     }
 
     try {
       await api.delete(`/shelters/${shelterId}`);
       await fetchShelters();
-      alert('Albergue eliminado exitosamente');
+      toast.success('Albergue eliminado exitosamente');
     } catch (error: unknown) {
       const apiError = error as ApiErrorResponse;
-      alert(getErrorMessage(apiError, 'Error al eliminar albergue'));
+      toast.error(getErrorMessage(apiError, 'Error al eliminar albergue'));
     }
   };
 
@@ -83,7 +86,7 @@ export default function SheltersPage() {
       await fetchShelters();
     } catch (error: unknown) {
       const apiError = error as ApiErrorResponse;
-      alert(getErrorMessage(apiError, 'Error al actualizar estado'));
+      toast.error(getErrorMessage(apiError, 'Error al actualizar estado'));
     }
   };
 

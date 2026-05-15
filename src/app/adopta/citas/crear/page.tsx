@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { authService } from '@/lib/auth';
 import api from '@/lib/api';
 import { ApiErrorResponse } from '@/lib/types';
+import toast from 'react-hot-toast';
 
 interface Adoption {
   id: number;
@@ -87,7 +88,7 @@ function CreateAppointmentContent() {
       router.push('/adopta/citas');
     } catch (error: unknown) {
       const apiError = error as ApiErrorResponse;
-      alert(apiError.response?.data?.detail || 'Error al crear cita');
+      toast.error((apiError.response?.data?.detail as string) || 'Error al crear cita');
     } finally {
       setSaving(false);
     }

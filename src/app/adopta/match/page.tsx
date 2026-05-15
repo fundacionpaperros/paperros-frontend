@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { authService } from '@/lib/auth';
 import api from '@/lib/api';
 import { ApiErrorResponse, getErrorMessage } from '@/lib/types';
+import toast from 'react-hot-toast';
 
 interface AnimalMatch {
   id: number;
@@ -118,7 +119,7 @@ export default function MatchPage() {
 
   const handleContinue = async () => {
     if (selectedAnimals.length === 0) {
-      alert('Debe seleccionar al menos un animal');
+      toast.error('Debe seleccionar al menos un animal');
       return;
     }
 
@@ -138,7 +139,7 @@ export default function MatchPage() {
       router.push('/adopta/cita');
     } catch (err: unknown) {
       const apiError = err as ApiErrorResponse;
-      alert(apiError.response?.data?.detail || 'Error al crear adopciones');
+      toast.error((apiError.response?.data?.detail as string) || 'Error al crear adopciones');
       setCreating(false);
     }
   };
