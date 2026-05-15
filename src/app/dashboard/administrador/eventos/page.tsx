@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import api from '@/lib/api';
+import { confirmToast } from '@/lib/confirm-toast';
+import toast from 'react-hot-toast';
 
 interface Event {
   id: number;
@@ -33,12 +35,14 @@ export default function EventsPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('¿Eliminar este evento?')) return;
+    const confirmed = await confirmToast('¿Eliminar este evento?');
+    if (!confirmed) return;
     try {
       await api.delete(`/events/${id}`);
+      toast.success('Evento eliminado correctamente');
       fetchEvents();
     } catch {
-      alert('Error al eliminar');
+      toast.error('Error al eliminar');
     }
   };
 

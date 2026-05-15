@@ -6,6 +6,7 @@ import Link from 'next/link';
 import api from '@/lib/api';
 import { uploadFile, validateImageFile } from '@/lib/upload';
 import { ApiErrorResponse } from '@/lib/types';
+import toast from 'react-hot-toast';
 
 interface SponsorForm {
   nombre: string;
@@ -73,7 +74,7 @@ export default function NewSponsorPage() {
     // Validar archivo
     const validation = validateImageFile(file);
     if (!validation.valid) {
-      alert(validation.error);
+      toast.error(validation.error ?? 'Archivo no válido');
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -94,7 +95,7 @@ export default function NewSponsorPage() {
       setFormData({ ...formData, logo_url: filePath });
     } catch (error: unknown) {
       const uploadError = error as Error;
-      alert(uploadError.message || 'Error al subir logo');
+      toast.error(uploadError.message || 'Error al subir logo');
       setPreviewUrl(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -108,7 +109,7 @@ export default function NewSponsorPage() {
     e.preventDefault();
     
     if (!formData.logo_url && !sponsorId) {
-      alert('Por favor, sube un logo para el patrocinador');
+      toast.error('Por favor, sube un logo para el patrocinador');
       return;
     }
 
@@ -120,10 +121,11 @@ export default function NewSponsorPage() {
       } else {
         await api.post('/sponsors/', formData);
       }
+      toast.success('Patrocinador guardado correctamente');
       router.push('/dashboard/administrador/patrocinadores');
     } catch (error: unknown) {
       const apiError = error as ApiErrorResponse;
-      alert(apiError.response?.data?.detail || 'Error al guardar');
+      toast.error((apiError.response?.data?.detail as string) || 'Error al guardar');
     } finally {
       setSaving(false);
     }
