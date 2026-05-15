@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/lib/api';
 import { ApiErrorResponse } from '@/lib/types';
+import { confirmToast } from '@/lib/confirm-toast';
+import toast from 'react-hot-toast';
 
 interface Adoption {
   id: number;
@@ -14,6 +16,8 @@ interface Adoption {
   fecha_match?: string;
   fecha_cita?: string;
   fecha_adopcion_final?: string;
+  seguimiento_completado: boolean;
+  fecha_alta_seguimiento?: string;
   animal?: {
     id: number;
     nombre: string;
@@ -57,6 +61,7 @@ export default function AdoptionDetailPage() {
   const [visits, setVisits] = useState<FollowUpVisit[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [givingAlta, setGivingAlta] = useState(false);
   const [selectedEstado, setSelectedEstado] = useState<string>('');
 
   const loadData = useCallback(async () => {
@@ -95,24 +100,45 @@ export default function AdoptionDetailPage() {
         estado: selectedEstado,
       });
       setAdoption(response.data);
-      alert('Estado actualizado correctamente');
+      toast.success('Estado actualizado correctamente');
     } catch (error: unknown) {
       const apiError = error as ApiErrorResponse;
-      alert(apiError.response?.data?.detail || 'Error al actualizar el estado');
+      toast.error((apiError.response?.data?.detail as string) || 'Error al actualizar el estado');
     } finally {
       setUpdating(false);
     }
   };
 
+  const handleAltaSeguimiento = async () => {
+    if (!adoption) return;
+    const confirmed = await confirmToast(
+      `¿Confirmas que el animal "${adoption.animal?.nombre || 'este animal'}" se ha adaptado completamente a su nuevo hogar y deseas cerrar el programa de seguimiento? Esta acción no se puede deshacer.`,
+      { confirmLabel: 'Confirmar alta', danger: false }
+    );
+    if (!confirmed) return;
+    setGivingAlta(true);
+    try {
+      const response = await api.post(`/adoption-process/adoptions/${adoption.id}/alta-seguimiento`);
+      setAdoption(response.data);
+    } catch (error: unknown) {
+      const apiError = error as ApiErrorResponse;
+      toast.error((apiError.response?.data?.detail as string) || 'Error al otorgar el alta');
+    } finally {
+      setGivingAlta(false);
+    }
+  };
+
   const handleDelete = async () => {
     if (!adoption) return;
-    if (!confirm('¿Estás seguro de eliminar esta adopción? Se eliminarán también las visitas de seguimiento asociadas.')) return;
+    const confirmed = await confirmToast('¿Estás seguro de eliminar esta adopción? Se eliminarán también las visitas de seguimiento asociadas.');
+    if (!confirmed) return;
     try {
       await api.delete(`/adoption-process/adoptions/${adoption.id}`);
+      toast.success('Adopción eliminada correctamente');
       router.push('/dashboard/administrador/adopciones');
     } catch (error: unknown) {
       const apiError = error as ApiErrorResponse;
-      alert(apiError.response?.data?.detail || 'Error al eliminar');
+      toast.error((apiError.response?.data?.detail as string) || 'Error al eliminar');
     }
   };
 
@@ -269,6 +295,41 @@ export default function AdoptionDetailPage() {
           <p className="text-gray-500">No hay visitas registradas</p>
         )}
       </div>
+
+      {/* Sección de alta del seguimiento — solo visible para adopciones en adoptado_final */}
+      {adoption.estado === 'adoptado_final' && (
+        <div className={`rounded-lg shadow p-6 mt-6 ${adoption.seguimiento_completado ? 'bg-green-50 border border-green-200' : 'bg-white'}`}>
+          <h2 className="text-xl font-bold mb-2">Seguimiento Post-Adopción</h2>
+          {adoption.seguimiento_completado ? (
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-800 text-sm font-semibold">
+                ✓ Alta otorgada
+              </span>
+              {adoption.fecha_alta_seguimiento && (
+                <span className="text-sm text-gray-600">
+                  el {new Date(adoption.fecha_alta_seguimiento).toLocaleDateString('es-CO', { timeZone: 'America/Bogota' })}
+                </span>
+              )}
+              <p className="w-full text-sm text-gray-500 mt-1">
+                El animal ha completado su proceso de seguimiento y fue dado de alta del programa.
+              </p>
+            </div>
+          ) : (
+            <div>
+              <p className="text-sm text-gray-600 mb-4">
+                El animal está activo en el programa de seguimiento. Cuando se haya verificado su adaptación total al nuevo hogar, puedes cerrar formalmente el caso.
+              </p>
+              <button
+                onClick={handleAltaSeguimiento}
+                disabled={givingAlta}
+                className="px-5 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer font-semibold text-sm"
+              >
+                {givingAlta ? 'Procesando...' : 'Dar Alta del Seguimiento'}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
