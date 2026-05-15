@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { ApiErrorResponse } from '@/lib/types';
 import { v, FormErrors, sanitize } from '@/lib/validators';
+import { confirmToast } from '@/lib/confirm-toast';
+import toast from 'react-hot-toast';
 
 interface BlacklistEntry {
   id: number;
@@ -48,31 +50,35 @@ export default function BlacklistPage() {
         cedula: formData.cedula.replace(/\D/g, ''),
         razon_reporte: sanitize(formData.razon_reporte, 500),
       });
+      toast.success('Entrada agregada a la lista negra');
       setShowForm(false);
       setFormData({ cedula: '', razon_reporte: '' });
       fetchBlacklist();
     } catch (error: unknown) {
       const apiError = error as ApiErrorResponse;
-      alert(apiError.response?.data?.detail || 'Error al agregar');
+      toast.error((apiError.response?.data?.detail as string) || 'Error al agregar');
     }
   };
 
   const handleToggle = async (id: number, activo: boolean) => {
     try {
       await api.put(`/blacklist/${id}`, { activo: !activo });
+      toast.success(activo ? 'Entrada desactivada correctamente' : 'Entrada activada correctamente');
       fetchBlacklist();
     } catch {
-      alert('Error al actualizar');
+      toast.error('Error al actualizar');
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('¿Eliminar esta entrada?')) return;
+    const confirmed = await confirmToast('¿Eliminar esta entrada?');
+    if (!confirmed) return;
     try {
       await api.delete(`/blacklist/${id}`);
+      toast.success('Entrada eliminada correctamente');
       fetchBlacklist();
     } catch {
-      alert('Error al eliminar');
+      toast.error('Error al eliminar');
     }
   };
 

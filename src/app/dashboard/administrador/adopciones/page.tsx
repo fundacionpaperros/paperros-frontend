@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import api from '@/lib/api';
 import { ApiErrorResponse } from '@/lib/types';
+import { confirmToast } from '@/lib/confirm-toast';
+import toast from 'react-hot-toast';
 
 interface Adoption {
   id: number;
@@ -70,13 +72,15 @@ export default function AdoptionsPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('¿Estás seguro de eliminar esta adopción? Se eliminarán también las visitas de seguimiento asociadas.')) return;
+    const confirmed = await confirmToast('¿Estás seguro de eliminar esta adopción? Se eliminarán también las visitas de seguimiento asociadas.');
+    if (!confirmed) return;
     try {
       await api.delete(`/adoption-process/adoptions/${id}`);
+      toast.success('Adopción eliminada correctamente');
       fetchAdoptions();
     } catch (error: unknown) {
       const apiError = error as ApiErrorResponse;
-      alert(apiError.response?.data?.detail || 'Error al eliminar');
+      toast.error((apiError.response?.data?.detail as string) || 'Error al eliminar');
     }
   };
 

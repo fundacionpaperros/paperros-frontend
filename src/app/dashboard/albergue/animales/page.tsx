@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import api from '@/lib/api';
 import { ApiErrorResponse } from '@/lib/types';
+import toast from 'react-hot-toast';
 
 interface Animal {
   id: number;
@@ -97,6 +98,7 @@ export default function ShelterAnimalsPage() {
   const handleStatusChange = async (id: number, newStatus: string) => {
     try {
       await api.put(`/animals/${id}`, { estado: newStatus });
+      toast.success('Estado del animal actualizado correctamente');
       fetchAnimals();
     } catch (err: unknown) {
       const apiError = err as ApiErrorResponse;
@@ -116,7 +118,7 @@ export default function ShelterAnimalsPage() {
         }
       }
       
-      alert(errorMessage);
+      toast.error(errorMessage);
     }
   };
 

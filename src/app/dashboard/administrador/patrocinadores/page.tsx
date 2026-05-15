@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import api from '@/lib/api';
+import { confirmToast } from '@/lib/confirm-toast';
+import toast from 'react-hot-toast';
 
 interface Sponsor {
   id: number;
@@ -34,12 +36,14 @@ export default function SponsorsPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('¿Eliminar este patrocinador?')) return;
+    const confirmed = await confirmToast('¿Eliminar este patrocinador?');
+    if (!confirmed) return;
     try {
       await api.delete(`/sponsors/${id}`);
+      toast.success('Patrocinador eliminado correctamente');
       fetchSponsors();
     } catch {
-      alert('Error al eliminar');
+      toast.error('Error al eliminar');
     }
   };
 

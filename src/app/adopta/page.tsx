@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { authService } from '@/lib/auth';
 import api from '@/lib/api';
 import { ApiErrorResponse } from '@/lib/types';
+import toast from 'react-hot-toast';
 
 interface AdoptionProgress {
   proceso_paso: number | null;
@@ -218,7 +219,7 @@ function AdoptaPageContent() {
       window.location.reload();
     } catch (error: unknown) {
       const apiError = error as ApiErrorResponse;
-      alert(apiError.response?.data?.detail || 'Error al reiniciar el proceso');
+      toast.error((apiError.response?.data?.detail as string) || 'Error al reiniciar el proceso');
     }
   };
 

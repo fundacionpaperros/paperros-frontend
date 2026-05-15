@@ -4,6 +4,8 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import api from '@/lib/api';
 import { ApiErrorResponse, getErrorMessage } from '@/lib/types';
+import { confirmToast } from '@/lib/confirm-toast';
+import toast from 'react-hot-toast';
 
 interface Animal {
   id: number;
@@ -62,13 +64,15 @@ export default function AnimalsPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('¿Estás seguro de eliminar este animal?')) return;
+    const confirmed = await confirmToast('¿Estás seguro de eliminar este animal?');
+    if (!confirmed) return;
     try {
       await api.delete(`/animals/${id}`);
+      toast.success('Animal eliminado correctamente');
       fetchAnimals(selectedShelterId || undefined);
     } catch (err: unknown) {
       const apiError = err as ApiErrorResponse;
-      alert(apiError.response?.data?.detail || 'Error al eliminar');
+      toast.error((apiError.response?.data?.detail as string) || 'Error al eliminar');
     }
   };
 

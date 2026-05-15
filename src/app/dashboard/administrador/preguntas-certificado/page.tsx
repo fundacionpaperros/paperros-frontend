@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import { authService } from '@/lib/auth';
 import { ApiErrorResponse, getErrorMessage } from '@/lib/types';
+import { confirmToast } from '@/lib/confirm-toast';
+import toast from 'react-hot-toast';
 
 interface CertificateQuestion {
   id: number;
@@ -61,12 +63,14 @@ export default function PreguntasCertificadoPage() {
   }, [router, loadQuestions]);
 
   const handleDelete = async (id: number) => {
-    if (!confirm('¿Estás seguro de que deseas eliminar esta pregunta?')) {
+    const confirmed = await confirmToast('¿Estás seguro de que deseas eliminar esta pregunta?');
+    if (!confirmed) {
       return;
     }
 
     try {
       await api.delete(`/certificate-questions/${id}`);
+      toast.success('Pregunta eliminada correctamente');
       setSuccess('Pregunta eliminada exitosamente');
       await loadQuestions();
       setTimeout(() => setSuccess(''), 3000);
@@ -82,6 +86,7 @@ export default function PreguntasCertificadoPage() {
       await api.put(`/certificate-questions/${question.id}`, {
         activa: !question.activa
       });
+      toast.success('Estado de pregunta actualizado correctamente');
       setSuccess('Estado actualizado exitosamente');
       await loadQuestions();
       setTimeout(() => setSuccess(''), 3000);
@@ -145,6 +150,7 @@ export default function PreguntasCertificadoPage() {
             onSuccess={async () => {
               setShowForm(false);
               setEditingQuestion(null);
+              toast.success('Pregunta guardada correctamente');
               setSuccess('Pregunta guardada exitosamente');
               await loadQuestions();
               setTimeout(() => setSuccess(''), 3000);

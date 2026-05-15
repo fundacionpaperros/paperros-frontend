@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { authService, auth, User } from '@/lib/auth';
 import api from '@/lib/api';
 import { ApiErrorResponse, getErrorMessage } from '@/lib/types';
+import { confirmToast } from '@/lib/confirm-toast';
+import toast from 'react-hot-toast';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -104,7 +106,8 @@ export default function ProfilePage() {
       return;
     }
 
-    if (!confirm('¿Estás seguro de que deseas desactivar tu cuenta? Esta acción no se puede deshacer y no podrás iniciar sesión nuevamente.')) {
+    const confirmed = await confirmToast('¿Estás seguro de que deseas desactivar tu cuenta? Esta acción no se puede deshacer y no podrás iniciar sesión nuevamente.', { confirmLabel: 'Desactivar cuenta' });
+    if (!confirmed) {
       return;
     }
 
@@ -113,7 +116,7 @@ export default function ProfilePage() {
       await api.post('/auth/deactivate-account', {
         password: deactivateForm.password,
       });
-      alert('Tu cuenta ha sido desactivada exitosamente');
+      toast.success('Tu cuenta ha sido desactivada exitosamente');
       authService.logout();
       router.push('/auth/login');
     } catch (err: unknown) {

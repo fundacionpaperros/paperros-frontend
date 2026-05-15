@@ -7,6 +7,7 @@ import api from '@/lib/api';
 import { ApiErrorResponse, getErrorMessage } from '@/lib/types';
 import { v, FormErrors, sanitize } from '@/lib/validators';
 import { authService } from '@/lib/auth';
+import toast from 'react-hot-toast';
 
 interface ShelterForm {
   nombre: string;
@@ -50,7 +51,7 @@ export default function NewShelterPage() {
       });
     } catch (error) {
       console.error('Error loading shelter:', error);
-      alert('Error al cargar el albergue');
+      toast.error('Error al cargar el albergue');
     } finally {
       setLoading(false);
     }
@@ -140,10 +141,11 @@ export default function NewShelterPage() {
           nombre_usuario: formData.nombre_usuario ? sanitize(formData.nombre_usuario, 100) : undefined,
         });
       }
+      toast.success('Albergue guardado correctamente');
       router.push('/dashboard/administrador/albergues');
     } catch (error: unknown) {
       const apiError = error as ApiErrorResponse;
-      alert(getErrorMessage(apiError, 'Error al guardar'));
+      toast.error(getErrorMessage(apiError, 'Error al guardar'));
     } finally {
       setSaving(false);
     }
