@@ -47,16 +47,32 @@ function AnimatedStat({ value, label, description, icon }: { value: number; labe
   const prefix = value >= 10 ? '+' : '';
   
   return (
-    <div ref={ref} className="bg-white rounded-2xl p-6 shadow-lg text-center hover:shadow-xl transition-shadow duration-300">
+    <div ref={ref} className="h-full bg-white rounded-2xl p-6 shadow-lg text-center hover:shadow-xl transition-shadow duration-300">
       <div className="w-16 h-16 bg-accent-orange/20 rounded-full mx-auto mb-4 flex items-center justify-center">
         <span className="text-2xl">{icon}</span>
       </div>
-      <h3 className="text-3xl font-bold text-accent-orange mb-2">{prefix}{count.toLocaleString()}</h3>
+      <h3 className="text-3xl font-bold text-accent-orange mb-2">{prefix}{count.toLocaleString('es-CO')}</h3>
       <h4 className="text-lg font-semibold text-primary mb-2">{label}</h4>
       <p className="text-primary/70 text-sm">{description}</p>
     </div>
   );
 }
+
+const impactStats = [
+  { value: 600, label: 'Mascotas Esterilizadas', description: 'Prevención de sobrepoblación', icon: '✂️' },
+  { value: 600, label: 'Animales Desparasitados', description: 'Cuidado preventivo', icon: '💊' },
+  { value: 2000, label: 'Niños en Charlas', description: 'Tenencia responsable en escuelas', icon: '👨‍👩‍👧‍👦' },
+  { value: 550, label: 'Policías Capacitados', description: 'Normativa de bienestar animal', icon: '👮‍♂️' },
+  { value: 60, label: 'Emprendimientos Apoyados', description: 'Sector de mascotas', icon: '💼' },
+  { value: 40, label: 'Campañas Realizadas', description: 'Tenencia responsable', icon: '🏢' },
+  { value: 5, label: 'Convenios Académicos', description: 'Alianzas con instituciones educativas', icon: '🎓' },
+  { value: 8, label: 'Estudiantes UAM', description: 'Paz y Competitividad', icon: '📚' },
+  { value: 3000, label: 'Kg de Alimento Donado', description: 'A albergues y fundaciones', icon: '🍖' },
+  { value: 80, label: 'Mascotas en Adopción', description: 'Entregadas a familias', icon: '🏠' },
+  { value: 15, label: 'Adopciones Acompañadas', description: 'Procesos responsables', icon: '❤️' },
+  { value: 8, label: 'Casos Financiados', description: 'Atención especializada', icon: '🏥' },
+  { value: 2, label: 'Proyectos Realizados', description: 'Con impacto en la comunidad', icon: '📋' },
+];
 
 interface ApiEvent {
   id: number;
@@ -76,23 +92,13 @@ export default function Home() {
   const fallbackEvents = [
     {
       id: 1,
-      image: "/Banner página web_Invitación 1.png",
-      alt: "Festival Pa Dejar Huella - Invitación 1"
+      image: "/Banner gatos.png",
+      alt: "Curso Entendiendo a mi gato"
     },
     {
       id: 2,
-      image: "/Banner página web_Invitación 2.png",
-      alt: "Festival Pa Dejar Huella - Invitación 2"
-    },
-    {
-      id: 3,
-      image: "/Banner página web_Programación viernes 21.png",
-      alt: "Festival Pa Dejar Huella - Programación Viernes 21"
-    },
-    {
-      id: 4,
-      image: "/Banner página web_Programación sábado 22.png",
-      alt: "Festival Pa Dejar Huella - Programación Sábado 22"
+      image: "/Banner primeros auxilios.png",
+      alt: "Curso de primeros auxilios para perros y gatos"
     }
   ];
 
@@ -354,431 +360,25 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <AnimatedStat value={200} label="Mascotas Esterilizadas" description="Prevención de sobrepoblación" icon="✂️" />
-            <AnimatedStat value={500} label="Animales Desparasitados" description="Cuidado preventivo" icon="💊" />
-            <AnimatedStat value={1500} label="Niños en Charlas" description="Tenencia responsable en escuelas" icon="👨‍👩‍👧‍👦" />
-            <AnimatedStat value={300} label="Policías Capacitados" description="Normativa de bienestar animal" icon="👮‍♂️" />
+          <div className="flex flex-wrap justify-center gap-6 mb-8">
+            {impactStats.map((stat) => (
+              <div key={stat.label} className="w-full md:w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)]">
+                <AnimatedStat {...stat} />
+              </div>
+            ))}
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <AnimatedStat value={50} label="Emprendimientos Apoyados" description="Sector de mascotas" icon="💼" />
-            <AnimatedStat value={30} label="Campañas Realizadas" description="Tenencia responsable" icon="🏢" />
-            <AnimatedStat value={3} label="Convenios Universitarios" description="Educación tecnológica" icon="🎓" />
-            <AnimatedStat value={5} label="Estudiantes UAM" description="Paz y Competitividad" icon="📚" />
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <AnimatedStat value={290} label="Kg de Alimento Donado" description="A albergues y fundaciones" icon="🍖" />
-            <AnimatedStat value={50} label="Mascotas en Adopción" description="Entregadas a familias" icon="🏠" />
-            <AnimatedStat value={10} label="Adopciones Acompañadas" description="Procesos responsables" icon="❤️" />
-            <AnimatedStat value={5} label="Casos Financiados" description="Atención especializada" icon="🏥" />
-          </div>
-          
-          <div className="bg-accent-orange/10 rounded-2xl p-6 text-center max-w-2xl mx-auto">
-            <p className="text-lg font-semibold text-primary">
-              <span className="text-accent-orange">Miembros de la Junta Defensora Animal de Manizales</span> desde julio de 2025
-            </p>
-          </div>
-        </div>
-      </section>
 
-      {/* Historias Felices Section - Diseño con imágenes grandes */}
-      <section className="py-20 bg-primary text-secondary">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">
-              Historias Felices
-            </h2>
-            <p className="text-xl text-secondary/80 max-w-3xl mx-auto">
-              Cada adopción exitosa es una historia de amor, esperanza y segundas oportunidades que nos inspira a seguir adelante
-            </p>
-          </div>
-          
-          <div className="space-y-12">
-            {/* Historia 1 - Samy y Perla Giraldo */}
-            <div className="relative rounded-3xl overflow-hidden group h-[400px] md:h-[500px]">
-              <img 
-                src="/Perla y Samy.jpeg" 
-                alt="Perla y Samy" 
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
-              <div className="absolute bottom-0 left-0 p-8 md:p-12 max-w-xl">
-                <h3 className="text-2xl md:text-3xl font-bold mb-4 text-accent-orange">Samy y Perla Giraldo</h3>
-                <p className="text-secondary/90 leading-relaxed text-sm md:text-base mb-4">
-                  &ldquo;Samy llegó de Cartagena, luego de que su dueño le pegó un machetazo, y yo la conocí en la Fundación Huella Amiga. 
-                  Ella estaba en proceso de adopción, pero supongo que por la falta de su manito, no la adoptaron. 
-                  Entonces yo decidí adoptarla.&rdquo;
-                </p>
-                <div className="inline-block bg-accent-orange/30 backdrop-blur-sm rounded-lg px-4 py-2 border-l-4 border-accent-orange">
-                  <p className="text-sm text-secondary font-medium">- Perla Giraldo</p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Historia 2 - Monstro y Camilo Bravo */}
-            <div className="relative rounded-3xl overflow-hidden group h-[500px] md:h-[650px]">
-              <img 
-                src="/Camilo y Monstro.jpg" 
-                alt="Camilo y Monstro" 
-                className="absolute inset-0 w-full h-full object-cover object-[center_20%] transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/40 to-transparent"></div>
-              <div className="absolute top-0 right-0 p-8 md:p-12 max-w-xl text-right">
-                <h3 className="text-2xl md:text-3xl font-bold mb-4 text-accent-blue">Monstro y Camilo Bravo</h3>
-                <p className="text-secondary/90 leading-relaxed text-sm md:text-base mb-4">
-                  &ldquo;Desde las ausencias de mis viejos he sufrido de depresión. Pero desde que Monstro llegó a mi vida, 
-                  a mitad de la pandemia, se volvió un perro sanador. Yo lo adopté de una Fundación en Bogotá, 
-                  cuando tenía un mes. Encontraron a la mamá muerta con 3 hermanitos.&rdquo;
-                </p>
-                <div className="inline-block bg-accent-blue/30 backdrop-blur-sm rounded-lg px-4 py-2 border-r-4 border-accent-blue">
-                  <p className="text-sm text-secondary font-medium">- Camilo Bravo</p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Historia 3 - Aby, Lía y Juliana Salazar - Contenedor unificado */}
-            <div className="bg-accent-green/10 backdrop-blur-sm rounded-3xl overflow-hidden border border-accent-green/30">
-              {/* Imágenes */}
-              <div className="grid grid-cols-1 md:grid-cols-2">
-                {/* Juliana y Lía */}
-                <div className="relative overflow-hidden group h-[350px] md:h-[450px]">
-                  <img 
-                    src="/Juliana y Lía.jpeg" 
-                    alt="Juliana y Lía" 
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <h3 className="text-xl md:text-2xl font-bold text-accent-green">Juliana y Lía</h3>
-                  </div>
-                </div>
-                
-                {/* Juliana y Aby */}
-                <div className="relative overflow-hidden group h-[350px] md:h-[450px]">
-                  <img 
-                    src="/Juliana y Aby.jpeg" 
-                    alt="Juliana y Aby" 
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <h3 className="text-xl md:text-2xl font-bold text-accent-green">Juliana y Aby</h3>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Texto */}
-              <div className="p-8 md:p-10">
-                <h3 className="text-2xl font-bold mb-4 text-accent-green text-center">Aby, Lía y Juliana Salazar</h3>
-                <p className="text-secondary/90 leading-relaxed text-center mb-4 max-w-3xl mx-auto">
-                  &ldquo;Yo tuve una experiencia traumática en Bogotá, cuando fui atracada y, consecuencia de eso, sufrí graves fracturas. 
-                  La recuperación física, pero especialmente la emocional, tuve la fortuna de tener dos acompañantes de lujo: 
-                  Lía y Aby. Ambas rescatadas, ambas con historias tristes, pero con todo el amor para brindarme durante una larga recuperación. 
-                  Siempre que vengo de Argentina, aprovecho para saludarlas.&rdquo;
-                </p>
-                <p className="text-center text-accent-green font-medium">- Juliana Salazar</p>
-              </div>
-            </div>
-          </div>
-          
-          {/* Call to Action para Historias */}
-          <div className="text-center mt-16">
-            <div className="bg-secondary/10 backdrop-blur-sm rounded-2xl p-8 border border-secondary/20 max-w-4xl mx-auto">
-              <h3 className="text-2xl font-bold mb-4 text-accent-orange">
-                ¿Quieres ser parte de una historia feliz?
-              </h3>
-              <p className="text-secondary/80 mb-6">
-                Cada día, más animales esperan una segunda oportunidad. Únete a nuestra misión y 
-                transforma una vida para siempre.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link 
-                  href="/adopta"
-                  className="bg-accent-orange text-white px-8 py-4 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200"
-                >
-                  Ver Animales Disponibles
-                </Link>
-                <Link 
-                  href="/contacto"
-                  className="border-2 border-secondary text-secondary px-8 py-4 rounded-lg font-semibold hover:bg-secondary hover:text-primary transition-colors duration-200"
-                >
-                  Ser Voluntario
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Con Propósito Section */}
-      <section className="py-20 bg-secondary">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-primary mb-6">
-              Con Propósito
-            </h2>
-            <p className="text-xl text-primary/80 max-w-3xl mx-auto">
-              Servicios diseñados con amor para el bienestar de tu mascota
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Mimos en Casa */}
-            <div className="text-center">
-              <div className="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto mb-6">
-                {/* Image overlapping from top */}
-                <div className="absolute -top-12 sm:-top-16 left-1/2 transform -translate-x-1/2 z-10">
-                  <img
-                    src="/gatoanimado1.png" 
-                    alt="Mimos en casa" 
-                    className="object-contain w-20 h-20 sm:w-24 sm:h-24"
-                  />
-                </div>
-                {/* Circle container with content */}
-                <div className="w-full h-full bg-accent-orange rounded-full flex flex-col items-center justify-center px-4 sm:px-6">
-                  <h3 className="text-lg sm:text-xl font-bold text-primary mb-2 sm:mb-3">Mimos en Casa</h3>
-                  <p className="text-primary/80 leading-relaxed text-center text-sm sm:text-base">
-                    Servicio de niñera en el hogar de tu mascota. Reducimos el estrés y brindamos 
-                    cuidado integral: físico, emocional y recreativo con amor y responsabilidad.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Cursos y Talleres */}
-            <div className="text-center">
-              <div className="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto mb-6">
-                {/* Image overlapping from top */}
-                <div className="absolute -top-12 sm:-top-16 left-1/2 transform -translate-x-1/2 z-10">
-                  <img
-                    src="/perroanimado2.png" 
-                    alt="Cursos y Talleres" 
-                    className="object-contain w-20 h-20 sm:w-24 sm:h-24"
-                  />
-                </div>
-                {/* Circle container with content */}
-                <div className="w-full h-full bg-accent-blue rounded-full flex flex-col items-center justify-center px-4 sm:px-6">
-                  <h3 className="text-lg sm:text-xl font-bold text-primary mb-2 sm:mb-3">Cursos y Talleres</h3>
-                  <p className="text-primary/80 leading-relaxed text-center text-sm sm:text-base">
-                    Formación para tutores de mascotas. Primeros auxilios, comportamiento, 
-                    adiestramiento y más. Aprende a convivir mejor con tu peludo.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="text-center mt-12">
-            <Link 
-              href="/con-proposito"
-              className="bg-accent-orange text-white px-8 py-4 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200 inline-block"
-            >
-              Ver Todos los Servicios
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Process Section */}
-      <section className="py-20 bg-primary text-secondary">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <p className="text-accent-orange text-sm font-medium uppercase tracking-wide mb-4">
-              Nuestro Proceso
-            </p>
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">
-              Cómo funciona la adopción responsable
-            </h2>
-            <p className="text-xl text-secondary/80 max-w-3xl mx-auto">
-              Un proceso diseñado para garantizar el bienestar animal y la compatibilidad perfecta
-            </p>
-          </div>
-          
-          {/* Process Flow */}
-          <div className="relative">
-            {/* Connection Line - Hidden on mobile */}
-            <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-accent-orange/30 transform -translate-y-1/2 z-0"></div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
-              {/* Step 1 */}
-              <div className="text-center group">
-                <div className="relative mb-8">
-                  <div className="w-20 h-20 bg-accent-orange rounded-full mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <span className="text-2xl font-bold text-white">1</span>
-                  </div>
-                  {/* Connection arrow to next step */}
-                  <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2">
-                    <div className="w-0 h-0 border-l-8 border-l-accent-orange border-t-4 border-b-4 border-t-transparent border-b-transparent"></div>
-                  </div>
-                </div>
-                <h3 className="text-lg font-semibold mb-3 text-accent-orange">Registro</h3>
-                <p className="text-secondary/80 leading-relaxed text-sm">
-                  Registro del adoptante y validación en bases de datos internas
-                </p>
-              </div>
-              
-              {/* Step 2 */}
-              <div className="text-center group">
-                <div className="relative mb-8">
-                  <div className="w-20 h-20 bg-accent-orange rounded-full mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <span className="text-2xl font-bold text-white">2</span>
-                  </div>
-                  {/* Connection arrow to next step */}
-                  <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2">
-                    <div className="w-0 h-0 border-l-8 border-l-accent-orange border-t-4 border-b-4 border-t-transparent border-b-transparent"></div>
-                  </div>
-                </div>
-                <h3 className="text-lg font-semibold mb-3 text-accent-orange">Formación</h3>
-                <p className="text-secondary/80 leading-relaxed text-sm">
-                  Curso formativo sobre adopción responsable y normativa colombiana
-                </p>
-              </div>
-              
-              {/* Step 3 */}
-              <div className="text-center group">
-                <div className="relative mb-8">
-                  <div className="w-20 h-20 bg-accent-orange rounded-full mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <span className="text-2xl font-bold text-white">3</span>
-                  </div>
-                  {/* Connection arrow to next step */}
-                  <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2">
-                    <div className="w-0 h-0 border-l-8 border-l-accent-orange border-t-4 border-b-4 border-t-transparent border-b-transparent"></div>
-                  </div>
-                </div>
-                <h3 className="text-lg font-semibold mb-3 text-accent-orange">Evaluación</h3>
-                <p className="text-secondary/80 leading-relaxed text-sm">
-                  Evaluación mediante preguntas y certificación digital
-                </p>
-              </div>
-              
-              {/* Step 4 */}
-              <div className="text-center group">
-                <div className="relative mb-8">
-                  <div className="w-20 h-20 bg-accent-orange rounded-full mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <span className="text-2xl font-bold text-white">4</span>
-                  </div>
-                </div>
-                <h3 className="text-lg font-semibold mb-3 text-accent-orange">Seguimiento</h3>
-                <p className="text-secondary/80 leading-relaxed text-sm">
-                  Acompañamiento posterior con revisiones periódicas y seguimiento anual
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          {/* Process Summary */}
-          <div className="mt-16 text-center">
-            <div className="bg-accent-orange/10 rounded-2xl p-8 max-w-4xl mx-auto">
-              <h3 className="text-2xl font-bold text-accent-orange mb-4">
-                Proceso Completo de Adopción
-              </h3>
-              <p className="text-secondary/80 leading-relaxed">
-                Desde el registro inicial hasta el seguimiento continuo, cada paso está diseñado para garantizar 
-                que tanto el adoptante como la mascota tengan la mejor experiencia posible. Nuestro compromiso 
-                es con el bienestar animal y la adopción responsable.
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+            <div className="bg-accent-orange/10 rounded-2xl p-6 text-center">
+              <p className="text-lg font-semibold text-primary">
+                <span className="text-accent-orange">Miembros de la Junta Defensora Animal (JUDEA) de Manizales</span> desde julio de 2025
               </p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Why Choose Us Section */}
-      <section className="py-20 bg-secondary">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left Content */}
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <p className="text-accent-orange text-sm font-medium uppercase tracking-wide">
-                  ¿Por qué elegirnos?
-                </p>
-                <h2 className="text-3xl md:text-4xl font-bold text-primary">
-                  Transformamos la cultura de adopción en Colombia
-                </h2>
-                <p className="text-lg text-primary/80 leading-relaxed">
-                  A diferencia de un albergue tradicional, nuestra misión se enfoca en promover 
-                  la adopción responsable y generar conciencia sobre el bienestar animal. 
-                  Garantizamos que cada proceso se realice de forma ética y sostenible.
-                </p>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-accent-orange rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-white text-sm">✓</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-primary">Proceso Riguroso</h3>
-                    <p className="text-primary/80">Evaluación completa y certificación digital</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-accent-orange rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-white text-sm">✓</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-primary">Seguimiento Continuo</h3>
-                    <p className="text-primary/80">Acompañamiento posterior con revisiones periódicas</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-accent-orange rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-white text-sm">✓</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-primary">Albergues Aliados</h3>
-                    <p className="text-primary/80">Trabajamos con rescatistas y albergues confiables</p>
-                  </div>
-                </div>
-              </div>
+            <div className="bg-accent-orange/10 rounded-2xl p-6 text-center">
+              <p className="text-lg font-semibold text-primary">
+                <span className="text-accent-orange">Directivos de Alegato Caldas</span> desde febrero de 2026
+              </p>
             </div>
-
-            {/* Right Content - Image */}
-            <div className="relative">
-              <div className="relative w-full h-96">
-                <div className="absolute inset-0 rounded-2xl overflow-hidden">
-                  <img
-                    src="/image 13.png"
-                    alt="Fundación Pa&apos; Perros"
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                {/* Decorative elements */}
-                <div className="absolute -top-4 -right-4 w-8 h-8 bg-accent-orange rounded-full"></div>
-                <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-accent-blue rounded-full"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Call to Action */}
-      <section className="py-20 bg-primary text-secondary">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">
-            ¿Listo para darle un hogar a tu mejor amigo?
-          </h2>
-          <p className="text-xl mb-8 text-secondary/80">
-            Únete a nuestra misión de promover la adopción responsable en Colombia. 
-            Educamos, acompañamos y garantizamos que cada decisión esté guiada por el respeto a la vida animal.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
-              href="/adopta"
-              className="bg-accent-orange text-white px-8 py-4 rounded-lg font-semibold hover:bg-accent-orange/90 transition-colors duration-200"
-            >
-              Ver Animales Disponibles
-            </Link>
-            <Link 
-              href="/contacto"
-              className="border-2 border-secondary text-secondary px-8 py-4 rounded-lg font-semibold hover:bg-secondary hover:text-primary transition-colors duration-200"
-            >
-              Contáctanos
-            </Link>
           </div>
         </div>
       </section>

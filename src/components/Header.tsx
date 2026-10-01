@@ -12,6 +12,7 @@ const Header = () => {
     { name: 'INICIO', href: '/' },
     { name: 'LA MANADA', href: '/la-manada' },
     { name: 'LO QUE HACEMOS', href: '/lo-que-hacemos' },
+    { name: 'HISTORIAS FELICES', href: '/historias-felices' },
     { name: 'CON PROPÓSITO', href: '/con-proposito' },
     { name: 'TIENDA SOLIDARIA', href: '/tienda' },
     { name: 'CONTÁCTANOS', href: '/contacto' },

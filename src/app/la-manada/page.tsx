@@ -49,6 +49,10 @@ export default function LaManada() {
       tipoEnlace: 'instagram',
       imagen: '/etologica.jpg',
     },
+    {
+      nombre: 'El Mundo según los gatos',
+      imagen: '/El mundo segun los gatos.jpg',
+    },
   ];
 
   useEffect(() => {
@@ -180,7 +184,7 @@ export default function LaManada() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="max-w-xl mx-auto">
             {/* Mauricio */}
             <div className="group">
               <div className="bg-secondary rounded-3xl p-8 shadow-xl transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-2">
@@ -196,25 +200,6 @@ export default function LaManada() {
                 <p className="text-primary leading-relaxed">
                   Nuestra cabeza. Lleva más de <span className="font-semibold text-accent-orange">9 años</span> trabajando por el bienestar animal 
                   y la tenencia responsable de mascotas.
-                </p>
-              </div>
-            </div>
-
-            {/* Diana */}
-            <div className="group">
-              <div className="bg-secondary rounded-3xl p-8 shadow-xl transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-2">
-                <div className="flex items-center gap-6 mb-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-accent-blue to-accent-blue/60 rounded-2xl flex items-center justify-center shadow-lg">
-                    <span className="text-4xl">👩‍💼</span>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-primary">Diana Lucía Guzmán</h3>
-                    <p className="text-accent-blue font-semibold">Líder de Proyectos</p>
-                  </div>
-                </div>
-                <p className="text-primary leading-relaxed">
-                  Más de <span className="font-semibold text-accent-blue">20 años</span> de experiencia en formulación y ejecución de proyectos 
-                  con alto impacto social.
                 </p>
               </div>
             </div>
@@ -238,8 +223,8 @@ export default function LaManada() {
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1, 2, 3].map((i) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="bg-[#01778D]/10 rounded-2xl p-6 animate-pulse">
                   <div className="w-full h-32 mb-4 bg-[#01778D]/20 rounded-xl"></div>
                   <div className="h-6 bg-[#01778D]/20 rounded w-3/4 mx-auto mb-2"></div>
@@ -248,7 +233,7 @@ export default function LaManada() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {aliados.map((aliado, index) => (
                 <div
                   key={index}
@@ -291,20 +276,6 @@ export default function LaManada() {
               ))}
             </div>
           )}
-
-          {/* CTA Aliados */}
-          <div className="mt-16 bg-gradient-to-r from-accent-orange/20 via-accent-blue/20 to-accent-green/20 rounded-3xl p-10 text-center border border-primary/10">
-            <h3 className="text-2xl font-bold text-primary mb-4">¿Quieres ser nuestro aliado?</h3>
-            <p className="text-primary mb-6 max-w-2xl mx-auto">
-              Si tu organización comparte nuestra visión, contáctanos para explorar oportunidades de colaboración.
-            </p>
-            <a
-              href="/contacto"
-              className="inline-block bg-primary text-secondary px-8 py-4 rounded-xl font-semibold hover:bg-[#01778D]/90 transition-colors duration-200 shadow-lg"
-            >
-              Contáctanos
-            </a>
-          </div>
         </div>
       </section>
     </div>

@@ -1,9 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
 import WompiCheckout from '@/components/WompiCheckout';
+import { whatsappUrl } from '@/lib/contact';
 
 interface Product {
   id: number;
@@ -14,8 +14,6 @@ interface Product {
   activo: boolean;
   stock: number | null;
 }
-
-const MONTOS_RAPIDOS = [5000, 10000, 20000, 50000, 100000];
 
 const PRODUCT_EMOJIS: Record<string, string> = {
   'Muñeco Kahu': '🧸',
@@ -34,8 +32,6 @@ export default function Tienda() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [quantities, setQuantities] = useState<Record<number, number>>({});
-  const [montoSeleccionado, setMontoSeleccionado] = useState<number>(10000);
-  const [montoPersonalizado, setMontoPersonalizado] = useState<string>('');
 
   useEffect(() => {
     api.get('/products/')
@@ -48,12 +44,6 @@ export default function Tienda() {
   const setQty = (id: number, qty: number) =>
     setQuantities((prev) => ({ ...prev, [id]: Math.max(1, qty) }));
 
-  const montoFinal = montoPersonalizado
-    ? parseInt(montoPersonalizado.replace(/[^0-9]/g, ''), 10) || 0
-    : montoSeleccionado;
-
-  const montoValido = montoFinal >= 1500;
-
   return (
     <div className="bg-secondary">
       {/* Hero */}
@@ -64,6 +54,46 @@ export default function Tienda() {
             Cada compra apoya nuestra misión de transformar vidas
           </p>
           <div className="w-16 h-1 bg-accent-orange mx-auto mt-6"></div>
+        </div>
+      </section>
+
+      {/* Muñecos Kahu */}
+      <section className="pb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-primary rounded-3xl p-8 md:p-12 shadow-xl">
+            <div className="flex flex-col md:flex-row gap-8 items-center">
+              <img
+                src="/Munecos Kahu.jpg"
+                alt="Muñecos Kahu de perro y gato"
+                className="w-full md:w-80 h-56 md:h-72 object-cover rounded-3xl flex-shrink-0 bg-white"
+              />
+              <div className="text-secondary space-y-4">
+                <h2 className="text-2xl md:text-3xl font-bold">
+                  Muñecos Kahu con propósito, de perro o gato
+                </h2>
+                <p className="leading-relaxed">
+                  Desde la Fundación Pa Perros, transformamos el significado de Kahu en una acción concreta:
+                  dejar de ser espectador y convertirte en protector de un perro que necesita un hogar.
+                </p>
+                <p className="leading-relaxed">
+                  En hawaiano, Kahu no es el dueño de una mascota. Es la persona en quien se confía la protección
+                  de algo sagrado. Lo que un Kahu protege no es suyo: es una parte de su alma.
+                </p>
+                <p className="leading-relaxed">
+                  Hoy, ese vínculo toma forma en un acto real: apadrinar un perro de un albergue. Este muñeco Kahu
+                  no es solo un símbolo: es el puente entre tú y la vida que decides cuidar.
+                </p>
+                <a
+                  href={whatsappUrl('Hola, quiero un muñeco Kahu con propósito')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-accent-orange text-secondary px-6 py-3 rounded-xl font-semibold hover:bg-accent-orange/90 transition-colors duration-200 inline-block"
+                >
+                  Quiero mi Kahu
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -159,76 +189,6 @@ export default function Tienda() {
         </div>
       </section>
 
-      {/* Donaciones */}
-      <section className="pb-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-primary rounded-3xl p-8 md:p-12 shadow-xl">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold text-secondary mb-2">Donaciones</h2>
-              <p className="text-secondary">Tu aporte hace posible nuestra labor diaria · Pago seguro con Wompi</p>
-            </div>
-
-            <div className="max-w-lg mx-auto">
-              <p className="text-secondary font-semibold mb-3">Monto de tu donación</p>
-              <div className="flex flex-wrap gap-2 mb-3">
-                {MONTOS_RAPIDOS.map((m) => (
-                  <button
-                    key={m}
-                    onClick={() => {
-                      setMontoSeleccionado(m);
-                      setMontoPersonalizado('');
-                    }}
-                    className={`px-4 py-2 rounded-xl font-medium text-sm transition-all ${
-                      montoSeleccionado === m && !montoPersonalizado
-                        ? 'bg-accent-orange text-secondary'
-                        : 'bg-[#FFE9D2]/20 text-secondary hover:bg-[#FFE9D2]/40'
-                    }`}
-                  >
-                    {formatCOP(m)}
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex items-center gap-2 bg-[#FFE9D2]/20 rounded-xl px-4 py-3 mb-1">
-                <span className="text-secondary font-bold">$</span>
-                <input
-                  type="number"
-                  placeholder="Otro monto en pesos"
-                  value={montoPersonalizado}
-                  onChange={(e) => setMontoPersonalizado(e.target.value)}
-                  className="bg-transparent text-secondary flex-1 outline-none placeholder:text-secondary/50"
-                  min="1500"
-                />
-                <span className="text-secondary text-sm">COP</span>
-              </div>
-              {!montoValido && montoPersonalizado && (
-                <p className="text-red-400 text-xs mb-2">El monto mínimo es $1.500 COP</p>
-              )}
-
-              <div className="mt-4">
-                {montoValido ? (
-                  <WompiCheckout
-                    payload={{ tipo: 'donacion', monto: montoFinal }}
-                    label={`Donar ${formatCOP(montoFinal)}`}
-                  />
-                ) : (
-                  <button
-                    disabled
-                    className="bg-accent-orange/50 text-secondary px-6 py-3 rounded-xl font-semibold w-full cursor-not-allowed"
-                  >
-                    Ingresa un monto válido
-                  </button>
-                )}
-              </div>
-
-              <p className="text-secondary text-xs text-center mt-4">
-                🔒 Pago seguro · No almacenamos datos de tu tarjeta
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* CTA Final */}
       <section className="py-16 bg-primary">
         <div className="max-w-4xl mx-auto px-4 text-center">
@@ -238,12 +198,14 @@ export default function Tienda() {
           <p className="text-secondary mb-8">
             Contáctanos para más información sobre disponibilidad y envíos.
           </p>
-          <Link
-            href="/contacto"
+          <a
+            href={whatsappUrl('Hola, tengo una pregunta sobre los productos de la Tienda Solidaria')}
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-accent-orange text-secondary px-8 py-4 rounded-xl font-semibold hover:bg-accent-orange/90 transition-colors duration-200 inline-block"
           >
             Contáctanos
-          </Link>
+          </a>
         </div>
       </section>
     </div>

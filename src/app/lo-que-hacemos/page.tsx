@@ -69,13 +69,13 @@ export default function LoQueHacemos() {
               <div className="absolute bottom-0 left-0 right-0 p-6">
                 <div className="bg-secondary rounded-2xl p-5 shadow-xl">
                   <div className="inline-block bg-accent-green px-4 py-1 rounded-full text-sm font-semibold text-secondary mb-3">
-                    Rescate
+                    Rehabilitación
                   </div>
                   <h2 className="text-2xl md:text-3xl font-bold text-primary mb-3 leading-tight">
                     Transformando vidas con amor
                   </h2>
                   <p className="text-primary text-sm md:text-base leading-relaxed">
-                    Acompañamos a los perros adultos de los albergues en sus procesos de adaptación, 
+                    Acompañamos a los perros adoptados en sus procesos de adaptación,
                     ayudándolos a recuperar la confianza.
                   </p>
                 </div>
@@ -108,7 +108,7 @@ export default function LoQueHacemos() {
           </div>
 
           {/* Prevención y Compasión - Ancho completo */}
-          <div className="relative rounded-3xl overflow-hidden group h-[550px] md:h-[500px]">
+          <div className="relative rounded-3xl overflow-hidden group h-[550px] md:h-[500px] mb-8">
             <img 
               src="/Prevención y compasión.jpeg" 
               alt="Prevención y Compasión" 
@@ -125,10 +125,30 @@ export default function LoQueHacemos() {
                     Prevención y Compasión
                   </h2>
                   <p className="text-primary text-base md:text-lg leading-relaxed">
-                    Promovemos la esterilización como un acto de responsabilidad. 
+                    Promovemos la esterilización como un acto de responsabilidad.
                     Prevenimos la sobrepoblación y reducimos el abandono.
                   </p>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Velamos por sus derechos - Ancho completo */}
+          <div className="relative rounded-3xl overflow-hidden bg-primary">
+            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10 p-6 md:p-12">
+              <div className="w-24 h-24 md:w-32 md:h-32 bg-[#FFE9D2]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-5xl md:text-6xl">⚖️</span>
+              </div>
+              <div className="bg-secondary rounded-2xl p-5 md:p-8 shadow-xl text-center md:text-left w-full">
+                <div className="inline-block bg-accent-blue px-4 py-1 rounded-full text-sm font-semibold text-secondary mb-3 md:mb-4">
+                  Legal
+                </div>
+                <h2 className="text-2xl md:text-4xl font-bold text-primary mb-3 md:mb-4 leading-tight">
+                  Velamos por sus derechos
+                </h2>
+                <p className="text-primary text-base md:text-lg leading-relaxed">
+                  Desde Alegato Caldas acompañamos procesos por abandono, maltrato o mala tenencia.
+                </p>
               </div>
             </div>
           </div>
@@ -143,14 +163,14 @@ export default function LoQueHacemos() {
             ¿Quieres ser parte del cambio?
           </h2>
           <p className="text-xl mb-8 text-secondary">
-            Únete a nuestra misión de promover el bienestar animal.
+            Conviértete en padrino y ayuda a transformar vidas.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
-              href="/adopta"
+            <Link
+              href="/dona"
               className="bg-accent-orange text-secondary px-8 py-4 rounded-xl font-semibold hover:bg-accent-orange/90 transition-colors duration-200"
             >
-              Adoptar Ahora
+              Quiero ser Padrino
             </Link>
             <Link 
               href="/contacto"

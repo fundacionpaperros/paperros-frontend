@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import { whatsappUrl } from '@/lib/contact';
 
 export const metadata: Metadata = {
   title: 'Con propósito — Cursos y formación en bienestar animal',
@@ -14,19 +14,16 @@ export const metadata: Metadata = {
 
 export default function ConProposito() {
   const cursos = [
-    { nombre: 'Primeros Auxilios para Mascotas', emoji: '🩺' },
-    { nombre: 'Educación y comportamiento básico', emoji: '📚' },
-    { nombre: 'Modificación de conducta para Perros', emoji: '🐕' },
-    { nombre: 'Modificación de conducta para Gatos', emoji: '🐱' },
-    { nombre: 'Adiestrador Canino Integral', emoji: '🎓' },
-    { nombre: 'Intervenciones Asistidas con Perros', emoji: '💕' },
-    { nombre: 'Estética de especies pequeñas', emoji: '✨' },
+    { nombre: 'Curso de Primeros Auxilios para perros y gatos', emoji: '🩺', precio: '$350.000', duracion: '16 horas prácticas' },
+    { nombre: 'Curso Entendiendo a mi gato', emoji: '🐱', precio: '$900.000', duracion: '46 horas teórico-prácticas' },
+    { nombre: 'Curso Escuela de cachorros', emoji: '🐶', precio: '$350.000', duracion: '16 horas prácticas' },
+    { nombre: 'Curso Educando a tu perro', emoji: '🎓', precio: '$1.200.000', duracion: '100 horas teórico-prácticas' },
   ];
 
   const servicios = [
     {
-      id: 'mimos',
-      titulo: 'Mimos en Casa',
+      id: 'ninera',
+      titulo: 'Niñera en Casa',
       descripcion: 'Cuidamos a tu mascota en su propio hogar, reduciendo el estrés y brindándoles atención con amor y responsabilidad.',
       color: 'accent-blue',
       bgColor: 'bg-accent-blue',
@@ -34,17 +31,8 @@ export default function ConProposito() {
       beneficios: ['Reducción del estrés', 'Cuidado personalizado', 'Reportes constantes'],
     },
     {
-      id: 'etologia',
-      titulo: 'Consulta de Etología',
-      descripcion: 'Especialistas que te ayudan a comprender el comportamiento de tu mascota y encontrar soluciones efectivas.',
-      color: 'accent-green',
-      bgColor: 'bg-accent-green',
-      icon: '🧠',
-      beneficios: ['Diagnóstico profesional', 'Tratamiento personalizado', 'Seguimiento continuo'],
-    },
-    {
       id: 'adiestramiento',
-      titulo: 'Adiestramiento Canino',
+      titulo: 'Adiestramiento canino y modificación de conducta',
       descripcion: 'Métodos positivos y respetuosos para una comunicación efectiva con tu perro y una convivencia armoniosa.',
       color: 'accent-orange',
       bgColor: 'bg-accent-orange',
@@ -52,13 +40,13 @@ export default function ConProposito() {
       beneficios: ['Obediencia básica', 'Entrenamiento avanzado', 'Vínculo fortalecido'],
     },
     {
-      id: 'caminatas',
-      titulo: 'Caminatas Grupales',
-      descripcion: 'Paseos en entornos naturales donde tu peludo puede socializar, explorar y disfrutar de forma segura.',
-      color: 'accent-blue',
-      bgColor: 'bg-accent-blue',
+      id: 'paseos',
+      titulo: 'Paseos',
+      descripcion: 'Grupos de máximo 6 perros, no se mezcla el tamaño de los peludos, se camina al ritmo del que más lento va.',
+      color: 'accent-green',
+      bgColor: 'bg-accent-green',
       icon: '🌿',
-      beneficios: ['Socialización', 'Ejercicio guiado', 'Conexión con la naturaleza'],
+      beneficios: ['Máximo 6 perros', 'Grupos por tamaño', 'Al ritmo de cada peludo'],
     },
   ];
 
@@ -84,25 +72,34 @@ export default function ConProposito() {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
               <div>
                 <h2 className="text-2xl md:text-3xl font-bold text-secondary mb-2">Cursos y Talleres</h2>
-                <p className="text-secondary">Formación para tutores responsables</p>
+                <p className="text-secondary max-w-2xl">
+                  Buscamos que los tutores de mascotas estén formados para educar y convivir de la mejor manera con los miembros peludos de su familia.
+                </p>
               </div>
-              <Link 
-                href="/contacto"
-                className="mt-4 md:mt-0 bg-accent-orange text-secondary px-6 py-3 rounded-xl font-semibold hover:bg-accent-orange/90 transition-colors duration-200 inline-block text-center"
+              <a
+                href={whatsappUrl('Hola, quiero inscribirme a un curso de la Fundación Pa\' Perros')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 md:mt-0 md:ml-6 flex-shrink-0 bg-accent-orange text-secondary px-6 py-3 rounded-xl font-semibold hover:bg-accent-orange/90 transition-colors duration-200 inline-block text-center"
               >
                 Inscríbete
-              </Link>
+              </a>
             </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-              {cursos.map((curso, index) => (
-                <div 
-                  key={index} 
-                  className="bg-[#FFE9D2]/20 hover:bg-[#FFE9D2]/30 rounded-xl p-4 transition-all duration-300 group cursor-pointer"
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {cursos.map((curso) => (
+                <a
+                  key={curso.nombre}
+                  href={whatsappUrl(`Hola, quiero inscribirme al ${curso.nombre}`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-[#FFE9D2]/20 hover:bg-[#FFE9D2]/30 rounded-xl p-5 transition-all duration-300 group flex flex-col"
                 >
-                  <span className="text-2xl mb-2 block group-hover:scale-110 transition-transform">{curso.emoji}</span>
-                  <h3 className="text-sm md:text-base font-semibold text-secondary leading-tight">{curso.nombre}</h3>
-                </div>
+                  <span className="text-3xl mb-3 block group-hover:scale-110 transition-transform">{curso.emoji}</span>
+                  <h3 className="text-base md:text-lg font-semibold text-secondary leading-tight mb-3">{curso.nombre}</h3>
+                  <p className="text-2xl font-bold text-accent-orange mt-auto">{curso.precio}</p>
+                  <p className="text-sm text-secondary">{curso.duracion}</p>
+                </a>
               ))}
             </div>
           </div>
@@ -112,7 +109,7 @@ export default function ConProposito() {
       {/* Servicios - Grid dinámico */}
       <section className="pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {servicios.map((servicio) => (
               <div 
                 key={servicio.id}
@@ -140,12 +137,14 @@ export default function ConProposito() {
                     ))}
                   </div>
                   
-                  <Link 
-                    href="/contacto"
+                  <a
+                    href={whatsappUrl(`Hola, quiero más información sobre el servicio de ${servicio.titulo}`)}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className={`${servicio.bgColor} text-secondary px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-all duration-200 inline-block text-sm`}
                   >
                     Más información
-                  </Link>
+                  </a>
                 </div>
               </div>
             ))}
@@ -162,12 +161,14 @@ export default function ConProposito() {
           <p className="text-secondary mb-8">
             Estamos aquí para ayudarte a elegir el servicio ideal para ti y tu mascota.
           </p>
-          <Link 
-            href="/contacto"
+          <a
+            href={whatsappUrl('Hola, tengo una pregunta sobre los servicios de la Fundación Pa\' Perros')}
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-accent-orange text-secondary px-8 py-4 rounded-xl font-semibold hover:bg-accent-orange/90 transition-colors duration-200 inline-block"
           >
             Contáctanos
-          </Link>
+          </a>
         </div>
       </section>
     </div>

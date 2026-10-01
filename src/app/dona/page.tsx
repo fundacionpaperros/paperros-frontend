@@ -76,7 +76,7 @@ export default function PlanPadrino() {
                 <h3 className="text-xl font-bold text-secondary mb-4">Davivienda</h3>
                 <div className="bg-[#FFE9D2]/20 rounded-xl p-4 mb-3">
                   <p className="text-secondary text-sm mb-1">Número de cuenta:</p>
-                  <p className="font-bold text-2xl text-secondary">084500098383</p>
+                  <p className="font-bold text-xl sm:text-2xl text-secondary break-all">0000108900884017</p>
                 </div>
                 <div className="text-secondary text-sm space-y-1">
                   <p>Tipo: Cuenta de Ahorros</p>
